@@ -130,15 +130,15 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         
         if self.include_float:
             float_solutions = solution.variables.pop(0)
-            results.extend( [ (self.float_vars[i],float_solutions.variables[i]) for i range(len(float_solutions)) ] )
+            results.extend( [ (self.float_vars[i],float_solutions.variables[i]) for i in range(len(float_solutions)) ] )
             
         if self.include_int:
             int_solutions = solution.variables.pop(0)
-            results.extend( [ (self.int_vars[i],int_solutions.variables[i]) for i range(len(int_solutions)) ] )
+            results.extend( [ (self.int_vars[i],int_solutions.variables[i]) for i in range(len(int_solutions)) ] )
             
         if self.include_int:
             discretized_solutions = solution.variables.pop(0)
-            results.extend( [ (self.discretized_vars[i],discretized_solutions.variables[i]) for i range(len(discretized_solutions)) ] )
+            results.extend( [ (self.discretized_vars[i],discretized_solutions.variables[i]) for i in range(len(discretized_solutions)) ] )
         
         return results
     
