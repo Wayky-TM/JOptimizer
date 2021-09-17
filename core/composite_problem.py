@@ -8,15 +8,16 @@ from enum import Enum
 from abc import *
 from typing import List
 
-
 import jmetal.core.problem as jprob
 import jmetal.core.solution as jsol
 import jmetal.operator.crossover as Crossover
 import jmetal.operator.mutation as Mutation
 
 from core.variable import FloatVariable, IntegerVariable, DiscretizedFloatVariable
-
+from core.constant import FloatConstant, IntegerConstant
 from core.evaluator import Evaluator
+
+
 
 class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         
@@ -24,10 +25,14 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                  evaluator: Evaluator,
                  float_vars : List[FloatVariable] = [],
                  int_vars : List[IntegerVariable] = [],
-                 discretized_vars : List[DiscretizedFloatVariable] = []):
+                 discretized_vars : List[DiscretizedFloatVariable] = [],
+                 constants : List = []):
         
         if len(float_vars)+len(int_vars)+len(discretized_vars) < 1:
             raise ValueError( "%s.__init__(): at least one variable needed" % (type(self).__name__) )
+            
+        if (len(float_vars) + len(int_vars) + len(discretized_vars) + len(constants)) != evaluator.number_of_variables:
+            raise ValueError( "%s.__init__(): provided variables and constants do not match the required by the evaluator" % (type(self).__name__) )
             
         self.include_float = len(float_vars)>0
         self.include_int = len(int_vars)>0
@@ -36,6 +41,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         self.float_vars = copy.deepcopy( float_vars )
         self.int_vars = copy.deepcopy( int_vars )
         self.discretized_vars = copy.deepcopy( discretized_vars )
+        
+        self.constants = copy.deepcopy(constants)
         
         counter = 0
         
@@ -71,13 +78,22 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         solutions = []
         
         if self.include_float:
-            solutions.append( jsol.FloatSolution(self.float_lower_bounds, self.float_upper_bounds, self.number_of_objectives ) )
+            temp_solution = jsol.FloatSolution(self.float_lower_bounds, self.float_upper_bounds, self.number_of_objectives )
+            # temp_solution.variables = [random.uniform(self.float_lower_bounds[i], self.float_upper_bounds[i]) for i in range(len(self.float_lower_bounds))]
+            temp_solution.variables = [ x.rand() for x in self.float_vars ]
+            solutions.append( temp_solution )
             
         if self.include_int:
-            solutions.append( jsol.IntegerSolution(self.int_lower_bounds, self.int_upper_bounds, self.number_of_objectives ) )
+            temp_solution = jsol.IntegerSolution(self.int_lower_bounds, self.int_upper_bounds, self.number_of_objectives )
+            # temp_solution.variables = [random.randint(self.int_lower_bounds[i], self.int_upper_bounds[i]) for i in range(len(self.int_lower_bounds))]
+            temp_solution.variables = [ x.rand() for x in self.int_vars ]
+            solutions.append( temp_solution )
             
         if self.include_discretized:
-            solutions.append( jsol.IntegerSolution(self.discretized_lower_bounds, self.discretized_upper_bounds, self.number_of_objectives ) )
+            temp_solution = jsol.IntegerSolution(self.discretized_lower_bounds, self.discretized_upper_bounds, self.number_of_objectives )
+            # temp_solution.variables = [random.randint(self.discretized_lower_bounds[i], self.discretized_upper_bounds[i]) for i in range(len(self.discretized_lower_bounds))]
+            temp_solution.variables = [ x.randint() for x in self.discretized_vars ]
+            solutions.append( temp_solution )
         
         return jsol.CompositeSolution( solutions=solutions )
     
@@ -99,9 +115,32 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             discretized_args = { self.discretized_vars[i].keyword:(float(solution.variables[self.discretized_index].variables[i])*self.discretized_vars[i].step)  for i in range(len(self.discretized_vars)) }
             arguments.update( discretized_args )
         
+        if len(self.constants) > 0:
+            const_args = { x.keyword:x.value for x in self.constants }
+            arguments.update( const_args )
+        
         solution.objectives = self.evaluator.evaluate( **arguments )
         
         return solution
+    
+    def recover_solution( self, solution: jsol.CompositeSolution ):
+        
+        variables = solution.variables
+        results = []
+        
+        if self.include_float:
+            float_solutions = solution.variables.pop(0)
+            results.extend( [ (self.float_vars[i],float_solutions.variables[i]) for i range(len(float_solutions)) ] )
+            
+        if self.include_int:
+            int_solutions = solution.variables.pop(0)
+            results.extend( [ (self.int_vars[i],int_solutions.variables[i]) for i range(len(int_solutions)) ] )
+            
+        if self.include_int:
+            int_solutions = solution.variables.pop(0)
+            results.extend( [ (self.int_vars[i],int_solutions.variables[i]) for i range(len(int_solutions)) ] )
+        
+        pass
     
     def get_name(self):
         return "CompositeProblem"

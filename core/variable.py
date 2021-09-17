@@ -33,7 +33,7 @@ class FloatVariable:
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         
-    def rand():
+    def rand(self):
         return random.uniform(self.lower_bound, self.upper_bound)
     
     def within_bounds( self, value: float ):
@@ -56,7 +56,7 @@ class IntegerVariable:
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         
-    def rand():
+    def rand(self):
         return random.randint(self.lower_bound, self.upper_bound)
     
     def within_bounds( self, value: int ):
@@ -84,8 +84,11 @@ class DiscretizedFloatVariable:
         
         self.resolution = int( math.floor((upper_bound - lower_bound)/step) )
         
-    def rand():
+    def rand(self):
         return float( random.randint(0, self.resolution-1) )*self.step + self.lower_bound
+    
+    def randint(self):
+        return random.randint(0, self.resolution-1)
     
     def within_bounds( self, value: float ):
         return (value >= self.lower_bound) and (value <= self.upper_bound)

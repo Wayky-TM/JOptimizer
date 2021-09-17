@@ -27,6 +27,7 @@ from jmetal.util.solution import get_non_dominated_solutions
 
 from core.evaluator import Evaluator
 from core.variable import FloatVariable, IntegerVariable, DiscretizedFloatVariable
+from core.constant import FloatConstant, IntegerConstant
 from core.composite_problem import CompositeProblem
 
 
@@ -39,21 +40,23 @@ class EvaluatorPrueba(Evaluator):
     
     def evaluate(self, x, y, z, t):
         f1 = x
-        g = 1.0 + 9.0*(y+z+t)/3.0
+        g = 1.0 + 9.0*(y+z+float(t)/1000.0)/3.0
         h = 1 - math.sqrt(f1/g)
         return [x, g*h]
     
 
 
 
-variables_float = [FloatVariable( keyword='x', lower_bound=0.0, upper_bound=1.0 ), FloatVariable( keyword='y', lower_bound=0.0, upper_bound=1.0 )]
-variables_discretized = [DiscretizedFloatVariable( keyword='z', lower_bound=0.0, upper_bound=1.0, step=0.1 ), DiscretizedFloatVariable( keyword='t', lower_bound=0.0, upper_bound=1.0, step=0.1 )]
+variables_float = [FloatVariable( keyword='x', lower_bound=0.0, upper_bound=1.0 )]
+variables_int = [IntegerVariable( keyword='t', lower_bound=0, upper_bound=1000 )]
+variables_discretized = [DiscretizedFloatVariable( keyword='z', lower_bound=0.0, upper_bound=1.0, step=0.1 )]
+constants = [ FloatConstant( keyword='y', value=0.5 ) ]
 
-problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, evaluator=EvaluatorPrueba() )
+problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=EvaluatorPrueba(), constants=constants )
 
-crossover = jcross.CompositeCrossover( [ jcross.SBXCrossover( probability=0.9 ), jcross.IntegerSBXCrossover( probability=0.9 ) ] )
+crossover = jcross.CompositeCrossover( [ jcross.SBXCrossover( probability=0.9 ), jcross.IntegerSBXCrossover( probability=0.9 ), jcross.IntegerSBXCrossover( probability=0.9 ) ] )
 
-mutation = jmut.CompositeMutation( [ jmut.PolynomialMutation( probability=0.1 ), jmut.IntegerPolynomialMutation( probability=0.1 )] )
+mutation = jmut.CompositeMutation( [ jmut.PolynomialMutation( probability=0.1 ), jmut.IntegerPolynomialMutation( probability=0.1 ), jmut.IntegerPolynomialMutation( probability=0.1 )] )
 
 algorithm = jalg.NSGAII(problem, population_size=100, offspring_population_size=100, mutation=mutation, crossover=crossover, termination_criterion=jterm.StoppingByEvaluations(1000))
 
