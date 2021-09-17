@@ -125,7 +125,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
     
     def recover_solution( self, solution: jsol.CompositeSolution ):
         
-        variables = solution.variables
+        variables = copy.deepcopy(solution.variables)
         results = []
         
         if self.include_float:
@@ -137,10 +137,10 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             results.extend( [ (self.int_vars[i],int_solutions.variables[i]) for i range(len(int_solutions)) ] )
             
         if self.include_int:
-            int_solutions = solution.variables.pop(0)
-            results.extend( [ (self.int_vars[i],int_solutions.variables[i]) for i range(len(int_solutions)) ] )
+            discretized_solutions = solution.variables.pop(0)
+            results.extend( [ (self.discretized_vars[i],discretized_solutions.variables[i]) for i range(len(discretized_solutions)) ] )
         
-        pass
+        return results
     
     def get_name(self):
         return "CompositeProblem"

@@ -30,6 +30,8 @@ from core.variable import FloatVariable, IntegerVariable, DiscretizedFloatVariab
 from core.constant import FloatConstant, IntegerConstant
 from core.composite_problem import CompositeProblem
 
+from evaluators.DebEtAl import Test3Evaluator
+
 
 class EvaluatorPrueba(Evaluator):
     
@@ -48,11 +50,13 @@ class EvaluatorPrueba(Evaluator):
 
 
 variables_float = [FloatVariable( keyword='x', lower_bound=0.0, upper_bound=1.0 )]
-variables_int = [IntegerVariable( keyword='t', lower_bound=0, upper_bound=1000 )]
-variables_discretized = [DiscretizedFloatVariable( keyword='z', lower_bound=0.0, upper_bound=1.0, step=0.1 )]
+# variables_int = [IntegerVariable( keyword='t', lower_bound=0, upper_bound=1000 )]
+variables_int = []
+variables_discretized = [DiscretizedFloatVariable( keyword='z', lower_bound=0.0, upper_bound=1.0, step=0.1 ), DiscretizedFloatVariable( keyword='t', lower_bound=0.0, upper_bound=1.0, step=0.1 )]
 constants = [ FloatConstant( keyword='y', value=0.5 ) ]
 
-problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=EvaluatorPrueba(), constants=constants )
+# problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=EvaluatorPrueba(), constants=constants )
+problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=Test3Evaluator(4), constants=constants )
 
 crossover = jcross.CompositeCrossover( [ jcross.SBXCrossover( probability=0.9 ), jcross.IntegerSBXCrossover( probability=0.9 ), jcross.IntegerSBXCrossover( probability=0.9 ) ] )
 
