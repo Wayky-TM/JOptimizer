@@ -14,7 +14,8 @@ from abc import *
 
 """
     TODO:
-        Multiple lower & upper bounds
+        -Multiple lower & upper bounds
+        -Inheritance
 """
 
 class FloatVariable:
@@ -95,4 +96,28 @@ class DiscretizedFloatVariable:
     
     
     
+class BinaryVariable(IntegerVariable):
     
+    def __init__( self,
+                  keyword: str,
+                  name: str = ""):
+        
+        super( BinaryVariable, self ).__init__( keyword=keyword, lower_bound=0, upper_bound=1, name=name )
+    
+    
+class PermutationVariable:
+    
+    def __init__( self,
+                  keyword: str,
+                  elements: List[int],
+                  name: str = ""):
+        
+        if len(elements)<2:
+            raise ValueError( "%s.__init__(): permutation variable of less than 2 elements" % (type(self).__name__) )
+        
+        self.name = name
+        self.keyword = keyword
+        self.elements = copy.deepcopy( elements )
+        
+    def rand(self):
+        return random.shuffle( copy.deepcopy( self.elements ) )

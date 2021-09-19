@@ -160,7 +160,11 @@ class AlgorithmParameters:
         
         type_set = { type(v) for v in variables }
         
-        if var_types.FloatVariable in type_set:
+        
+        """
+            Float
+        """
+        if problem.include_float:
             
             """ Crossover """
             if self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION:
@@ -176,7 +180,10 @@ class AlgorithmParameters:
             float_mutation = NullMutationOperator()
             
             
-        if var_types.IntegerVariable in type_set or var_types.DiscretizedFloatVariable in type_set:
+        """
+            Int/discr
+        """
+        if problem.include_int or problem.include_discretized:
             
             """ Crossover """
             if self.int_crossover_choice == AlgorithmParameters
@@ -189,3 +196,22 @@ class AlgorithmParameters:
             
             discr_crossover = int_crossover
             discr_mutation = int_mutation
+            
+            
+        """
+            Binary
+        """
+        if var_types.BinaryVariable in type_set:
+            
+        else:
+            binary_crossover = NullCrossoverOperator()
+            binary_mutation = NullMutationOperator()
+            
+            
+        crossover_operators = [float_crossover, int_crossover, discr_crossover, binary_crossover ]
+        mutation_operators = [float_mutation, int_mutation, discr_mutation, binary_mutation ]
+        
+        
+        """
+            Permutation
+        """

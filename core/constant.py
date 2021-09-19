@@ -26,7 +26,6 @@ class FloatConstant:
         self.value= value
 
 
-
 class IntegerConstant:
     
     def __init__( self,
