@@ -1,4 +1,6 @@
 
+import sys
+sys.path.append(r"./..")
 
 import copy
 import random
@@ -40,6 +42,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             raise ValueError( "%s.__init__(): at least one variable needed" % (type(self).__name__) )
             
         self.number_of_variables = len(float_vars) + len(int_vars) + len(discretized_vars) + len(binary_vars) + len(permutation_vars)
+        self.evaluator = copy.deepcopy( evaluator )
+        self.number_of_objectives = evaluator.number_of_objectives
         
         if (self.number_of_variables + len(constants)) != evaluator.number_of_variables:
             raise ValueError( "%s.__init__(): provided variables and constants do not match the required by the evaluator" % (type(self).__name__) )
@@ -57,7 +61,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         self.permutation_vars = copy.deepcopy( permutation_vars )
         
         self.constants = copy.deepcopy(constants)
-        self.null_solution = NullSolution()
+        self.null_solution = NullSolution( number_of_objectives=self.number_of_objectives )
         
         if self.include_float:
             self.float_lower_bounds = [ x.lower_bound for x in float_vars ]
@@ -70,18 +74,13 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         if self.include_discretized:
             self.discretized_lower_bounds = [0]*len(discretized_vars)
             self.discretized_upper_bounds = [ x.resolution for x in discretized_vars ]
-            
-        
-        self.evaluator = copy.deepcopy( evaluator )
-        
-        self.number_of_objectives = evaluator.number_of_objectives
         
 
     def create_solution(self) -> jsol.CompositeSolution:
         solutions = [self.null_solution]*4
         
         if self.include_float:
-            temp_solution = jsol.FloatSolution(lower_bound=self.float_lower_bounds, upper_bound=self.float_upper_bounds, number_of_objectives=self.number_of_objectives )
+            temp_solution = jsol.FloatSolution(lower_bound=self.float_lower_bounds, upper_bound=self.float_upper_bounds, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
             temp_solution.variables = [ x.rand() for x in self.float_vars ]
             solutions[0] = temp_solution
             

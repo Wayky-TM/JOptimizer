@@ -11,9 +11,11 @@ sys.path.append(r"../.")
 import copy
 import random
 import math
+import time
 
 from enum import Enum
 from abc import *
+import cProfile
 
 import jmetal.core.problem as jprob
 import jmetal.core.solution as jsol
@@ -29,6 +31,7 @@ from core.evaluator import Evaluator
 from core.variable import FloatVariable, IntegerVariable, DiscretizedFloatVariable
 from core.constant import FloatConstant, IntegerConstant
 from core.composite_problem import CompositeProblem
+from core.algorithm_parameters import AlgorithmParameters
 
 from evaluators.DebEtAl import Test3Evaluator
 
@@ -58,13 +61,55 @@ constants = [ FloatConstant( keyword='y', value=0.5 ) ]
 # problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=EvaluatorPrueba(), constants=constants )
 problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=Test3Evaluator(4), constants=constants )
 
-crossover = jcross.CompositeCrossover( [ jcross.SBXCrossover( probability=0.9 ), jcross.IntegerSBXCrossover( probability=0.9 ), jcross.IntegerSBXCrossover( probability=0.9 ) ] )
+""" Alg. configuration """
+algorithm_parameters = AlgorithmParameters()
+algorithm_parameters.choice = AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII
+algorithm_parameters.general_parameters["population_size"] = "100"
+algorithm_parameters.general_parameters["offspring_size"] = "100"
 
-mutation = jmut.CompositeMutation( [ jmut.PolynomialMutation( probability=0.1 ), jmut.IntegerPolynomialMutation( probability=0.1 ), jmut.IntegerPolynomialMutation( probability=0.1 )] )
+algorithm_parameters.float_crossover_choice = AlgorithmParameters.FLOAT_CROSSOVER.SBX
+algorithm_parameters.float_crossover_parameters["probability"] = "0.9"
+algorithm_parameters.float_crossover_parameters["distribution_index"] = "20.0"
+algorithm_parameters.float_mutation_choice = AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL
+algorithm_parameters.float_mutation_parameters["probability"] = "0.1"
+algorithm_parameters.float_mutation_parameters["distribution_index"] = "20.0"
 
-algorithm = jalg.NSGAII(problem, population_size=100, offspring_population_size=100, mutation=mutation, crossover=crossover, termination_criterion=jterm.StoppingByEvaluations(1000))
+algorithm_parameters.int_crossover_choice = AlgorithmParameters.INT_CROSSOVER.INT_SBX
+algorithm_parameters.int_crossover_parameters["probability"] = "0.9"
+algorithm_parameters.int_crossover_parameters["distribution_index"] = "20.0"
+algorithm_parameters.int_mutation_choice = AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL
+algorithm_parameters.int_mutation_parameters["probability"] = "0.1"
+algorithm_parameters.int_mutation_parameters["distribution_index"] = "20.0"
 
-algorithm.run()
+algorithm_parameters.selection_choice = AlgorithmParameters.SELECTION.BINARY_TOURNAMENT
+
+algorithm = algorithm_parameters.compile_algorithm( problem )
+
+
+
+
+algorithm.solutions = algorithm.create_initial_solutions()
+algorithm.solutions = algorithm.evaluate(algorithm.solutions)
+
+
+def run():
+    # nonlocal algorithm
+    
+    algorithm.init_progress()
+    
+    time1 = time.time()
+    
+    for i in range(1000):
+        algorithm.step()
+        algorithm.update_progress()
+        
+    total_time = time.time() - time1
+    
+    print(total_time)
+
+cProfile.run( 'run()' )
+
+# run()
 
 solutions = algorithm.get_result()
 

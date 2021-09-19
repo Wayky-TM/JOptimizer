@@ -6,6 +6,9 @@ Created on Sat Sep 18 14:18:54 2021
 """
 
 
+import sys
+sys.path.append(r"./..")
+
 import copy
 import random
 import math
@@ -13,6 +16,7 @@ import math
 from enum import Enum
 from abc import *
 from typing import List
+from collections import defaultdict
 
 import jmetal.core.problem as jprob
 import jmetal.core.solution as jsol
@@ -29,6 +33,9 @@ import jmetal.util.neighborhood as Neighborhood
 import core.variable as var_types
 from core.composite_problem import CompositeProblem
 from core.null import NullCrossoverOperator, NullMutationOperator
+
+
+
 
 class AlgorithmParameters:
     
@@ -170,9 +177,6 @@ class AlgorithmParameters:
     """ Generates an Algorithm object based on algorithm and problem parameters """
     def compile_algorithm(self, problem: CompositeProblem):
         
-        type_set = { type(v) for v in variables }
-        
-        
         """
             Float
         """
@@ -212,18 +216,32 @@ class AlgorithmParameters:
             
             """ Crossover """
             if self.int_crossover_choice == AlgorithmParameters.INT_CROSSOVER.INT_SBX:
-                int_crossover = Crossover.IntegerSBXCrossover( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
+                temp_int_crossover = Crossover.IntegerSBXCrossover( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
             
             """ Mutation """
             if self.int_mutation_choice == AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL:
-                int_mutation = Mutation.IntegerPolynomialMutation( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
+                temp_int_mutation = Mutation.IntegerPolynomialMutation( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
             
+            if problem.include_int:
+                int_crossover = temp_int_crossover
+                int_mutation = temp_int_mutation
+            else:
+                int_crossover = NullCrossoverOperator()
+                int_mutation = NullMutationOperator()    
+                
+            if problem.include_discretized:
+                discr_crossover = temp_int_crossover
+                discr_mutation = temp_int_mutation
+            else:
+                discr_crossover = NullCrossoverOperator()
+                discr_mutation = NullMutationOperator()    
+        
         else:
             int_crossover = NullCrossoverOperator()
             int_mutation = NullMutationOperator()
             
-        discr_crossover = int_crossover
-        discr_mutation = int_mutation
+            discr_crossover = int_crossover
+            discr_mutation = int_mutation
             
             
             

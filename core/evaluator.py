@@ -5,6 +5,9 @@ Created on Thu Sep 16 18:55:58 2021
 @author: Wayky
 """
 
+import sys
+sys.path.append(r"./..")
+
 import copy
 import random
 import math

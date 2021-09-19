@@ -39,6 +39,15 @@ class IntegerConstant:
     
 
     
+class BinaryConstant:
     
+    def __init__( self,
+                  keyword: str,
+                  value: bool,
+                  name: str = ""):
+        
+        self.name = name
+        self.keyword = keyword
+        self.value = value    
     
     
