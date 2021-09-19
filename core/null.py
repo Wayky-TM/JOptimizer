@@ -5,6 +5,8 @@ Created on Sun Sep 19 15:18:14 2021
 @author: Wayky
 """
 
+from typing import List
+
 import jmetal.core.solution as jsol
 import jmetal.core.operator as jop
 
@@ -39,7 +41,7 @@ class NullMutationOperator( jop.Mutation ):
     def __init__(self):
         pass
     
-    def execute(self, solution: List[jsol.Solution]):
+    def execute(self, solution: jsol.Solution):
         return solution
 
     def get_name(self) -> str:

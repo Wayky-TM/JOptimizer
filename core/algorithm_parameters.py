@@ -20,6 +20,11 @@ import jmetal.core.operator as jop
 import jmetal.operator.crossover as Crossover
 import jmetal.operator.mutation as Mutation
 import jmetal.operator.selection as Selection
+import jmetal.algorithm.multiobjective as Multiobjective
+import jmetal.algorithm.singleobjective as Singleobjective
+import jmetal.util.aggregative_function as Aggregative
+import jmetal.util.archive as Archive
+import jmetal.util.neighborhood as Neighborhood
 
 import core.variable as var_types
 from core.composite_problem import CompositeProblem
@@ -83,10 +88,40 @@ class AlgorithmParameters:
         RANKING_AND_CROWDING="ranking_and_crowding"
         # RANKING_AND_FITNESS="ranking_and_fitness"
         # BINARY_TOURNAMENT_2="binary_tournament_2"
+        
+    
+    """
+        MOEAD Specific
+    """
+    class MOEAD_AGGREGATIVE_FUNCTION(Enum):
+        # WEIGHTED_SUM = "weighted_sum"
+        TSCHEBYCHEFF = "tschebycheff"
+            
+    """
+        MOCELL Specific
+    """     
+    class MOCELL_ARCHIVE(Enum):
+        # NONDOMINATED_SOLUTIONS="non-dominated_solutions"
+        CROWDING_DISTANCE="crowding_distance"
+        # BOUNDED="bounded"
+        
+        
+    class MOCELL_NEIGHBORHOOD(Enum):
+        # WEIGHT_NEIGHBORHOOD="weight_neighborhood"
+        # WEIGHT_VECTOR_NEIGHBORHOOD="weight_vector_neighborhood"
+        # TWO_DIMENSIONAL_MESH="two-dimensional_mesh"
+        C9="C9"
+        # L5="L5"
+        
+        
+        
     
     def __init__(self):
         
         self.choice = AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII
+        
+        """ General """
+        self.general_parameters = defaultdict(lambda: "")
         
         """ Float """
         self.float_crossover_choice = AlgorithmParameters.FLOAT_CROSSOVER.SBX
@@ -127,9 +162,12 @@ class AlgorithmParameters:
         
         
         """ Algorithm-specific """
-        self.specific_
+        self.specific_options = defaultdict(lambda: "")
+        self.specific_parameters = defaultdict(lambda: defaultdict(lambda: ""))
         
         
+        
+    """ Generates an Algorithm object based on algorithm and problem parameters """
     def compile_algorithm(self, problem: CompositeProblem):
         
         type_set = { type(v) for v in variables }
@@ -235,10 +273,13 @@ class AlgorithmParameters:
             mutation_operators.extend( [permutation_mutation]*len(problem.permutation_vars) )
             
         
+        composite_crossover = Crossover.CompositeCrossover( crossover_operators )
+        composite_mutation = Mutation.CompositeMutation( mutation_operators )
+        
         """
             Selection
         """
-        if self.choice != AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD:
+        if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD]:
             
             if self.selection_choice == AlgorithmParameters.SELECTION.ROULETTE:
                 selection_operator = Selection.RouletteWheelSelection()
@@ -268,6 +309,65 @@ class AlgorithmParameters:
             #     selection_operator = Selection.BinaryTournament2Selection(  )
             
             
+        population_size = int(self.general_parameters["population_size"])
         
+        if self.choice in [AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO]:
+            offspring_size = int(self.general_parameters["offspring_size"])
         
+            
+        """
+            Algorithm compilation
+        """
+        if self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII:
+            
+            algorithm = Multiobjective.NSGAII(problem=problem,
+                                              population_size=population_size,
+                                              offspring_population_size=offspring_size,
+                                              mutation=composite_mutation,
+                                              crossover=composite_crossover,
+                                              selection=selection_operator)
+            
+            
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO:
+            
+            algorithm = Singleobjective.GeneticAlgorithm(problem=problem,
+                                                         population_size=population_size,
+                                                         offspring_population_size=offspring_size,
+                                                         mutation=composite_mutation,
+                                                         crossover=composite_crossover,
+                                                         selection=selection_operator)
+            
+            
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD:
+            
+            if self.specific_options["aggregative_function"] == AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.TSCHEBYCHEFF:
+                aggregative_function = Aggregative.Tschebycheff( dimension=int(self.specific_parameters["aggregative"]["dimension"]) )
+            
+            algorithm = Multiobjective.MOEAD(problem=problem,
+                                             population_size=population_size,
+                                             mutation=composite_mutation,
+                                             crossover=composite_crossover,
+                                             aggregative_function=aggregative_function,
+                                             neighbourhood_selection_probability=float(self.specific_parameters["aggregative"]["neighborhood_selection_probability"]),
+                                             max_number_of_replaced_solutions=int(self.specific_parameters["aggregative"]["max_number_of_replaced_solutions"]),
+                                             neighbor_size=int(self.specific_parameters["aggregative"]["neighbor_size"]),
+                                             weight_files_path=self.specific_parameters["aggregative"]["weight_files_path"])
         
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL:
+            
+            if self.specific_options["archive"] == AlgorithmParameters.MOCELL_ARCHIVE.CROWDING_DISTANCE:
+                archive_operator = Archive.CrowdingDistanceArchive( maximum_size=int(self.specific_parameters["archive"]["maximum_size"]) )
+                
+            
+            if self.specific_options["neighborhood"] == AlgorithmParameters.MOCELL_NEIGHBORHOOD.C9:
+                neighborhood_operator = Neighborhood.C9(rows=int(self.specific_parameters["neighborhood"]["rows"]), columns=int(self.specific_parameters["neighborhood"]["columns"]))
+                
+            algorithm = Multiobjective.MOCell(problem=problem,
+                                              population_size=population_size,
+                                              neighborhood=neighborhood_operator,
+                                              archive=archive_operator,
+                                              mutation=composite_mutation,
+                                              crossover=composite_crossover)
+            
+        
+        return algorithm
