@@ -16,15 +16,16 @@ import jmetal.operator.mutation as Mutation
 from core.variable import FloatVariable, IntegerVariable, DiscretizedFloatVariable, BinaryVariable, PermutationVariable
 from core.constant import FloatConstant, IntegerConstant
 from core.evaluator import Evaluator
+from core.null import NullSolution
 
 
 
 class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
 
-    class NullSolution(jsol.Solution):
+    # class NullSolution(jsol.Solution):
         
-        def __init__(self):
-            super(NullSolution, self).__init__(number_of_variables=0, number_of_objectives=0, number_of_constraints=0)
+    #     def __init__(self):
+    #         super(NullSolution, self).__init__(number_of_variables=0, number_of_objectives=0, number_of_constraints=0)
         
     def __init__(self,
                  evaluator: Evaluator,
@@ -73,7 +74,6 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         
         self.evaluator = copy.deepcopy( evaluator )
         
-        # self.number_of_variables = evaluator.number_of_variables
         self.number_of_objectives = evaluator.number_of_objectives
         
 
@@ -149,22 +149,32 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         
         return solution
     
-    def recover_solution( self, solution: jsol.CompositeSolution ):
+    def recover_variables( self, solution: jsol.CompositeSolution ):
         
-        variables = copy.deepcopy(solution.variables)
+        # variables = copy.deepcopy(solution.variables)
         results = []
         
         if self.include_float:
-            float_solutions = solution.variables.pop(0)
-            results.extend( [ (self.float_vars[i],float_solutions.variables[i]) for i in range(len(float_solutions)) ] )
+            float_solutions = copy.deepcopy(solution.variables[0])
+            results.extend( [ (self.float_vars[i],float_solutions.variables[i]) for i in range(len(float_solutions.variables)) ] )
             
         if self.include_int:
-            int_solutions = solution.variables.pop(0)
-            results.extend( [ (self.int_vars[i],int_solutions.variables[i]) for i in range(len(int_solutions)) ] )
+            int_solutions = copy.deepcopy(solution.variables[1])
+            results.extend( [ (self.int_vars[i],int_solutions.variables[i]) for i in range(len(int_solutions.variables)) ] )
             
-        if self.include_int:
-            discretized_solutions = solution.variables.pop(0)
-            results.extend( [ (self.discretized_vars[i],discretized_solutions.variables[i]) for i in range(len(discretized_solutions)) ] )
+        if self.include_discretized:
+            discretized_solutions = copy.deepcopy(solution.variables[2])
+            results.extend( [ (self.discretized_vars[i],discretized_solutions.variables[i]) for i in range(len(discretized_solutions.variables)) ] )
+            
+        if self.include_binary:
+            binary_solutions = copy.deepcopy(solution.variables[3])
+            results.extend( [ (self.binary_vars[i],binary_solutions.variables[i]) for i in range(len(binary_solutions.variables)) ] )
+            
+        if self.include_permutation:
+            
+            for i in range(len(self.permutation_vars)):
+                permutation_solution = copy.deepcopy(solution.variables[4+i])
+                results.append( (self.permutation_vars[i],permutation_solution.variables) )
         
         return results
     
