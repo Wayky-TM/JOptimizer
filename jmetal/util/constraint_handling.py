@@ -26,7 +26,13 @@ def overall_constraint_violation_degree(solution: Solution) -> float:
     :param solution:
     :return:
     """
-    return sum([value for value in solution.constraints if value < 0])
+    def __selection_negative(constraint: float):
+        return float(constraint<0)*constraint
+        
+    result_arr = map(__selection_negative, solution.constraints)
+    
+    return sum(result_arr)
+    # return sum([value for value in solution.constraints if value < 0])
 
 
 def feasibility_ratio(solutions: [Solution]):
