@@ -12,8 +12,10 @@ import copy
 import random
 import math
 # import importlib
+# from pydoc import locate
+import imp
+from pathlib import Path
 
-from pydoc import locate
 from enum import Enum
 from abc import *
 from typing import List
@@ -64,9 +66,11 @@ class ProblemParameters:
         
         """ Problem type selection """
         if self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.UNIVERSAL:
-            module_evaluator = locate('{package}.{ev_class}'.format(package=self.options["evaluator_path"], ev_class=self.options["evaluator_classname"]))
+            # module_evaluator = locate('{package}.{ev_class}'.format(package=self.options["evaluator_path"], ev_class=self.options["evaluator_classname"]))
+            evaluator_module = imp.load_source(name=Path(self.options["evaluator_path"]).stem, pathname=self.options["evaluator_path"])
+            evaluator_class = getattr(evaluator_module, self.options["evaluator_classname"])
             
-            evaluator = module_evaluator()
+            evaluator = evaluator_class()
         
         composite_problem = cproblem.CompositeProblem( evaluator=evaluator,
                                                        float_vars=float_vars,

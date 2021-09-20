@@ -41,22 +41,6 @@ from evaluators.DebEtAl import Test3Evaluator
 from interface.popups.algorithm_parameters_popup import algorithm_parameters_popup
 
 
-class EvaluatorPrueba(Evaluator):
-    
-    def __init__(self):
-        super( EvaluatorPrueba, self ).__init__()
-        self.number_of_variables = 4
-        self.number_of_objectives = 2
-    
-    def evaluate(self, x, y, z, t):
-        f1 = x
-        g = 1.0 + 9.0*(y+z+float(t)/1000.0)/3.0
-        h = 1 - math.sqrt(f1/g)
-        return [x, g*h]
-    
-
-
-
 # variables_float = [FloatVariable( keyword='x', lower_bound=0.0, upper_bound=1.0 )]
 # variables_int = [IntegerVariable( keyword='t', lower_bound=0, upper_bound=1000 )]
 # variables_int = []
@@ -72,49 +56,29 @@ class App(tk.Tk):
     
     def __init__(self, algorithm_parameters: AlgorithmParameters, problem_parameters: ProblemParameters):
         super( App, self ).__init__()
-        algorithm_parameters_popup( self, algorithm_parameters, problem_parameters )
         
-    def destroy_everything(self):
-        self.destroy()
+
+        self.geometry("100x100")
+        button1=tk.Button(self, text="Algoritmo", command=lambda: algorithm_parameters_popup( self, algorithm_parameters, problem_parameters ))
+        button1.place(x=0, y=0)
         
 
 algorithm_parameters = AlgorithmParameters()
 problem_parameters = ProblemParameters()
 
 problem_parameters.variables = [FloatVariable( keyword='x', lower_bound=0.0, upper_bound=1.0 ),
+                                FloatVariable( keyword='y', lower_bound=0.0, upper_bound=1.0 ),
                                 DiscretizedFloatVariable( keyword='z', lower_bound=0.0, upper_bound=1.0, step=0.1 ),
-                                DiscretizedFloatVariable( keyword='t', lower_bound=0.0, upper_bound=1.0, step=0.05 )]
+                                DiscretizedFloatVariable( keyword='t', lower_bound=0.0, upper_bound=1.0, step=0.1 )]
 
-problem_parameters.constants = [ FloatConstant( keyword='y', value=0.5 ) ]
+# problem_parameters.constants = [ FloatConstant( keyword='y', value=0.5 ) ]
 
 problem_parameters.options["template"] = ProblemParameters.PROBLEM_TEMPLATES.UNIVERSAL
-problem_parameters.options["evaluator_path"] = "test_multitipo"
+problem_parameters.options["evaluator_path"] = r"C:\Users\Wayky\Documents\GitHub\JOptimizer\tests\evaluator_4var.py"
 problem_parameters.options["evaluator_classname"] = "EvaluatorPrueba"
 
 app = App(algorithm_parameters, problem_parameters)
-app.mainloop(n=1)
-
-# algorithm_parameters_popup( frame_widget, algorithm_parameters, problem_parameters )
-
-# algorithm_parameters.choice = AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII
-# algorithm_parameters.general_parameters["population_size"] = "100"
-# algorithm_parameters.general_parameters["offspring_size"] = "100"
-
-# algorithm_parameters.float_crossover_choice = AlgorithmParameters.FLOAT_CROSSOVER.SBX
-# algorithm_parameters.float_crossover_parameters["probability"] = "0.9"
-# algorithm_parameters.float_crossover_parameters["distribution_index"] = "20.0"
-# algorithm_parameters.float_mutation_choice = AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL
-# algorithm_parameters.float_mutation_parameters["probability"] = "0.1"
-# algorithm_parameters.float_mutation_parameters["distribution_index"] = "20.0"
-
-# algorithm_parameters.int_crossover_choice = AlgorithmParameters.INT_CROSSOVER.INT_SBX
-# algorithm_parameters.int_crossover_parameters["probability"] = "0.9"
-# algorithm_parameters.int_crossover_parameters["distribution_index"] = "20.0"
-# algorithm_parameters.int_mutation_choice = AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL
-# algorithm_parameters.int_mutation_parameters["probability"] = "0.1"
-# algorithm_parameters.int_mutation_parameters["distribution_index"] = "20.0"
-
-# algorithm_parameters.selection_choice = AlgorithmParameters.SELECTION.BINARY_TOURNAMENT
+app.mainloop()
 
 problem = problem_parameters.CompileProblem()
 algorithm = algorithm_parameters.compile_algorithm( problem )
@@ -133,7 +97,7 @@ def run():
     
     time1 = time.time()
     
-    for i in range(10):
+    for i in range(100):
         algorithm.step()
         algorithm.update_progress()
         
