@@ -17,6 +17,8 @@ from enum import Enum
 from abc import *
 import cProfile
 
+import tkinter as tk
+
 import jmetal.core.problem as jprob
 import jmetal.core.solution as jsol
 import jmetal.operator.crossover as jcross
@@ -30,8 +32,9 @@ from jmetal.util.solution import get_non_dominated_solutions
 from core.evaluator import Evaluator
 from core.variable import FloatVariable, IntegerVariable, DiscretizedFloatVariable
 from core.constant import FloatConstant, IntegerConstant
-from core.composite_problem import CompositeProblem
+# from core.composite_problem import CompositeProblem
 from core.algorithm_parameters import AlgorithmParameters
+from core.problem_parameters import ProblemParameters
 
 from evaluators.DebEtAl import Test3Evaluator
 
@@ -54,22 +57,34 @@ class EvaluatorPrueba(Evaluator):
 
 
 
-variables_float = [FloatVariable( keyword='x', lower_bound=0.0, upper_bound=1.0 )]
+# variables_float = [FloatVariable( keyword='x', lower_bound=0.0, upper_bound=1.0 )]
 # variables_int = [IntegerVariable( keyword='t', lower_bound=0, upper_bound=1000 )]
-variables_int = []
-variables_discretized = [DiscretizedFloatVariable( keyword='z', lower_bound=0.0, upper_bound=1.0, step=0.1 ), DiscretizedFloatVariable( keyword='t', lower_bound=0.0, upper_bound=1.0, step=0.1 )]
-constants = [ FloatConstant( keyword='y', value=0.5 ) ]
+# variables_int = []
+# variables_discretized = [DiscretizedFloatVariable( keyword='z', lower_bound=0.0, upper_bound=1.0, step=0.1 ), DiscretizedFloatVariable( keyword='t', lower_bound=0.0, upper_bound=1.0, step=0.1 )]
+# constants = [ FloatConstant( keyword='y', value=0.5 ) ]
 
 # problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=EvaluatorPrueba(), constants=constants )
-problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=Test3Evaluator(4), constants=constants )
+# problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=Test3Evaluator(4), constants=constants )
 
 """ Alg. configuration """
 
 frame_widget = tk.Tk()
 
 algorithm_parameters = AlgorithmParameters()
+problem_parameters = ProblemParameters()
 
-algorithm_parameters_popup( frame_widget, algorithm_parameters )
+problem_parameters.variables = [FloatVariable( keyword='x', lower_bound=0.0, upper_bound=1.0 ),
+                                DiscretizedFloatVariable( keyword='z', lower_bound=0.0, upper_bound=1.0, step=0.1 ),
+                                DiscretizedFloatVariable( keyword='t', lower_bound=0.0, upper_bound=1.0, step=0.05 )]
+
+problem_parameters.constants = [ FloatConstant( keyword='y', value=0.5 ) ]
+
+problem_parameters.options["template"] = ProblemParameters.PROBLEM_TEMPLATES.UNIVERSAL
+problem_parameters.options["evaluator_path"] = "test_multitipo"
+problem_parameters.options["evaluator_classname"] = "EvaluatorPrueba"
+problem = problem_parameters.CompileProblem()
+
+algorithm_parameters_popup( frame_widget, algorithm_parameters, problem_parameters )
 
 # algorithm_parameters.choice = AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII
 # algorithm_parameters.general_parameters["population_size"] = "100"

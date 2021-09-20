@@ -63,7 +63,7 @@ class ProblemParameters:
         
         """ Problem type selection """
         if self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.UNIVERSAL:
-            module_evaluator = importlib.import_module( name=, package="%s.%s" % (self.options["evaluator_path"], self.options["evaluator_classname"]))
+            module_evaluator = importlib.import_module( name=self.options["evaluator_classname"], package=self.options["evaluator_path"])
             
             evaluator = module_evaluator()
         

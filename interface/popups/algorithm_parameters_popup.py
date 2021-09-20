@@ -24,7 +24,6 @@ except ImportError:
 
 from win32api import GetSystemMetrics
 from collections import defaultdict
-from ..utils import *
 
 import core.variable as variable_types
 from core.algorithm_parameters import AlgorithmParameters
@@ -49,7 +48,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
     error_vert_anchor = 0.82
     error_vert_spacing = 0.1
 
-    var_types = { type(x) for problem_parameters.variables }   
+    var_types = { type(x) for x in problem_parameters.variables }   
 
     def save_close():
         
@@ -294,10 +293,10 @@ def algorithm_parameters_popup( controller: tk.Tk,
         def _GA_parameters():
             nonlocal optionSelection
             nonlocal selectionParams
-            nonlocal optionCrossover
-            nonlocal crossoverParams
-            nonlocal optionMutation
-            nonlocal mutationParams
+            # nonlocal optionCrossover
+            # nonlocal crossoverParams
+            # nonlocal optionMutation
+            # nonlocal mutationParams
             nonlocal offspringSize
             
             nonlocal labelframe_operators
@@ -375,10 +374,10 @@ def algorithm_parameters_popup( controller: tk.Tk,
         def _MOEAD_parameters():
             nonlocal optionSelection
             nonlocal selectionParams
-            nonlocal optionCrossover
-            nonlocal crossoverParams
-            nonlocal optionMutation
-            nonlocal mutationParams
+            # nonlocal optionCrossover
+            # nonlocal crossoverParams
+            # nonlocal optionMutation
+            # nonlocal mutationParams
             nonlocal weightFilesPath
             nonlocal aggregationOption
             nonlocal neighborhoodSize
