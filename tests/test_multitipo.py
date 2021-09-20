@@ -68,7 +68,15 @@ class EvaluatorPrueba(Evaluator):
 
 """ Alg. configuration """
 
-frame_widget = tk.Tk()
+class App(tk.Tk):
+    
+    def __init__(self, algorithm_parameters: AlgorithmParameters, problem_parameters: ProblemParameters):
+        super( App, self ).__init__()
+        algorithm_parameters_popup( self, algorithm_parameters, problem_parameters )
+        
+    def destroy_everything(self):
+        self.destroy()
+        
 
 algorithm_parameters = AlgorithmParameters()
 problem_parameters = ProblemParameters()
@@ -82,9 +90,11 @@ problem_parameters.constants = [ FloatConstant( keyword='y', value=0.5 ) ]
 problem_parameters.options["template"] = ProblemParameters.PROBLEM_TEMPLATES.UNIVERSAL
 problem_parameters.options["evaluator_path"] = "test_multitipo"
 problem_parameters.options["evaluator_classname"] = "EvaluatorPrueba"
-problem = problem_parameters.CompileProblem()
 
-algorithm_parameters_popup( frame_widget, algorithm_parameters, problem_parameters )
+app = App(algorithm_parameters, problem_parameters)
+app.mainloop(n=1)
+
+# algorithm_parameters_popup( frame_widget, algorithm_parameters, problem_parameters )
 
 # algorithm_parameters.choice = AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII
 # algorithm_parameters.general_parameters["population_size"] = "100"
@@ -106,6 +116,7 @@ algorithm_parameters_popup( frame_widget, algorithm_parameters, problem_paramete
 
 # algorithm_parameters.selection_choice = AlgorithmParameters.SELECTION.BINARY_TOURNAMENT
 
+problem = problem_parameters.CompileProblem()
 algorithm = algorithm_parameters.compile_algorithm( problem )
 
 
@@ -122,7 +133,7 @@ def run():
     
     time1 = time.time()
     
-    for i in range(1000):
+    for i in range(10):
         algorithm.step()
         algorithm.update_progress()
         
@@ -130,9 +141,9 @@ def run():
     
     print(total_time)
 
-cProfile.run( 'run()' )
+# cProfile.run( 'run()' )
 
-# run()
+run()
 
 solutions = algorithm.get_result()
 
@@ -141,32 +152,6 @@ front = get_non_dominated_solutions(solutions)
 plot_front = Plot(title='Pareto front approximation', axis_labels=['x', 'y'])
 plot_front.plot(front, label='NSGAII-%s' % problem.get_name())
 
-# class AlgorithmCompiler:
-        
-        
-#     class NullCrossover(Crossover):
-        
-#         def execute( self, empty_solution: List ):
-#             return empty_solution[0]
-        
-#     class NullMutation(Mutation)
-        
-#         def execute( self, empty_solution ):
-#             return empty_solution
-        
-    
-#     def __init__( self,
-#                   float_vars : List[FloatVariable] = [],
-#                   int_vars : List[IntegerVariable] = [],
-#                   discretized_vars : List[DiscretizedFloatVariable] = [],
-#                   evaluator: Evaluator,
-                  
-#                   ):
-        
-        
-#     def Compile():
-#         pass
-        
         
 
 

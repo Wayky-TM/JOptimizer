@@ -125,46 +125,46 @@ class AlgorithmParameters:
     
     def __init__(self):
         
-        self.choice = AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII
+        self.choice = AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value
         
         """ General """
         self.general_parameters = defaultdict(lambda: "")
         
         """ Float """
-        self.float_crossover_choice = AlgorithmParameters.FLOAT_CROSSOVER.SBX
+        self.float_crossover_choice = AlgorithmParameters.FLOAT_CROSSOVER.SBX.value
         self.float_crossover_parameters = defaultdict(lambda: "")
         
-        self.float_mutation_choice = AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL
+        self.float_mutation_choice = AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL.value
         self.float_mutation_parameters = defaultdict(lambda: "")
         
         
         
         """ Int """
-        self.int_crossover_choice = AlgorithmParameters.INT_CROSSOVER.INT_SBX
+        self.int_crossover_choice = AlgorithmParameters.INT_CROSSOVER.INT_SBX.value
         self.int_crossover_parameters = defaultdict(lambda: "")
         
-        self.int_mutation_choice = AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL
+        self.int_mutation_choice = AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL.value
         self.int_mutation_parameters = defaultdict(lambda: "")
         
         
         """ Binary """
-        self.binary_crossover_choice = AlgorithmParameters.BINARY_CROSSOVER.SPX
+        self.binary_crossover_choice = AlgorithmParameters.BINARY_CROSSOVER.SPX.value
         self.binary_crossover_parameters = defaultdict(lambda: "")
         
-        self.binary_mutation_choice = AlgorithmParameters.BINARY_MUTATION.BIT_FLIP
+        self.binary_mutation_choice = AlgorithmParameters.BINARY_MUTATION.BIT_FLIP.value
         self.binary_mutation_parameters = defaultdict(lambda: "")
         
         
         """ Permutation """
-        self.permutation_crossover_choice = AlgorithmParameters.PERMUTATION_CROSSOVER.PMX
+        self.permutation_crossover_choice = AlgorithmParameters.PERMUTATION_CROSSOVER.PMX.value
         self.permutation_crossover_parameters = defaultdict(lambda: "")
         
-        self.permutation_mutation_choice = AlgorithmParameters.PERMUTATION_MUTATION.PERMUTATION_SWAP
+        self.permutation_mutation_choice = AlgorithmParameters.PERMUTATION_MUTATION.PERMUTATION_SWAP.value
         self.permutation_mutation_parameters = defaultdict(lambda: "")
         
         
         """ Selection """
-        self.selection_choice = AlgorithmParameters.SELECTION.BINARY_TOURNAMENT
+        self.selection_choice = AlgorithmParameters.SELECTION.BINARY_TOURNAMENT.value
         self.selection_parameters = defaultdict(lambda: "")
         
         
@@ -183,24 +183,24 @@ class AlgorithmParameters:
         if problem.include_float:
             
             """ Crossover """
-            if self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION:
+            if self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION.value:
                 float_crossover = Crossover.DifferentialEvolutionCrossover( CR=float(self.float_crossover_parameters["probability"]), F=float(self.float_crossover_parameters["F"]))
                 
-            elif self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.SBX:
+            elif self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.SBX.value:
                 float_crossover = Crossover.SBXCrossover( probability=float(self.float_crossover_parameters["probability"]), distribution_index=float(self.float_crossover_parameters["distribution_index"]))
                 
             
             """ Mutation """
-            if self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL:
+            if self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL.value:
                 float_mutation = Mutation.PolynomialMutation( probability=float(self.float_mutation_parameters["probability"]), distribution_index=float(self.float_mutation_parameters["distribution_index"]) )
             
-            elif self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.SIMPLE_RANDOM:
+            elif self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.SIMPLE_RANDOM.value:
                 float_mutation = Mutation.SimpleRandomMutation( probability=float(self.float_mutation_parameters["probability"]) )
                 
-            elif self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.UNIFORM:
+            elif self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.UNIFORM.value:
                 float_mutation = Mutation.UniformMutation(probability=float(self.float_mutation_parameters["probability"]), perturbation=float(self.float_mutation_parameters["perturbation"]) )
             
-            elif self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.NON_UNIFORM:
+            elif self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.NON_UNIFORM.value:
                 float_mutation = Mutation.NonUniformMutation(probability=float(self.float_mutation_parameters["probability"]), perturbation=float(self.float_mutation_parameters["perturbation"]), max_iterations=int(self.float_mutation_parameters["max_iterations"]) )
             
         else:
@@ -215,11 +215,11 @@ class AlgorithmParameters:
         if problem.include_int or problem.include_discretized:
             
             """ Crossover """
-            if self.int_crossover_choice == AlgorithmParameters.INT_CROSSOVER.INT_SBX:
+            if self.int_crossover_choice == AlgorithmParameters.INT_CROSSOVER.INT_SBX.value:
                 temp_int_crossover = Crossover.IntegerSBXCrossover( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
             
             """ Mutation """
-            if self.int_mutation_choice == AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL:
+            if self.int_mutation_choice == AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL.value:
                 temp_int_mutation = Mutation.IntegerPolynomialMutation( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
             
             if problem.include_int:
@@ -251,11 +251,11 @@ class AlgorithmParameters:
         if problem.include_binary:
             
             """ Crossover """
-            if self.binary_crossover_choice == AlgorithmParameters.BINARY_CROSSOVER.SPX:
+            if self.binary_crossover_choice == AlgorithmParameters.BINARY_CROSSOVER.SPX.value:
                 binary_crossover = Crossover.SPXCrossover( probability=float(self.binary_crossover_parameters["probability"]) )
             
             """ Mutation """
-            if self.binary_mutation_choice == AlgorithmParameters.BINARY_MUTATION.BIT_FLIP:
+            if self.binary_mutation_choice == AlgorithmParameters.BINARY_MUTATION.BIT_FLIP.value:
                 binary_mutation = Mutation.BitFlipMutation( probability=float(self.binary_mutation_parameters["probability"]) )
             
         else:
@@ -274,17 +274,17 @@ class AlgorithmParameters:
         if problem.include_permutation:
             
             """ Crossover """
-            if self.permutation_crossover_choice == AlgorithmParameters.PERMUTATION_CROSSOVER.CXC:
+            if self.permutation_crossover_choice == AlgorithmParameters.PERMUTATION_CROSSOVER.CXC.value:
                 permutation_crossover = Crossover.CXCrossover( probability=float(self.permutation_crossover_parameters["probability"]) )
             
-            elif self.permutation_crossover_choice == AlgorithmParameters.PERMUTATION_CROSSOVER.PMX:
+            elif self.permutation_crossover_choice == AlgorithmParameters.PERMUTATION_CROSSOVER.PMX.value:
                 permutation_crossover = Crossover.PMXCrossover( probability=float(self.permutation_crossover_parameters["probability"]) )
             
             """ Mutation """
-            if self.permutation_mutation_choice == AlgorithmParameters.PERMUTATION_MUTATION.PERMUTATION_SWAP:
+            if self.permutation_mutation_choice == AlgorithmParameters.PERMUTATION_MUTATION.PERMUTATION_SWAP.value:
                 permutation_mutation = Mutation.PermutationSwapMutation( probability=float(self.permutation_mutation_parameters["probability"]) )
             
-            elif self.permutation_mutation_choice == AlgorithmParameters.PERMUTATION_MUTATION.SCRAMBLE_MUTATION:
+            elif self.permutation_mutation_choice == AlgorithmParameters.PERMUTATION_MUTATION.SCRAMBLE_MUTATION.value:
                 permutation_mutation = Mutation.ScrambleMutation( probability=float(self.permutation_mutation_parameters["probability"]) )
             
             crossover_operators.extend( [permutation_crossover]*len(problem.permutation_vars) )
@@ -297,27 +297,27 @@ class AlgorithmParameters:
         """
             Selection
         """
-        if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD]:
+        if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value]:
             
-            if self.selection_choice == AlgorithmParameters.SELECTION.ROULETTE:
+            if self.selection_choice == AlgorithmParameters.SELECTION.ROULETTE.value:
                 selection_operator = Selection.RouletteWheelSelection()
                 
-            elif self.selection_choice == AlgorithmParameters.SELECTION.BINARY_TOURNAMENT:
+            elif self.selection_choice == AlgorithmParameters.SELECTION.BINARY_TOURNAMENT.value:
                 selection_operator = Selection.BinaryTournamentSelection()
                 
-            elif self.selection_choice == AlgorithmParameters.SELECTION.BEST_SOLUTION:
+            elif self.selection_choice == AlgorithmParameters.SELECTION.BEST_SOLUTION.value:
                 selection_operator = Selection.BestSolutionSelection()
                 
-            elif self.selection_choice == AlgorithmParameters.SELECTION.NARY_RANDOM:
+            elif self.selection_choice == AlgorithmParameters.SELECTION.NARY_RANDOM.value:
                 selection_operator = Selection.NaryRandomSolutionSelection( number_of_solutions_to_be_returned=int(self.selection_parameters["number_of_solutions_to_be_returned"]) )
                 
-            elif self.selection_choice == AlgorithmParameters.SELECTION.DIFF_EVOLUTION:
+            elif self.selection_choice == AlgorithmParameters.SELECTION.DIFF_EVOLUTION.value:
                 selection_operator = Selection.DifferentialEvolutionSelection()
                 
-            elif self.selection_choice == AlgorithmParameters.SELECTION.RANDOM:
+            elif self.selection_choice == AlgorithmParameters.SELECTION.RANDOM.value:
                 selection_operator = Selection.RandomSolutionSelection()
                 
-            elif self.selection_choice == AlgorithmParameters.SELECTION.RANKING_AND_CROWDING:
+            elif self.selection_choice == AlgorithmParameters.SELECTION.RANKING_AND_CROWDING.value:
                 selection_operator = Selection.RankingAndCrowdingDistanceSelection( max_population_size=int(self.selection_parameters["max_population_size"]) )
                 
             # elif self.selection_choice == AlgorithmParameters.SELECTION.RANKING_AND_FITNESS:
@@ -329,14 +329,14 @@ class AlgorithmParameters:
             
         population_size = int(self.general_parameters["population_size"])
         
-        if self.choice in [AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO]:
+        if self.choice in [AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value]:
             offspring_size = int(self.general_parameters["offspring_size"])
         
             
         """
             Algorithm compilation
         """
-        if self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII:
+        if self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value:
             
             algorithm = Multiobjective.NSGAII(problem=problem,
                                               population_size=population_size,
@@ -346,7 +346,7 @@ class AlgorithmParameters:
                                               selection=selection_operator)
             
             
-        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO:
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value:
             
             algorithm = Singleobjective.GeneticAlgorithm(problem=problem,
                                                          population_size=population_size,
@@ -356,9 +356,9 @@ class AlgorithmParameters:
                                                          selection=selection_operator)
             
             
-        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD:
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value:
             
-            if self.specific_options["aggregative"] == AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.TSCHEBYCHEFF:
+            if self.specific_options["aggregative"] == AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.TSCHEBYCHEFF.value:
                 aggregative_function = Aggregative.Tschebycheff( dimension=int(self.specific_parameters["aggregative"]["dimension"]) )
             
             algorithm = Multiobjective.MOEAD(problem=problem,
@@ -371,13 +371,13 @@ class AlgorithmParameters:
                                              neighbor_size=int(self.specific_options["neighborhood_size"]),
                                              weight_files_path=self.specific_options["weight_files_path"])
         
-        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL:
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL.value:
             
-            if self.specific_options["archive"] == AlgorithmParameters.MOCELL_ARCHIVE.CROWDING_DISTANCE:
+            if self.specific_options["archive"] == AlgorithmParameters.MOCELL_ARCHIVE.CROWDING_DISTANCE.value:
                 archive_operator = Archive.CrowdingDistanceArchive( maximum_size=int(self.specific_parameters["archive"]["maximum_size"]) )
                 
             
-            if self.specific_options["neighborhood"] == AlgorithmParameters.MOCELL_NEIGHBORHOOD.C9:
+            if self.specific_options["neighborhood"] == AlgorithmParameters.MOCELL_NEIGHBORHOOD.C9.value:
                 neighborhood_operator = Neighborhood.C9(rows=int(self.specific_parameters["neighborhood"]["rows"]), columns=int(self.specific_parameters["neighborhood"]["columns"]))
                 
             algorithm = Multiobjective.MOCell(problem=problem,

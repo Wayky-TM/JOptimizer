@@ -11,8 +11,9 @@ sys.path.append(r"./..")
 import copy
 import random
 import math
-import importlib
+# import importlib
 
+from pydoc import locate
 from enum import Enum
 from abc import *
 from typing import List
@@ -63,7 +64,7 @@ class ProblemParameters:
         
         """ Problem type selection """
         if self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.UNIVERSAL:
-            module_evaluator = importlib.import_module( name=self.options["evaluator_classname"], package=self.options["evaluator_path"])
+            module_evaluator = locate('{package}.{ev_class}'.format(package=self.options["evaluator_path"], ev_class=self.options["evaluator_classname"]))
             
             evaluator = module_evaluator()
         

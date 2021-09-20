@@ -38,6 +38,14 @@ def algorithm_parameters_popup( controller: tk.Tk,
                                 algorithm_parameters: AlgorithmParameters,
                                 problem_parameters: ProblemParameters ):   
     
+    screen_width = GetSystemMetrics(0)
+    screen_height = GetSystemMetrics(1)
+    # window_width=screen_width*0.75
+    # window_height=screen_height*0.75
+
+    popup_width=screen_width*0.5
+    popup_height=screen_height*0.5
+    
     # Variables for automatic spacing & scaling
     first_col_anchor_offset = 0.05
     second_col_anchor_offset = 0.45
@@ -81,14 +89,14 @@ def algorithm_parameters_popup( controller: tk.Tk,
         if variable_types.FloatVariable in var_types:    
             
             # Crossover
-            if fOptionCrossover.get() == AlgorithmParameters.FLOAT_CROSSOVER.SBX:
+            if fOptionCrossover.get() == AlgorithmParameters.FLOAT_CROSSOVER.SBX.value:
                 if not is_float(fCrossoverParams["probability"].get()) or (float(fCrossoverParams["probability"].get())<0.0 or float(fCrossoverParams["probability"].get())>1.0):
                     error_list.append( "Crossover parameter 'Probability' for float variables must be a real number in [0,1]" )
                     
                 if not is_float(fCrossoverParams["distribution_index"].get()) or (float(fCrossoverParams["distribution_index"].get())<0.0):
                     error_list.append( "Crossover parameter 'Distribution index' for float variables must be a positive real number" )
                     
-            elif fOptionCrossover.get() == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION:
+            elif fOptionCrossover.get() == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION.value:
                 if not is_float(fCrossoverParams["probability"].get()) or (float(fCrossoverParams["probability"].get())<0.0 or float(fCrossoverParams["CR"].get())>1.0):
                     error_list.append( "Crossover parameter 'CR' for float variables must be a real number in [0,1]" )
                     
@@ -99,15 +107,15 @@ def algorithm_parameters_popup( controller: tk.Tk,
             if not is_float(fMutationParams["probability"].get()) or (float(fMutationParams["probability"].get())<0.0 or float(fMutationParams["probability"].get())>1.0):
                 error_list.append( "Mutation parameter 'Probability' for float variables must be a real number in [0,1]" )
                     
-            if fOptionMutation.get() == AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL:
+            if fOptionMutation.get() == AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL.value:
                 if not is_float(fMutationParams["distribution_index"].get()) or float(fMutationParams["distribution_index"].get())<0.0:
                     error_list.append( "Mutation parameter 'Distribution index' for float variables must be a positive real number" )
                     
-            elif fOptionMutation.get() == AlgorithmParameters.FLOAT_MUTATION.UNIFORM:
+            elif fOptionMutation.get() == AlgorithmParameters.FLOAT_MUTATION.UNIFORM.value:
                 if not is_float(fMutationParams["perturbation"].get()):
                     error_list.append( "Mutation parameter 'Perturbation' for float variables must be a real number" )
             
-            elif fOptionMutation.get() == AlgorithmParameters.FLOAT_MUTATION.NON_UNIFORM:
+            elif fOptionMutation.get() == AlgorithmParameters.FLOAT_MUTATION.NON_UNIFORM.value:
                 if not is_float(fMutationParams["perturbation"].get()):
                     error_list.append( "Mutation parameter 'Perturbation' for float variables must be a real number" )
                     
@@ -176,13 +184,13 @@ def algorithm_parameters_popup( controller: tk.Tk,
             Algorithm-specific error checking
         """
         
-        if algorithm in [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO, AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL]:
+        if algorithm in [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value, AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL.value]:
             
-            if optionSelection.get() == AlgorithmParameters.SELECTION.NARY_RANDOM:
+            if optionSelection.get() == AlgorithmParameters.SELECTION.NARY_RANDOM.value:
                 if not is_integer(selectionWidgetsEntries["number_of_solutions"].get()) or int(selectionWidgetsEntries["number_of_solutions"].get())<1:
                     error_list.append( "Selection parameter 'Number of solutions' must be a positive, non-zero integer" )
             
-            if optionSelection.get() == AlgorithmParameters.SELECTION.RANKING_AND_CROWDING:
+            if optionSelection.get() == AlgorithmParameters.SELECTION.RANKING_AND_CROWDING.value:
                 if not is_integer(selectionWidgetsEntries["max_population_size"].get()) or int(selectionWidgetsEntries["max_population_size"].get())<1:
                     error_list.append( "Selection parameter 'Max. population size' must be a positive, non-zero integer" )
             
@@ -193,7 +201,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
                     algorithm_parameters.selection_parameters[key] = widget.get()
                 
         
-        if algorithm in [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO]:
+        if algorithm in [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value]:
             
             # Offspring size
             offspring_size = offspringSize.get()
@@ -203,7 +211,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             else:
                 algorithm_parameters.general_parameters["offspring_size"] = offspringSize.get()
             
-        elif algorithm == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD:
+        elif algorithm == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value:
             
             # Aggregation function
             algorithm_parameters.specific_options["aggregative"] = aggregationOption.get()
@@ -243,7 +251,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
                 #TODO: Proper path error checking
                 algorithm_parameters.specific_options["weight_files_path"] = weightFilesPath.get()
             
-        elif algorithm == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL:
+        elif algorithm == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL.value:
             
             # TODO: check errors in parameters' values
             algorithm_parameters.specific_options["archive"] = archiveOption.get()
@@ -336,9 +344,9 @@ def algorithm_parameters_popup( controller: tk.Tk,
             labelframe_operators.place(relx=0.05,rely=0.56)
             
             Label(labelframe_operators, text="Archive").place(relx=first_col_anchor_offset,rely=vertical_anchor_offset)
-            optionList_archive = [ option for option in AlgorithmParameters.MOCELL_ARCHIVE ]
+            optionList_archive = [ option.value for option in AlgorithmParameters.MOCELL_ARCHIVE ]
             archiveOption = tk.StringVar(labelframe_operators)
-            archiveOption.set(AlgorithmParameters.MOCELL_ARCHIVE.CROWDING_DISTANCE)
+            archiveOption.set(AlgorithmParameters.MOCELL_ARCHIVE.CROWDING_DISTANCE.value)
             option_archive = tk.OptionMenu(labelframe_operators, archiveOption, *optionList_archive)
             option_archive.config(width=10, state=DISABLED)
             option_archive.place(relx=0.145, rely=vertical_anchor_offset - 0.01, relwidth=0.26) 
@@ -349,9 +357,9 @@ def algorithm_parameters_popup( controller: tk.Tk,
             archiveParams["maximum_size"].place(relx=0.544, rely=vertical_anchor_offset, relwidth=0.1)
             
             Label(labelframe_operators, text="Neighborhood").place(relx=first_col_anchor_offset,rely=vertical_anchor_offset + vertical_spacing)
-            optionList_neighborhood = [ option for option in AlgorithmParameters.MOCELL_NEIGHBORHOOD ]
+            optionList_neighborhood = [ option.value for option in AlgorithmParameters.MOCELL_NEIGHBORHOOD ]
             neighborhoodOption = tk.StringVar(labelframe_operators)
-            neighborhoodOption.set( AlgorithmParameters.MOCELL_NEIGHBORHOOD.C9 )
+            neighborhoodOption.set( AlgorithmParameters.MOCELL_NEIGHBORHOOD.C9.value )
             option_neighborhood = tk.OptionMenu(labelframe_operators, neighborhoodOption, *optionList_neighborhood)
             option_neighborhood.config(width=10, state=DISABLED)
             option_neighborhood.place(relx=0.215, rely=vertical_anchor_offset + vertical_spacing - 0.04) 
@@ -400,7 +408,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             labelframe_operators.place(relx=0.05,rely=0.56)
         
             Label(labelframe_operators, text="Aggregative").place(relx=first_col_anchor_offset,rely=vertical_anchor_offset)
-            optionList_aggregation = [ option for option in AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION ]
+            optionList_aggregation = [ option.value for option in AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION ]
             aggregationOption = tk.StringVar(labelframe_operators)
             
             if algorithm_parameters.specific_options["aggregative"] not in optionList_aggregation:
@@ -476,7 +484,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
         selectionWidgetsText = {}
         selectionWidgetsEntries = {}
             
-        if selection == AlgorithmParameters.SELECTION.NARY_RANDOM:
+        if selection == AlgorithmParameters.SELECTION.NARY_RANDOM.value:
             selectionWidgetsText["number_of_solutions"] = Label(labelframe_evol, text="Number of solutions")
             selectionWidgetsText["number_of_solutions"].place(relx=0.48, rely=0.07+vOffsetEvol)
     
@@ -484,7 +492,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             selectionWidgetsEntries["number_of_solutions"].insert(0, algorithm_parameters.selection_parameters["number_of_solutions"])
             selectionWidgetsEntries["number_of_solutions"].place(relx=0.7, rely=0.07+vOffsetEvol, relwidth=0.1)
             
-        elif selection == AlgorithmParameters.SELECTION.RANKING_AND_CROWDING:
+        elif selection == AlgorithmParameters.SELECTION.RANKING_AND_CROWDING.value:
             selectionWidgetsText["max_population_size"] = Label(labelframe_evol, text="Max. population size")
             selectionWidgetsText["max_population_size"].place(relx=0.48, rely=0.07+vOffsetEvol)
             
@@ -506,7 +514,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
         fCrossoverParams = {}
         fCrossoverWidgetsText = {}
         
-        if selection == AlgorithmParameters.FLOAT_CROSSOVER.SBX:
+        if selection == AlgorithmParameters.FLOAT_CROSSOVER.SBX.value:
             fCrossoverWidgetsText["probability"] = Label(real_tab, text="Probability")
             fCrossoverWidgetsText["probability"].place(relx=0.435,rely=0.1)
             fCrossoverParams["probability"] = tk.Entry(real_tab, state=NORMAL )
@@ -522,7 +530,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             fCrossoverParams["distribution_index"].insert(0, algorithm_parameters.float_crossover_parameters["distribution_index"])
             fCrossoverParams["distribution_index"].place(relx=0.885, rely=0.1, relwidth=0.1)
             
-        elif selection == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION:
+        elif selection == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION.value:
             fCrossoverWidgetsText["probability"] = Label(real_tab, text="Rate")
             fCrossoverWidgetsText["probability"].place(relx=0.435,rely=0.1)
             fCrossoverParams["probability"] = tk.Entry(real_tab, state=NORMAL )
@@ -561,7 +569,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
         fMutationParams = {}
         fMutationWidgetsText = {}
         
-        if selection == AlgorithmParameters.FLOAT_MUTATION.SIMPLE_RANDOM:
+        if selection == AlgorithmParameters.FLOAT_MUTATION.SIMPLE_RANDOM.value:
             
             fMutationWidgetsText["probability"] = Label(real_tab, text="Probability")
             fMutationWidgetsText["probability"].place(relx=0.435,rely=0.1+vOperatorsOffset)
@@ -569,7 +577,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             fMutationParams["probability"].insert(0, algorithm_parameters.float_mutation_parameters["probability"])
             fMutationParams["probability"].place(relx=0.56, rely=0.1+vOperatorsOffset, relwidth=0.1)
         
-        if selection == AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL:
+        if selection == AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL.value:
             
             fMutationWidgetsText["probability"] = Label(real_tab, text="Probability")
             fMutationWidgetsText["probability"].place(relx=0.435,rely=0.1+vOperatorsOffset)
@@ -586,7 +594,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             fMutationParams["distribution_index"].insert(0, algorithm_parameters.float_mutation_parameters["distribution_index"])
             fMutationParams["distribution_index"].place(relx=0.885, rely=0.1+vOperatorsOffset, relwidth=0.1)
             
-        if selection == AlgorithmParameters.FLOAT_MUTATION.UNIFORM:
+        if selection == AlgorithmParameters.FLOAT_MUTATION.UNIFORM.value:
             
             fMutationWidgetsText["probability"] = Label(real_tab, text="Probability")
             fMutationWidgetsText["probability"].place(relx=0.435,rely=0.1+vOperatorsOffset)
@@ -600,7 +608,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             fMutationParams["perturbation"].insert(0, algorithm_parameters.float_mutation_parameters["perturbation"])
             fMutationParams["perturbation"].place(relx=0.835, rely=0.1+vOperatorsOffset, relwidth=0.1)
             
-        if selection == AlgorithmParameters.FLOAT_MUTATION.NON_UNIFORM:
+        if selection == AlgorithmParameters.FLOAT_MUTATION.NON_UNIFORM.value:
             
             fMutationWidgetsText["probability"] = Label(real_tab, text="Prob.")
             fMutationWidgetsText["probability"].place(relx=0.435,rely=0.1+vOperatorsOffset)
@@ -735,7 +743,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
     
     selectionText = Label(labelframe_evol, text="Selection")
     # selectionText.place(relx=0.05,rely=0.07+vOffsetEvol)
-    optionList_Selection = [ option for option in AlgorithmParameters.SELECTION ]
+    optionList_Selection = [ option.value for option in AlgorithmParameters.SELECTION ]
     optionSelection = tk.StringVar(labelframe_evol)
     
     if algorithm_parameters.selection_choice not in optionList_Selection:
@@ -750,7 +758,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
     
     if variable_types.FloatVariable in var_types:
         real_tab = ttk.Frame(tabs)
-        f_crossover_optionlist = [ option for option in AlgorithmParameters.FLOAT_CROSSOVER ]
+        f_crossover_optionlist = [ option.value for option in AlgorithmParameters.FLOAT_CROSSOVER ]
         
         if algorithm_parameters.float_crossover_choice not in f_crossover_optionlist:
             algorithm_parameters.float_crossover_choice = f_crossover_optionlist[0]
@@ -764,7 +772,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
         f_option_crossover.config( state=NORMAL )
         f_option_crossover.place( relx=0.16, rely=0.09, relwidth=0.26 )
         
-        f_mutation_optionlist = [ option for option in AlgorithmParameters.FLOAT_MUTATION ]
+        f_mutation_optionlist = [ option.value for option in AlgorithmParameters.FLOAT_MUTATION ]
         
         if algorithm_parameters.float_mutation_choice not in f_mutation_optionlist:
             algorithm_parameters.float_mutation_choice = f_mutation_optionlist[0]
@@ -781,10 +789,10 @@ def algorithm_parameters_popup( controller: tk.Tk,
         tabs.add( real_tab, text="Real" )
     
     
-    if variable_types.IntegerVariable in var_types:
+    if variable_types.IntegerVariable in var_types or variable_types.DiscretizedFloatVariable in var_types:
         int_tab = ttk.Frame(tabs)
         
-        i_crossover_optionlist = [ option for option in AlgorithmParameters.INT_CROSSOVER ]
+        i_crossover_optionlist = [ option.value for option in AlgorithmParameters.INT_CROSSOVER ]
         
         Label( int_tab, text="Crossover" ).place( relx=0.03, rely=0.1 )
         iOptionCrossover = tk.StringVar(int_tab)
@@ -808,7 +816,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
         iCrossoverParams["distribution_index"].insert(0, algorithm_parameters.int_crossover_parameters["distribution_index"])
         iCrossoverParams["distribution_index"].place(relx=0.885, rely=0.1, relwidth=0.1)
         
-        i_mutation_optionlist = [ option for option in AlgorithmParameters.INT_MUTATION ]
+        i_mutation_optionlist = [ option.value for option in AlgorithmParameters.INT_MUTATION ]
         
         Label( int_tab, text="Mutation" ).place( relx=0.03, rely=0.1+vOperatorsOffset )
         iOptionMutation = tk.StringVar(int_tab)
@@ -837,7 +845,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
     if variable_types.BinaryVariable in var_types:
         binary_tab = ttk.Frame(tabs)
         
-        b_crossover_optionlist = [ option for option in AlgorithmParameters.BINARY_CROSSOVER ]
+        b_crossover_optionlist = [ option.value for option in AlgorithmParameters.BINARY_CROSSOVER ]
         
         Label( binary_tab, text="Crossover" ).place( relx=0.03, rely=0.1 )
         bOptionCrossover = tk.StringVar(binary_tab)
@@ -852,7 +860,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
         bCrossoverParams["probability"].insert(0, algorithm_parameters.binary_crossover_parameters["probability"])
         bCrossoverParams["probability"].place(relx=0.56, rely=0.1, relwidth=0.1)
         
-        b_mutation_optionlist = [ option for option in AlgorithmParameters.BINARY_MUTATION ]
+        b_mutation_optionlist = [ option.value for option in AlgorithmParameters.BINARY_MUTATION ]
         
         Label( binary_tab, text="Mutation" ).place( relx=0.03, rely=0.1+vOperatorsOffset )
         bOptionMutation = tk.StringVar(binary_tab)
@@ -892,7 +900,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
 
     Label(labelframe_common, text="Algorithm").place(relx=0.05,rely=0.07)
     # optionList_Algorithm = ["NSGAII", "MOEAD", "Mocell", "GA (Single)"]
-    optionList_Algorithm = [ option for option in AlgorithmParameters.SUPPORTED_ALGORITHMS ]
+    optionList_Algorithm = [ option.value for option in AlgorithmParameters.SUPPORTED_ALGORITHMS ]
     
     optionAlgorithm = tk.StringVar(labelframe_common)
     
