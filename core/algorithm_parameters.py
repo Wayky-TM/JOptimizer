@@ -358,7 +358,7 @@ class AlgorithmParameters:
             
         elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD:
             
-            if self.specific_options["aggregative_function"] == AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.TSCHEBYCHEFF:
+            if self.specific_options["aggregative"] == AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.TSCHEBYCHEFF:
                 aggregative_function = Aggregative.Tschebycheff( dimension=int(self.specific_parameters["aggregative"]["dimension"]) )
             
             algorithm = Multiobjective.MOEAD(problem=problem,
@@ -366,10 +366,10 @@ class AlgorithmParameters:
                                              mutation=composite_mutation,
                                              crossover=composite_crossover,
                                              aggregative_function=aggregative_function,
-                                             neighbourhood_selection_probability=float(self.specific_parameters["aggregative"]["neighborhood_selection_probability"]),
-                                             max_number_of_replaced_solutions=int(self.specific_parameters["aggregative"]["max_number_of_replaced_solutions"]),
-                                             neighbor_size=int(self.specific_parameters["aggregative"]["neighbor_size"]),
-                                             weight_files_path=self.specific_parameters["aggregative"]["weight_files_path"])
+                                             neighbourhood_selection_probability=float(self.specific_options["neighborhood_selection_probability"]),
+                                             max_number_of_replaced_solutions=int(self.specific_options["max_number_of_replaced_solutions"]),
+                                             neighbor_size=int(self.specific_options["neighborhood_size"]),
+                                             weight_files_path=self.specific_options["weight_files_path"])
         
         elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL:
             
