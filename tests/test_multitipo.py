@@ -35,6 +35,8 @@ from core.algorithm_parameters import AlgorithmParameters
 
 from evaluators.DebEtAl import Test3Evaluator
 
+from interface.popups.algorithm_parameters_popup import algorithm_parameters_popup
+
 
 class EvaluatorPrueba(Evaluator):
     
@@ -62,26 +64,32 @@ constants = [ FloatConstant( keyword='y', value=0.5 ) ]
 problem = CompositeProblem( float_vars=variables_float, discretized_vars=variables_discretized, int_vars=variables_int, evaluator=Test3Evaluator(4), constants=constants )
 
 """ Alg. configuration """
+
+frame_widget = tk.Tk()
+
 algorithm_parameters = AlgorithmParameters()
-algorithm_parameters.choice = AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII
-algorithm_parameters.general_parameters["population_size"] = "100"
-algorithm_parameters.general_parameters["offspring_size"] = "100"
 
-algorithm_parameters.float_crossover_choice = AlgorithmParameters.FLOAT_CROSSOVER.SBX
-algorithm_parameters.float_crossover_parameters["probability"] = "0.9"
-algorithm_parameters.float_crossover_parameters["distribution_index"] = "20.0"
-algorithm_parameters.float_mutation_choice = AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL
-algorithm_parameters.float_mutation_parameters["probability"] = "0.1"
-algorithm_parameters.float_mutation_parameters["distribution_index"] = "20.0"
+algorithm_parameters_popup( frame_widget, algorithm_parameters )
 
-algorithm_parameters.int_crossover_choice = AlgorithmParameters.INT_CROSSOVER.INT_SBX
-algorithm_parameters.int_crossover_parameters["probability"] = "0.9"
-algorithm_parameters.int_crossover_parameters["distribution_index"] = "20.0"
-algorithm_parameters.int_mutation_choice = AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL
-algorithm_parameters.int_mutation_parameters["probability"] = "0.1"
-algorithm_parameters.int_mutation_parameters["distribution_index"] = "20.0"
+# algorithm_parameters.choice = AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII
+# algorithm_parameters.general_parameters["population_size"] = "100"
+# algorithm_parameters.general_parameters["offspring_size"] = "100"
 
-algorithm_parameters.selection_choice = AlgorithmParameters.SELECTION.BINARY_TOURNAMENT
+# algorithm_parameters.float_crossover_choice = AlgorithmParameters.FLOAT_CROSSOVER.SBX
+# algorithm_parameters.float_crossover_parameters["probability"] = "0.9"
+# algorithm_parameters.float_crossover_parameters["distribution_index"] = "20.0"
+# algorithm_parameters.float_mutation_choice = AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL
+# algorithm_parameters.float_mutation_parameters["probability"] = "0.1"
+# algorithm_parameters.float_mutation_parameters["distribution_index"] = "20.0"
+
+# algorithm_parameters.int_crossover_choice = AlgorithmParameters.INT_CROSSOVER.INT_SBX
+# algorithm_parameters.int_crossover_parameters["probability"] = "0.9"
+# algorithm_parameters.int_crossover_parameters["distribution_index"] = "20.0"
+# algorithm_parameters.int_mutation_choice = AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL
+# algorithm_parameters.int_mutation_parameters["probability"] = "0.1"
+# algorithm_parameters.int_mutation_parameters["distribution_index"] = "20.0"
+
+# algorithm_parameters.selection_choice = AlgorithmParameters.SELECTION.BINARY_TOURNAMENT
 
 algorithm = algorithm_parameters.compile_algorithm( problem )
 

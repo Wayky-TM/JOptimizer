@@ -38,9 +38,6 @@ from util.type_check import is_integer, is_float
 def algorithm_parameters_popup( controller: tk.Tk,
                                 algorithm_parameters: AlgorithmParameters,
                                 problem_parameters: ProblemParameters ):   
-
-    # global controller.opt_options
-    # global controller.opt_parameters
     
     # Variables for automatic spacing & scaling
     first_col_anchor_offset = 0.05
@@ -78,28 +75,29 @@ def algorithm_parameters_popup( controller: tk.Tk,
         if not is_integer(population_size) or int(population_size)<1:
             error_list.append( "Parameter 'Population size' must be a positive, non-zero integer" )
         else:
-            controller.opt_options["population_size"] = population_size
+            algorithm_parameters.general_parameters["population_size"] = population_size
+            
         
         # Crossover operator
         if variable_types.FloatVariable in var_types:    
             
             # Crossover
             if fOptionCrossover.get() == AlgorithmParameters.FLOAT_CROSSOVER.SBX:
-                if not is_float(fCrossoverParams["rate"].get()) or (float(fCrossoverParams["rate"].get())<0.0 or float(fCrossoverParams["rate"].get())>1.0):
+                if not is_float(fCrossoverParams["probability"].get()) or (float(fCrossoverParams["probability"].get())<0.0 or float(fCrossoverParams["probability"].get())>1.0):
                     error_list.append( "Crossover parameter 'Probability' for float variables must be a real number in [0,1]" )
                     
                 if not is_float(fCrossoverParams["distribution_index"].get()) or (float(fCrossoverParams["distribution_index"].get())<0.0):
                     error_list.append( "Crossover parameter 'Distribution index' for float variables must be a positive real number" )
                     
             elif fOptionCrossover.get() == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION:
-                if not is_float(fCrossoverParams["CR"].get()) or (float(fCrossoverParams["CR"].get())<0.0 or float(fCrossoverParams["CR"].get())>1.0):
+                if not is_float(fCrossoverParams["probability"].get()) or (float(fCrossoverParams["probability"].get())<0.0 or float(fCrossoverParams["CR"].get())>1.0):
                     error_list.append( "Crossover parameter 'CR' for float variables must be a real number in [0,1]" )
                     
                 if not is_float(fCrossoverParams["F"].get()):
                     error_list.append( "Crossover parameter 'F' for float variables must be a real number" )
                     
             # Mutation
-            if not is_float(fMutationParams["rate"].get()) or (float(fMutationParams["rate"].get())<0.0 or float(fMutationParams["rate"].get())>1.0):
+            if not is_float(fMutationParams["probability"].get()) or (float(fMutationParams["probability"].get())<0.0 or float(fMutationParams["probability"].get())>1.0):
                 error_list.append( "Mutation parameter 'Probability' for float variables must be a real number in [0,1]" )
                     
             if fOptionMutation.get() == AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL:
@@ -118,58 +116,58 @@ def algorithm_parameters_popup( controller: tk.Tk,
                     error_list.append( "Mutation parameter 'Max. iterations' for float variables must be a positive real number" )
                 
             if len(error_list)==0:
-                controller.opt_options["float_crossover"] = fOptionCrossover.get()
-                controller.opt_options["float_mutation"] = fOptionMutation.get()
+                algorithm_parameters.float_crossover_choice = fOptionCrossover.get()
+                algorithm_parameters.float_mutation_choice = fOptionMutation.get()
                 
                 for key,widget in fCrossoverParams.items():
-                    controller.opt_parameters["float_crossover"][key] = widget.get()
+                    algorithm_parameters.float_crossover_parameters[key] = widget.get()
                     
                 for key,widget in fMutationParams.items():
-                    controller.opt_parameters["float_mutation"][key] = widget.get()
+                    algorithm_parameters.float_mutation_parameters[key] = widget.get()
             
             
         if variable_types.IntegerVariable in var_types or variable_types.DiscretizedFloatVariable in var_types:
             
-            if not is_float(iCrossoverParams["rate"].get()) or (float(iCrossoverParams["rate"].get())<0.0 or float(iCrossoverParams["rate"].get())>1.0):
+            if not is_float(iCrossoverParams["probability"].get()) or (float(iCrossoverParams["probability"].get())<0.0 or float(iCrossoverParams["probability"].get())>1.0):
                 error_list.append( "Crossover parameter 'Probability' for integer variables must be a real value in [0,1]" )
                 
             if not is_float(iCrossoverParams["distribution_index"].get()) or (float(iCrossoverParams["distribution_index"].get())<0.0):
                 error_list.append( "Crossover parameter 'Distribution index' for integer variables must be a positive real number" )
                 
-            if not is_float(iMutationParams["rate"].get()) or (float(iMutationParams["rate"].get())<0.0 or float(iMutationParams["rate"].get())>1.0):
+            if not is_float(iMutationParams["probability"].get()) or (float(iMutationParams["probability"].get())<0.0 or float(iMutationParams["probability"].get())>1.0):
                 error_list.append( "Mutation parameter 'Probability' for integer variables must be a real value in [0,1]" )
                 
             if not is_float(iMutationParams["distribution_index"].get()) or (float(iMutationParams["distribution_index"].get())<0.0):
                 error_list.append( "Mutation parameter 'Distribution index' for integer variables must be a positive real number" )
                 
             if len(error_list)==0:
-                controller.opt_options["int_crossover"] = iOptionCrossover.get()
-                controller.opt_options["int_mutation"] = iOptionMutation.get()
+                algorithm_parameters.int_crossover_choice = iOptionCrossover.get()
+                algorithm_parameters.int_mutation_choice = iOptionMutation.get()
             
                 for key,widget in iCrossoverParams.items():
-                    controller.opt_parameters["int_crossover"][key] = widget.get()
+                    algorithm_parameters.int_crossover_parameters[key] = widget.get()
             
                 for key,widget in iMutationParams.items():
-                    controller.opt_parameters["int_mutation"][key] = widget.get()
+                    algorithm_parameters.int_mutation_parameters[key] = widget.get()
                 
         
         if variable_types.BinaryVariable in var_types:
             
-            if not is_float(bCrossoverParams["rate"].get()) or (float(bCrossoverParams["rate"].get())<0.0 or float(bCrossoverParams["rate"].get())>1.0):
+            if not is_float(bCrossoverParams["probability"].get()) or (float(bCrossoverParams["probability"].get())<0.0 or float(bCrossoverParams["probability"].get())>1.0):
                 error_list.append( "Crossover parameter 'Probability' for binary variables must be a real value in [0,1]" )
             
-            if not is_float(bMutationParams["rate"].get()) or (float(bMutationParams["rate"].get())<0.0 or float(bMutationParams["rate"].get())>1.0):
+            if not is_float(bMutationParams["probability"].get()) or (float(bMutationParams["probability"].get())<0.0 or float(bMutationParams["probability"].get())>1.0):
                 error_list.append( "Mutation parameter 'Probability' for binary variables must be a real value in [0,1]" )
             
             if len(error_list)==0:
-                controller.opt_options["binary_crossover"] = bOptionCrossover.get()
-                controller.opt_options["binary_mutation"] = bOptionMutation.get()
+                algorithm_parameters.binary_crossover_choice = bOptionCrossover.get()
+                algorithm_parameters.binary_mutation_choice = bOptionMutation.get()
                 
                 for key,widget in bCrossoverParams.items():
-                        controller.opt_parameters["binary_crossover"][key] = widget.get()
+                        algorithm_parameters.binary_crossover_parameters[key] = widget.get()
                         
                 for key,widget in bMutationParams.items():
-                        controller.opt_parameters["binary_mutation"][key] = widget.get()
+                        algorithm_parameters.binary_mutation_parameters[key] = widget.get()
         
         if variable_types.PermutationVariable in var_types:
             #TODO
@@ -179,24 +177,24 @@ def algorithm_parameters_popup( controller: tk.Tk,
             Algorithm-specific error checking
         """
         
-        if algorithm in ["NSGAII", "GA (Single)", "Mocell"]:
+        if algorithm in [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO, AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL]:
             
-            if optionSelection.get() == "n-ary random":
+            if optionSelection.get() == AlgorithmParameters.SELECTION.NARY_RANDOM:
                 if not is_integer(selectionWidgetsEntries["number_of_solutions"].get()) or int(selectionWidgetsEntries["number_of_solutions"].get())<1:
                     error_list.append( "Selection parameter 'Number of solutions' must be a positive, non-zero integer" )
             
-            if optionSelection.get() == "Rank & Crowding":
+            if optionSelection.get() == AlgorithmParameters.SELECTION.RANKING_AND_CROWDING:
                 if not is_integer(selectionWidgetsEntries["max_population_size"].get()) or int(selectionWidgetsEntries["max_population_size"].get())<1:
                     error_list.append( "Selection parameter 'Max. population size' must be a positive, non-zero integer" )
             
             if len(error_list)==0:
-                controller.opt_options["selection"] = optionSelection.get()
+                algorithm_parameters.selection_choice = optionSelection.get()
                 
                 for key,widget in selectionWidgetsEntries.items():
-                    controller.opt_parameters["selection"][key] = widget.get()
+                    algorithm_parameters.selection_parameters[key] = widget.get()
                 
         
-        if algorithm in ["NSGAII", "GA (Single)"]:
+        if algorithm in [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO]:
             
             # Offspring size
             offspring_size = offspringSize.get()
@@ -204,16 +202,16 @@ def algorithm_parameters_popup( controller: tk.Tk,
             if not is_integer(offspring_size) or int(offspring_size)<1:
                 error_list.append( "Parameter 'Offspring size' must be a positive, non-zero integer" )
             else:
-                controller.opt_options["offspring_size"] = offspringSize.get()
+                algorithm_parameters.general_parameters["offspring_size"] = offspringSize.get()
             
-        elif algorithm=="MOEAD":
+        elif algorithm == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD:
             
             # Aggregation function
-            controller.opt_options["aggregation_funct"] = aggregationOption.get()
+            algorithm_parameters.specific_options["aggregative"] = aggregationOption.get()
             
             # TODO: check aggregation parameters' correctness
             for key,value in aggregationParams.items():
-                controller.opt_parameters["aggregative"][key] = value.get()
+                algorithm_parameters.specific_parameters["aggregative"][key] = value.get()
             
             # Neighborhood size
             neighborhood_size = neighborhoodSize.get()
@@ -221,7 +219,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             if not is_integer(neighborhood_size) or int(neighborhood_size)<1:
                 error_list.append( "Parameter 'Neighborhood size' must be a positive, non-zero integer" )
             else:
-                controller.opt_options["neighborhood_size"] = neighborhood_size
+                algorithm_parameters.specific_options["neighborhood_size"] = neighborhood_size
                 
             # Neighborhood sel. prob.
             neighborhood_sel_prob = neighborhoodSelProb.get()
@@ -229,7 +227,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             if not is_float(neighborhood_sel_prob) or float(neighborhood_sel_prob) < 0:
                 error_list.append( "Parameter 'Neighborhood selection prob.' takes a positive real value" )
             else:
-                controller.opt_options["neighborhood_sel_prob"] = neighborhood_sel_prob
+                algorithm_parameters.specific_options["neighborhood_selection_probability"] = neighborhood_sel_prob
             
             # Max. of n replaced
             max_of_n_replaced = maxOfNReplaced.get()
@@ -237,41 +235,31 @@ def algorithm_parameters_popup( controller: tk.Tk,
             if not is_integer(max_of_n_replaced) or int(max_of_n_replaced)<1:
                 error_list.append( "Parameter 'Max. replaced' must be a positive, non-zero integer" )
             else:
-                controller.opt_options["max_n_replaced"] = max_of_n_replaced
+                algorithm_parameters.specific_options["max_number_of_replaced_solutions"] = max_of_n_replaced
             
             # Weight files path
             if not weightFilesPath.get():
                 error_list.append( "Select a folder for weight files" )
             else:
-                controller.opt_options["weight_files_path"] = weightFilesPath.get()
+                #TODO: Proper path error checking
+                algorithm_parameters.specific_options["weight_files_path"] = weightFilesPath.get()
             
-        elif algorithm=="Mocell":
+        elif algorithm == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL:
             
             # TODO: check errors in parameters' values
-            
-            controller.opt_options["archive_option"] = archiveOption.get()
+            algorithm_parameters.specific_options["archive"] = archiveOption.get()
             
             for key,value in archiveParams.items():
-                controller.opt_parameters["archive"][key] = value.get()
+                algorithm_parameters.specific_paramaters["archive"][key] = value.get()
             
-            controller.opt_options["neighborhood"] = neighborhoodOption.get()
+            algorithm_parameters.specific_options["neighborhood"] = neighborhoodOption.get()
             
             for key,value in neighborhoodParams.items():
-                controller.opt_parameters["neighborhood"][key] = value.get()
+                algorithm_parameters.specific_parameters["neighborhood"][key] = value.get()
                 
                 
         
         if (len(error_list) == 0):
-            # TODO: delete once 'optimizer_cst' isn't used anymore
-            controller.optimizer_cst[0] = algorithm
-            controller.optimizer_cst[1] = "CST"
-            controller.optimizer_cst[2] = int(population_size)
-            controller.optimizer_cst[3] = int(max_evaluations)
-            # controller.optimizer_cst[4] = float(cross_rate)
-            # controller.optimizer_cst[5] = float(mut_rate)
-            controller.optimizer_cst[6] = low_frequencies
-            controller.optimizer_cst[7] = high_frequencies
-            
             win.destroy()
             
         else:
@@ -431,7 +419,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             
             Label(labelframe_operators, text="Weights folder path").place(relx=first_col_anchor_offset,rely=vertical_anchor_offset + vertical_spacing)
             weightFilesPath = tk.Entry(labelframe_operators, state=NORMAL)
-            weightFilesPath.insert(0, algorithm_parameters.specific_options["weight_files_path"]) # TODO: organize parameters by algorithm (e.g. controller.opt_parameters["MOEAD"]["weight_files_path"])
+            weightFilesPath.insert(0, algorithm_parameters.specific_options["weight_files_path"])
             weightFilesPath.place(relx=0.26, rely=vertical_anchor_offset + vertical_spacing, relwidth=0.52)
             weightFilesPath.config(state=DISABLED)
             button_browse_weights = tk.Button( labelframe_operators,  text="Browse", command=lambda: _browse_weights() ).place(relx=0.805, rely=vertical_anchor_offset + vertical_spacing - 0.0125, relwidth=0.1)
@@ -448,7 +436,7 @@ def algorithm_parameters_popup( controller: tk.Tk,
             
             Label(labelframe_operators, text="Max. replaced").place(relx=first_col_anchor_offset,rely=vertical_anchor_offset + 3*vertical_spacing)
             maxOfNReplaced = tk.Entry(labelframe_operators, state=NORMAL)
-            maxOfNReplaced.insert(0, controller.opt_options["max_n_replaced"])
+            maxOfNReplaced.insert(0, algorithm_parameters.specific_options["max_number_of_replaced_solutions"])
             maxOfNReplaced.place(relx=0.22, rely=vertical_anchor_offset + 3*vertical_spacing, relwidth=0.135)
         
         # Cleaing error textbox
@@ -590,8 +578,8 @@ def algorithm_parameters_popup( controller: tk.Tk,
             fMutationParams["probability"].insert(0, algorithm_parameters.float_mutation_parameters["probability"])
             fMutationParams["probability"].place(relx=0.56, rely=0.1+vOperatorsOffset, relwidth=0.1)
             
-            if not is_float(controller.opt_parameters["float_mutation"]["distribution_index"]):
-                controller.opt_parameters["float_mutation"]["distribution_index"] = "20.0"
+            if not is_float(algorithm_parameters.float_mutation_parameters["distribution_index"]):
+                algorithm_parameters.float_mutation_parameters["distribution_index"] = "20.0"
             
             fMutationWidgetsText["distribution_index"] = Label(real_tab, text="Distribution index")
             fMutationWidgetsText["distribution_index"].place(relx=0.69,rely=0.1+vOperatorsOffset)
