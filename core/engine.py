@@ -22,7 +22,7 @@ from abc import *
 
 from core.composite_problem import CompositeProblem
 from jmetal.core.algorithm import Algorithm
-from jmetal.util.termination_criterion as jterm
+import jmetal.util.termination_criterion as jterm
 
 
 class OptimizationEngine:
@@ -52,28 +52,18 @@ class OptimizationEngine:
                   max_from_prev_front: float = 0.8):
         
         if self.algorithm is None: #First configuration
-            pass
-        else:
-            pass
-        
-        self.algorithm = algorithm
-    
-    
-    def __stats_update(self):
-        pass
-        
-    
-    def __update_time(self):
-        pass
-    
-    
-    def __update_evaluations(self):
-        pass
-    
+            self.algorithm = algorithm
+            self.algorithm.solutions = self.algorithm.create_initial_solutions()
+            self.algorithm.solutions = self.algorithm.evaluate(algorithm.solutions)
+            
+        else: #Reconfigure, keeping previous solution
+            new_alg = algorithm
+            new_alg.solutions = self.algorithm.solutions
+            self.algorithm = new_alg
+            
     
     def __singlethread_optimizerTask__(self,
                                        termination_criterion: jterm.TerminationCriterion):
-        
         
         if self.algorithm is None:
             raise Exception("__singlethread_optimizerTask__(): algorithm uninitialized")
@@ -86,16 +76,14 @@ class OptimizationEngine:
         while not self.algorithm.stopping_condition_is_met():
             self.pause_semaphore.acquire()
             
-            algorithm.step()
-            algorithm.update_progress()
+            self.algorithm.step()
+            self.algorithm.update_progress()
             self.endOfGen_callback()
             
             self.pause_semaphore.release()
         
         
         self.algorithm.evaluations += prev_evaluations
-        
-        update_runtime_statistics()
             
         self.termination_callback()
     
@@ -106,10 +94,12 @@ class OptimizationEngine:
         self.pause_semaphore = threading.Semaphore()
         
         self.stop_var = 0
-        self.x = threading.Thread( target=self.__singlethread_optimizerTask__, args=[termination_criterion] )
-        self.x.start()
+        self.optimizer_thread = threading.Thread( target=self.__singlethread_optimizerTask__, args=[termination_criterion] )
+        self.optimizer_thread.start()
         
-        
+    def wait_termination(self):
+        if self.optimizer_thread != None:
+            self.optimizer_thread.join()
         
     def pause(self):
         if self.pause_semaphore._value > 0:

@@ -35,6 +35,7 @@ from core.constant import FloatConstant, IntegerConstant
 # from core.composite_problem import CompositeProblem
 from core.algorithm_parameters import AlgorithmParameters
 from core.problem_parameters import ProblemParameters
+from core.engine import OptimizationEngine
 
 from evaluators.DebEtAl import Test3Evaluator
 
@@ -83,33 +84,15 @@ app.mainloop()
 problem = problem_parameters.CompileProblem()
 algorithm = algorithm_parameters.compile_algorithm( problem )
 
+engine = OptimizationEngine( problem=problem )
 
+engine.configure( algorithm=algorithm )
+engine.launch( jterm.StoppingByEvaluations( max_evaluations=300 ) )
+engine.wait_termination()
 
+# time.sleep(20)
 
-algorithm.solutions = algorithm.create_initial_solutions()
-algorithm.solutions = algorithm.evaluate(algorithm.solutions)
-
-
-def run():
-    # nonlocal algorithm
-    
-    algorithm.init_progress()
-    
-    time1 = time.time()
-    
-    for i in range(100):
-        algorithm.step()
-        algorithm.update_progress()
-        
-    total_time = time.time() - time1
-    
-    print(total_time)
-
-# cProfile.run( 'run()' )
-
-run()
-
-solutions = algorithm.get_result()
+solutions = engine.algorithm.get_result()
 
 front = get_non_dominated_solutions(solutions)
 
