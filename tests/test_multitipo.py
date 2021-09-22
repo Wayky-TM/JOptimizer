@@ -74,7 +74,7 @@ problem_parameters.variables = [FloatVariable( keyword='x', lower_bound=0.0, upp
 # problem_parameters.constants = [ FloatConstant( keyword='y', value=0.5 ) ]
 
 problem_parameters.options["template"] = ProblemParameters.PROBLEM_TEMPLATES.UNIVERSAL
-problem_parameters.options["evaluator_path"] = r"C:\Users\Wayky\Documents\GitHub\JOptimizer\tests\evaluator_4var.py"
+problem_parameters.options["evaluator_path"] = r"C:\Users\Álvaro\Documents\GitHub\JOptimizer\tests\evaluator_4var.py"
 problem_parameters.options["evaluator_classname"] = "EvaluatorPrueba"
 
 app = App(algorithm_parameters, problem_parameters)
