@@ -27,6 +27,10 @@ import jmetal.util.termination_criterion as jterm
 
 class OptimizationEngine:
     
+    class TerminationCriterion(Enum):
+        EVALUATIONS=1
+        TIME=1
+    
     def __null_callback():
         pass
     
@@ -41,8 +45,10 @@ class OptimizationEngine:
         
         self.total_elapsed_time = 0.0
         self.algorithm_time = 0.0
-        
+        self.total_evaluations = 0
         self.algorithm = None
+        
+        self.pause_semaphore = threading.Semaphore()
         
         
         
@@ -60,7 +66,7 @@ class OptimizationEngine:
             new_alg = algorithm
             new_alg.solutions = self.algorithm.solutions
             self.algorithm = new_alg
-            
+    
     
     def __singlethread_optimizerTask__(self,
                                        termination_criterion: jterm.TerminationCriterion):
@@ -68,10 +74,15 @@ class OptimizationEngine:
         if self.algorithm is None:
             raise Exception("__singlethread_optimizerTask__(): algorithm uninitialized")
         
+        self.algorithm.observable.deregister( self.algorithm.termination_criterion )
         self.algorithm.termination_criterion = termination_criterion
+        self.algorithm.observable.register( self.algorithm.termination_criterion )
         
-        prev_evaluations = self.algorithm.evaluations    
-        self.algorithm.evaluations = 0
+        self.total_evaluations += self.algorithm.evaluations
+        
+        self.algorithm.init_progress()
+        
+        self.algorithm.start_computing_time = time.time()
         
         while not self.algorithm.stopping_condition_is_met():
             self.pause_semaphore.acquire()
@@ -82,18 +93,15 @@ class OptimizationEngine:
             
             self.pause_semaphore.release()
         
+        self.algorithm.total_computing_time = time.time() - self.algorithm.start_computing_time
         
-        self.algorithm.evaluations += prev_evaluations
-            
         self.termination_callback()
     
     
     def launch( self,
                 termination_criterion: jterm.TerminationCriterion):
+    
         
-        self.pause_semaphore = threading.Semaphore()
-        
-        self.stop_var = 0
         self.optimizer_thread = threading.Thread( target=self.__singlethread_optimizerTask__, args=[termination_criterion] )
         self.optimizer_thread.start()
         

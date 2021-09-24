@@ -87,10 +87,10 @@ algorithm = algorithm_parameters.compile_algorithm( problem )
 engine = OptimizationEngine( problem=problem )
 
 engine.configure( algorithm=algorithm )
-engine.launch( jterm.StoppingByEvaluations( max_evaluations=300 ) )
+engine.launch( termination_criterion=jterm.StoppingByEvaluations( max_evaluations=10000 ) )
 engine.wait_termination()
 
-# time.sleep(20)
+print("Time: {}".format(engine.algorithm.total_computing_time) )
 
 solutions = engine.algorithm.get_result()
 
