@@ -111,11 +111,11 @@ class OptimizationEngine:
         
     def pause(self):
         if self.pause_semaphore._value > 0:
-            self.pause_semaphore.acquire()
+            self.pause_semaphore.acquire( blocking=False )
     
     def resume(self):
         if self.pause_semaphore._value == 0:
-            self.pause_semaphore.release()
+            self.pause_semaphore.release( blocking=False )
     
     
     def get_front(self):
