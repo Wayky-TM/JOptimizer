@@ -27,6 +27,7 @@ class Console(tk.scrolledtext.ScrolledText):
     
     def __init__(self, *args, **kwargs):
         kwargs['state']=tk.DISABLED
+        kwargs['wrap']=tk.WORD
         super(Console, self).__init__(*args, **kwargs)
         # self.config(state=DISABLED)
         

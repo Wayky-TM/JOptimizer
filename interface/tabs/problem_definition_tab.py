@@ -39,8 +39,15 @@ from interface.console import Console
 class ProblemTab(ttk.Frame):
     
     class ProblemFrame(tk.Frame):
-        def __init__(self, master, *args, **kwargs):
+        def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
             super(ProblemTab, self).__init__(master=master, *args, **kwargs)
+            self.problem_parameters = problem_parameters
+            self.parameters_bindings = []
+            
+        def error_check(self, error_list: List[str]):
+            
+            for paramenter in self.parameters_bindings:
+                parameter.check(error_list)
         
     
     def __listbox_selection_handler__(self, event):
@@ -70,11 +77,14 @@ class ProblemTab(ttk.Frame):
         self.parameters_listbox.bind( '<<ListboxSelect>>', self.__listbox_selection_handler__ )
         self.parameters_listbox.activate(0)
         
-        self.console = Console(master=self, wrap=tk.WORD, font=("Times New Roman", 9))
-        self.console.place( relx=0.2, rely=0.7, relwidth=0.6, relheight=0.5 )
-        self.console.print_message("Hola\n")
-        self.console.print_warning("Que haces???\n")
-        self.console.print_error("Cabrón!!!\n")
+        self.parameters_frame = tk.Frame(master=self)
+        self.parameters_frame.place()
+        
+        self.console = Console(master=self, font=("Times New Roman", 10, 'bold'))
+        self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
+        self.console.print_message("Mensaje\n")
+        self.console.print_warning("Advertencia\n")
+        self.console.print_error("Error\n")
         
     def check_errors(self):
         pass
