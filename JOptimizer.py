@@ -24,6 +24,7 @@ except ImportError:
 
 from win32api import GetSystemMetrics
 from collections import defaultdict
+from typing import List
 # import numpy as np
 
 import core.variable as variable_types

@@ -24,30 +24,56 @@ except ImportError:
     
 from win32api import GetSystemMetrics
 from collections import defaultdict
-# import numpy as np
+from typing import List
 
 import core.variable as variable_types
 from core.algorithm_parameters import AlgorithmParameters
 from core.problem_parameters import ProblemParameters
 from util.type_check import is_integer, is_float
 
+from interface.parameter import *
 from interface.console import Console
-
+from interface.parameter_binding import ParameterBinding
 
 
 
 class ProblemTab(ttk.Frame):
     
-    class ProblemFrame(tk.Frame):
+    class ProblemFrame(tk.LabelFrame):
         def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
-            super(ProblemTab, self).__init__(master=master, *args, **kwargs)
+            super(ProblemTab.ProblemFrame, self).__init__(master=master, *args, **kwargs)
+            
             self.problem_parameters = problem_parameters
             self.parameters_bindings = []
             
         def error_check(self, error_list: List[str]):
             
-            for paramenter in self.parameters_bindings:
-                parameter.check(error_list)
+            for binding in self.parameters_bindings:
+                binding.error_check(error_list)
+                
+        def save_parameters(self):
+            
+            for binding in self.parameters_bindings:
+                binding.store_value()
+                
+        def display(self):
+            self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
+            
+        def hide(self):
+            self.place_forget()
+            
+            
+            
+    class EvaluatorFrame(ProblemFrame):
+        def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+            super(ProblemTab.ProblemFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+            
+            tk.Label( master=self, text="Evaluator script path").place( relx=0.05, rely=0.2 )
+            self.evaluator_path_entry = tk.Entry( master=self , state=NORMAL)
+            evaluator_path_parameter = FilePath( fancy_name="Evaluator script path" )
+            
+            evaluator_path_ = 
+            
         
     
     def __listbox_selection_handler__(self, event):
@@ -65,6 +91,12 @@ class ProblemTab(ttk.Frame):
         template_option.config( font=('URW Gothic L','11') )
         template_option.config( state=tk.DISABLED )
         template_option.place( relx=0.07, rely=0.045, relwidth=0.1 )
+        
+        
+        
+        self.generic_problem_items = [ "Evaluator", "Variables", "Constants", "Contraints" ]
+        self.matlab_problem_items = [ "Script", "Variables", "Constants", "Contraints" ]
+        self.CST_problem_items = [ "CST", "Variables", "Constants", "Contraints" ]
         
         self.parameters_listbox = tk.Listbox( master=self)
         self.parameters_listbox.config( font=('URW Gothic L','11','bold') )
@@ -85,6 +117,10 @@ class ProblemTab(ttk.Frame):
         self.console.print_message("Mensaje\n")
         self.console.print_warning("Advertencia\n")
         self.console.print_error("Error\n")
+        
+        test_problem_parameters = ProblemParameters()
+        self.prueba = ProblemTab.ProblemFrame(master=self, problem_parameters=test_problem_parameters)
+        self.prueba.display()
         
     def check_errors(self):
         pass
