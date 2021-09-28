@@ -80,12 +80,6 @@ class JOptimizer_App(tk.Tk):
         s = ttk.Style()
         s.configure('TNotebook.Tab', font=('URW Gothic L','11','bold') )
         
-        # s.theme_create( "MyStyle", parent="alt", settings={
-        # "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0] } },
-        # "TNotebook.Tab": {"configure": {"padding": [10, 10] },}})
-
-        # s.theme_use("MyStyle")
-        
         self.tabs = ttk.Notebook( self )
         
         self.problem_tab = ProblemTab(master=self.tabs, problem_parameters=self.problem_parameters)
