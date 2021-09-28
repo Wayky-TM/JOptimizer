@@ -65,22 +65,85 @@ class ProblemTab(ttk.Frame):
             
             
     class EvaluatorFrame(ProblemFrame):
+        
+        def _browse(self): 
+            
+            path = filedialog.askopenfilename(title = "Select a file which contains the evaluator")
+            
+            self.OperatorFilePath.config(state=tk.NORMAL)
+            self.OperatorFilePath.insert( 0, path )
+            self.OperatorFilePath.config(state="readonly")
+        
         def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
-            super(ProblemTab.ProblemFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+            super(ProblemTab.EvaluatorFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
             
             tk.Label( master=self, text="Evaluator script path").place( relx=0.05, rely=0.2 )
-            self.evaluator_path_entry = tk.Entry( master=self , state=NORMAL)
+            self.OperatorFilePath = tk.Entry(master=self, state=tk.NORMAL)
+            self.OperatorFilePath.insert(0, problem_parameters.options["evaluator_classname"])
+            self.OperatorFilePath.place(relx=0.15, rely=0.2, relwidth=0.52)
+            self.OperatorFilePath.config(state=tk.DISABLED)
+            self.button_browse_operator = tk.Button( master=self,  text="Browse", command=lambda: self._browse() ).place(relx=0.73, rely=0.2 - 0.0125, relwidth=0.1)
+            
             evaluator_path_parameter = FilePath( fancy_name="Evaluator script path" )
             
-            evaluator_path_ = 
+            self.parameters_bindings.append( ParameterBinding(parameter=evaluator_path_parameter,
+                                                              widget_read_lambda=lambda: self.evaluator_class_entry.get(),
+                                                              variable_store_lambda=lambda var: self.problem_parameters.options.update({"evaluator_class":var})) )
+            
+            
+            
+            tk.Label( master=self, text="Evaluator class").place( relx=0.05, rely=0.3 )
+            self.evaluator_class_entry = tk.Entry( master=self , state=tk.NORMAL)
+            
+            evaluator_class_parameter = Parameter( fancy_name="Evaluator class" )
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=evaluator_class_parameter,
+                                                              widget_read_lambda=lambda: self.evaluator_class_entry.get(),
+                                                              variable_store_lambda=lambda var: self.problem_parameters.options.update({"evaluator_class":var})) )
+            
+        
+    class VariablesFrame(ProblemFrame):
+        
+        def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+            super(ProblemTab.VariablesFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+            
+            tk.Label( master=self, text="#Variables").place( relx=0.5, rely=0.5 )
+            
+            
+    class ConstantsFrame(ProblemFrame):
+        
+        def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+            super(ProblemTab.ConstantsFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+            
+            tk.Label( master=self, text="#Constants").place( relx=0.5, rely=0.5 )
+            
+            
+    class ConstraintsFrame(ProblemFrame):
+        
+        def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+            super(ProblemTab.ConstraintsFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+            
+            tk.Label( master=self, text="#Constraints").place( relx=0.5, rely=0.5 )
             
         
     
     def __listbox_selection_handler__(self, event):
-        print("pacopepe")
+        
+        selection = event.widget.curselection()
+        
+        if selection:
+            index = selection[0]
+            data = event.widget.get(index)
+            print(data)
+            self.selected_frame.hide()
+            self.selected_frame = self.frames[data]
+            self.selected_frame.display()
+        
     
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
         super(ProblemTab, self).__init__(master=master, *args, **kwargs)
+        
+        self.problem_parameters = problem_parameters
         
         templates_optionlist = [ option.value for option in ProblemParameters.PROBLEM_TEMPLATES ]
         
@@ -92,7 +155,14 @@ class ProblemTab(ttk.Frame):
         template_option.config( state=tk.DISABLED )
         template_option.place( relx=0.07, rely=0.045, relwidth=0.1 )
         
+        self.frames = {}
+        self.frames["Evaluator"] = ProblemTab.EvaluatorFrame( master=self, problem_parameters=self.problem_parameters )
+        self.frames["Variables"] = ProblemTab.VariablesFrame( master=self, problem_parameters=self.problem_parameters )
+        self.frames["Constants"] = ProblemTab.ConstantsFrame( master=self, problem_parameters=self.problem_parameters )
+        self.frames["Constraints"] = ProblemTab.ConstraintsFrame( master=self, problem_parameters=self.problem_parameters )
         
+        self.selected_frame = self.frames["Evaluator"]
+        self.selected_frame.display()
         
         self.generic_problem_items = [ "Evaluator", "Variables", "Constants", "Contraints" ]
         self.matlab_problem_items = [ "Script", "Variables", "Constants", "Contraints" ]
@@ -118,9 +188,8 @@ class ProblemTab(ttk.Frame):
         self.console.print_warning("Advertencia\n")
         self.console.print_error("Error\n")
         
-        test_problem_parameters = ProblemParameters()
-        self.prueba = ProblemTab.ProblemFrame(master=self, problem_parameters=test_problem_parameters)
-        self.prueba.display()
+        # self.prueba = ProblemTab.ProblemFrame(master=self, problem_parameters=self.problem_parameters)
+        # self.prueba.display()
         
     def check_errors(self):
         pass

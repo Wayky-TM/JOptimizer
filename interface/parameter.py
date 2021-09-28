@@ -13,18 +13,20 @@ from abc import *
 
 import os.path
 
+from typing import List
+
 import util.type_check as TC
 
 class Parameter:
 
     class Error:
         
-        def __init__( self, parameter: Parameter, err_str: str = "" )        :
+        def __init__( self, parameter: 'Parameter', err_str: str = "" )        :
             self.parameter = parameter
             self.err_str = err_str
     
     def __init__( self,
-                  name: str,
+                  name: str = "",
                   fancy_name: str = "" ): # Name to display in the GUI
         
         if type(name) != str:
@@ -51,12 +53,12 @@ class Parameter:
         pass
 
     @abstractmethod
-    def error_check( self, error_list: List[Parameter.Error] ):
+    def error_check( self, error_list: List[Error] ):
         pass
 
 class Float(Parameter):
     
-    def __init__( self, name: str, fancy_name: str = "", lower_bound: float, upper_bound: float ):
+    def __init__( self, name: str = "", fancy_name: str = "", lower_bound: float = 0.0, upper_bound: float = 1.0 ):
         
         if lower_bound <= upper_bound:
             raise ValueError( "%s.__init__(): parameter 'lower_bound' must be less than 'upper_bound'" % (type(self).__name__) )
@@ -87,7 +89,7 @@ class Float(Parameter):
         
 class Integer(Parameter):
     
-    def __init__( self, name: str, fancy_name: str = "", lower_bound: int, upper_bound: int ):
+    def __init__( self, name: str = "", fancy_name: str = "", lower_bound: int = -32768, upper_bound: int = 32767 ):
         
         if lower_bound <= upper_bound:
             raise ValueError( "%s.__init__(): parameter 'lower_bound' must be less than 'upper_bound'" % (type(self).__name__) )

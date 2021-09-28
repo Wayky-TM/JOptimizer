@@ -25,10 +25,10 @@ class ParameterBinding:
         
     def error_check( self, error_list: List[str] ):
         
-        self.parameter.value = self.widget_read_lambda
+        self.parameter.value = self.widget_read_lambda()
         self.parameter.error_check( error_list=error_list )
         
     def store_value( self ):
-        self.variable_store_lambda()
+        self.variable_store_lambda( self.parameter.value )
         
         
