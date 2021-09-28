@@ -105,6 +105,55 @@ class ProblemTab(ttk.Frame):
         
     class VariablesFrame(ProblemFrame):
         
+        class VariableParametersFrame(tk.Frame):
+            
+            def __init__(self, master, *args, **kwargs):
+                super(VariablesFrame.VariableParametersFrame, self).__init__(master=master, *args, **kwargs)
+                
+                self.name_label = tk.Label( master=self, text="Name" )
+                self.name_label.place( relx=0.1, rely=0.1 )
+                self.name_entry = tk.Entry( master=self )
+                self.name_entry.place( relx=0.3, rely=0.1, relwidth=0.5 )
+                
+            @abstractmethod
+            def check_errors(self) -> bool:
+                pass
+                
+            @abstractmethod
+            def generate_variable(self):
+                pass
+            
+        class NumericParametersFrame(VariableParametersFrame):
+            
+            def __init__(self, master, *args, **kwargs):
+                super(VariablesFrame.NumericParametersFrame, self).__init__(master=master, *args, **kwargs)
+                
+                self.lower_bound_label = tk.Label( master=self, text="Lower Bound" )
+                self.lower_bound_label.place( relx=0.1, rely=0.3 )
+                self.lower_bound_entry = tk.Entry( master=self )
+                self.lower_bound_entry.place( relx=0.4, rely=0.3, relwidth=0.5 )
+                
+                self.upper_bound_label = tk.Label( master=self, text="Upper Bound" )
+                self.upper_bound_label.place( relx=0.1, rely=0.3 )
+                self.upper_bound_entry = tk.Entry( master=self )
+                self.upper_bound_entry.place( relx=0.4, rely=0.5, relwidth=0.5 )
+                
+            def _invalidate_entry_(self, entry):
+                entry.config({"background":"Red"})
+                
+            def _reset_entry_(self, entry):
+                entry.config({"background":"White"})
+                
+        class FloatParametersFrame(VariableParametersFrame):
+            
+            def __init__(self, master, *args, **kwargs):
+                super(VariablesFrame.FloatParametersFrame, self).__init__(master=master, *args, **kwargs)
+                
+                self.variable = variable_types.FloatVariable(keyword="", lower_bound, upper_bound)
+            
+            def check_errors( self ):
+                pass
+        
         def add_variable(self):
             pass
         
@@ -129,28 +178,47 @@ class ProblemTab(ttk.Frame):
             # tk.Label( master=self, text="#Variables").place( relx=0.5, rely=0.5 )
             
             # Labelframe ListBox Variables + SeeAll + Delete
-            labelframe_list = tk.LabelFrame(master=self, text="Parameter List")
-            labelframe_list.place(relx=0.05, rely=0.05, relheight=0.9, relwidth=0.4)
+            labelframe_list = tk.LabelFrame(master=self, text="Variable List")
+            labelframe_list.place(relx=0.02, rely=0.05, relheight=0.9, relwidth=0.65)
         
-            listbox_variables = tk.Listbox(labelframe_list, height=20, width=25)
-            for var in self.problem_parameters.variables:
-                name_var = var.name
-                listbox_variables.insert(tk.END,name_var)
-                
-            listbox_variables.place(relx=0.02,rely=0.01)
+            # listbox_variables = tk.Listbox(labelframe_list, height=20, width=25)
+            # for var in self.problem_parameters.variables:
+            #     name_var = var.name
+            #     listbox_variables.insert(tk.END,name_var)
+            
+            # listbox_variables.place(relx=0.02,rely=0.01)
+            
+            self.variable_headers = ["Type", "Lower bound", "Upper bound"]
+            self.parameters_tree = ttk.Treeview(master=labelframe_list, columns=self.variable_headers, selectmode="extended")
+            
+            self.parameters_tree.heading("#0", text="Name")
+            self.parameters_tree.column("#0", minwidth=100, width=200, stretch=tk.NO)
+            
+            self.parameters_tree.heading( "Type", text="Type" )
+            self.parameters_tree.column( "Type", minwidth=100, width=200, stretch=tk.NO )
+            
+            self.parameters_tree.heading( "Lower bound", text="Lower bound" )
+            self.parameters_tree.column( "Lower bound", minwidth=100, width=200, stretch=tk.NO )
+            
+            self.parameters_tree.heading( "Upper bound", text="Upper bound" )
+            self.parameters_tree.column( "Upper bound", minwidth=100, width=200 )
+            
+            # for heading in self.variable_headers:
+            #     self.parameters_tree.heading(heading, text=heading)
+            
+            self.parameters_tree.place(relx=0.02, rely=0.17, relwidth=0.955, relheight=0.8)
         
-            seeall = ttk.Button(labelframe_list, text="See All", command=self.show_variables)
-            seeall.place(relx=0.65,rely=0.2)
+            
         
             delete = ttk.Button(labelframe_list, text="Delete", command=self.delete_variable)
-            delete.place(relx=0.65,rely=0.4)         
+            delete.place(relx=0.805, rely=0.025, relwidth=0.17, relheight=0.1 )         
         
             clearall = ttk.Button(labelframe_list, text="Clear All", command=self.clearall_variable)
-            clearall.place(relx=0.65,rely=0.6) 
+            clearall.place(relx=0.62, rely=0.025, relwidth=0.17, relheight=0.1 ) 
         
             # Labelframe Add Variables + Bounds
             labelframe_add = tk.LabelFrame(master=self, text="Add Design Variables")
-            labelframe_add.place(relx=0.5, rely=0.05, relheight=0.9, relwidth=0.4)
+            labelframe_add.place(relx=0.69, rely=0.05, relheight=0.9, relwidth=0.29)
         
             tk.Label(labelframe_add, text = "Name").place(relx=0.1,rely=0.15)
             add_entry = tk.Entry(labelframe_add)
