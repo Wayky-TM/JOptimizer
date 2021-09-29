@@ -107,26 +107,36 @@ class ProblemTab(ttk.Frame):
         
         class VariableParametersFrame(tk.Frame):
             
-            def __init__(self, master, *args, **kwargs):
+            def __init__(self, master, problem_parameters: ProblemParameters, , *args, **kwargs):
                 super(VariablesFrame.VariableParametersFrame, self).__init__(master=master, *args, **kwargs)
+                
+                self.problem_parameters = problem_parameters
                 
                 self.name_label = tk.Label( master=self, text="Name" )
                 self.name_label.place( relx=0.1, rely=0.1 )
                 self.name_entry = tk.Entry( master=self )
                 self.name_entry.place( relx=0.3, rely=0.1, relwidth=0.5 )
                 
-            @abstractmethod
-            def check_errors(self) -> bool:
-                pass
+            def check_name(self, error_list: List[str]):
                 
-            @abstractmethod
-            def generate_variable(self):
-                pass
+                if not self.name_entry.get():
+                    error_list.append()
+                
+                elif self.name_entry.get() in { var.keyword for var in self.problem_parameters.variables }:
+                    return -1
+            
+            
+            def _invalidate_entry_(self, entry):
+                entry.config({"background":"Red"})
+                
+                
+            def _reset_entry_(self, entry):
+                entry.config({"background":"White"})
             
         class NumericParametersFrame(VariableParametersFrame):
             
-            def __init__(self, master, *args, **kwargs):
-                super(VariablesFrame.NumericParametersFrame, self).__init__(master=master, *args, **kwargs)
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(VariablesFrame.NumericParametersFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
                 
                 self.lower_bound_label = tk.Label( master=self, text="Lower Bound" )
                 self.lower_bound_label.place( relx=0.1, rely=0.3 )
@@ -138,21 +148,135 @@ class ProblemTab(ttk.Frame):
                 self.upper_bound_entry = tk.Entry( master=self )
                 self.upper_bound_entry.place( relx=0.4, rely=0.5, relwidth=0.5 )
                 
-            def _invalidate_entry_(self, entry):
-                entry.config({"background":"Red"})
-                
-            def _reset_entry_(self, entry):
-                entry.config({"background":"White"})
-                
-        class FloatParametersFrame(VariableParametersFrame):
             
-            def __init__(self, master, *args, **kwargs):
-                super(VariablesFrame.FloatParametersFrame, self).__init__(master=master, *args, **kwargs)
-                
-                self.variable = variable_types.FloatVariable(keyword="", lower_bound, upper_bound)
             
-            def check_errors( self ):
+            def check_errors(self) -> bool:
+                
+                error_list = []
+                
+                self.check_name(error_list)
+                
+                if len(error_list)>0:
+                    self._invalidate_entry_(self.lower_bound_entry)
+                
+                if not self.is_type(self.lower_bound_entry.get()):
+                    error_list.append("Lower bound of unsuitable type")
+                    self._invalidate_entry_(self.lower_bound_entry)
+                    
+                if not self.is_type(self.upper_bound_entry.get()):
+                    error_list.append("Upper bound of unsuitable type")
+                    self._invalidate_entry_(self.upper_bound_entry)
+                
+                if len(error_list) == 0 and cast_type(self.lower_bound_entry.get()) >= cast_type(self.upper_bound_entry.get()):
+                    error_list.append("Lower bound must be smaller than Upper bound")
+                    self._invalidate_entry_(self.lower_bound_entry)
+                    
+                return error_list
+                
+            
+            @abstractmethod
+            def cast_type(self, value: str):
                 pass
+            
+            @abstractmethod
+            def generate_variable(self):
+                pass
+                
+            @abstractmethod
+            def is_type(self, string: str):
+                return
+            
+                
+        class FloatParametersFrame(NumericParametersFrame):
+            
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(VariablesFrame.FloatParametersFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+                
+            def is_type(self, string: str):
+                return is_float(string)
+            
+            def cast_type(self, value: str):
+                return float(value)
+            
+            def generate_variable(self):
+                
+                error_list = self.check_errors()
+                
+                if len(error_list)==0:
+                    self._reset_entry_(self.name_entry)
+                    self._reset_entry_(self.lower_bound_entry)
+                    self._reset_entry_(self.upper_bound_entry)
+                    return variable_types.FloatVariable(keyword=self.name_entry.get(), lower_bound=float(self.lower_bound_entry.get()), upper_bound=float(self.upper_bound_entry.get()))
+                
+                else:
+                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(error_list))
+                    return None
+                
+        class IntegerParametersFrame(NumericParametersFrame):
+            
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(VariablesFrame.IntegerParametersFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+            
+            def is_type(self, string: str):
+                return is_integer(string)
+            
+            def cast_type(self, value: str):
+                return int(value)
+            
+            def generate_variable(self):
+                
+                error_list = self.check_errors()
+                
+                if len(error_list)==0:
+                    self._reset_entry_(self.name_entry)
+                    self._reset_entry_(self.lower_bound_entry)
+                    self._reset_entry_(self.upper_bound_entry)
+                    return variable_types.IntegerVariable(keyword=self.name_entry.get(), lower_bound=int(self.lower_bound_entry.get()), upper_bound=int(self.upper_bound_entry.get()))
+                
+                else:
+                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(error_list))
+                    return None
+                
+                
+                
+        class DiscretizedParametersFrame(NumericParametersFrame):
+            
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(VariablesFrame.DiscretizedParametersFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+                
+                
+                
+            def is_type(self, string: str):
+                return is_float(string)
+            
+            
+            def cast_type(self, value: str):
+                return float(value)
+            
+            
+            def check_errors(self) -> bool:
+                
+                error_list = super(VariablesFrame.DiscretizedParametersFrame, self).check_errors()
+                
+                
+                    
+                return error_list
+            
+            
+            def generate_variable(self):
+                
+                error_list = self.check_errors()
+                
+                if len(error_list)==0:
+                    self._reset_entry_(self.name_entry)
+                    self._reset_entry_(self.lower_bound_entry)
+                    self._reset_entry_(self.upper_bound_entry)
+                    return variable_types.IntegerVariable(keyword=self.name_entry.get(), lower_bound=int(self.lower_bound_entry.get()), upper_bound=int(self.upper_bound_entry.get()))
+                
+                else:
+                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(error_list))
+                    return None
+                
         
         def add_variable(self):
             pass
@@ -220,24 +344,24 @@ class ProblemTab(ttk.Frame):
             labelframe_add = tk.LabelFrame(master=self, text="Add Design Variables")
             labelframe_add.place(relx=0.69, rely=0.05, relheight=0.9, relwidth=0.29)
         
-            tk.Label(labelframe_add, text = "Name").place(relx=0.1,rely=0.15)
-            add_entry = tk.Entry(labelframe_add)
-            add_entry.place(relx=0.5,rely=0.15)
+            # tk.Label(labelframe_add, text = "Name").place(relx=0.1,rely=0.15)
+            # add_entry = tk.Entry(labelframe_add)
+            # add_entry.place(relx=0.5,rely=0.15)
         
-            tk.Label(labelframe_add, text = "Type").place(relx=0.1,rely=0.02)
+            tk.Label(labelframe_add, text = "Type").place(relx=0.05,rely=0.05)
             optionList_Type = ["Real", "Integer", "Discretized real", "Binary", "Permutation"]
             optionType = tk.StringVar(labelframe_add)
             option_type = tk.OptionMenu(labelframe_add, optionType, *optionList_Type, command=self.updateType)
             option_type.config(width=5)
-            option_type.place(relx=0.23,rely=0.01)
+            option_type.place(relx=0.18,rely=0.04, relwidth=0.3)
         
-            tk.Label(labelframe_add, text = "Lower Bound").place(relx=0.1,rely=0.3)
-            lower_entry = tk.Entry(labelframe_add)
-            lower_entry.place(relx=0.5,rely=0.3)
+            # tk.Label(labelframe_add, text = "Lower Bound").place(relx=0.1,rely=0.3)
+            # lower_entry = tk.Entry(labelframe_add)
+            # lower_entry.place(relx=0.5,rely=0.3)
         
-            tk.Label(labelframe_add, text = "Higher Bound").place(relx=0.1,rely=0.4)
-            higher_entry = tk.Entry(labelframe_add)
-            higher_entry.place(relx=0.5,rely=0.4)  
+            # tk.Label(labelframe_add, text = "Higher Bound").place(relx=0.1,rely=0.4)
+            # higher_entry = tk.Entry(labelframe_add)
+            # higher_entry.place(relx=0.5,rely=0.4)  
         
             ps = tk.StringVar()
             ps.set("none")
