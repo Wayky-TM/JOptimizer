@@ -29,7 +29,7 @@ from typing import List
 import core.variable as variable_types
 from core.algorithm_parameters import AlgorithmParameters
 from core.problem_parameters import ProblemParameters
-from util.type_check import is_integer, is_float
+from util.type_check import is_integer, is_float, to_integer
 
 from interface.parameter import *
 from interface.console import Console
@@ -223,7 +223,7 @@ class ProblemTab(ttk.Frame):
                     return variable
                 
                 else:
-                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(error_list))
+                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(["-" + s for s in error_list]))
                     return None
                 
         class IntegerParametersFrame(NumericParametersFrame):
@@ -235,7 +235,7 @@ class ProblemTab(ttk.Frame):
                 return is_integer(string)
             
             def cast_type(self, value: str):
-                return int(value)
+                return to_integer(value)
             
             def generate_variable(self):
                 
@@ -246,7 +246,7 @@ class ProblemTab(ttk.Frame):
                     self._reset_entry_(self.lower_bound_entry)
                     self._reset_entry_(self.upper_bound_entry)
                     
-                    variable = variable_types.IntegerVariable(keyword=self.name_entry.get(), lower_bound=int(self.lower_bound_entry.get()), upper_bound=int(self.upper_bound_entry.get()))
+                    variable = variable_types.IntegerVariable(keyword=self.name_entry.get(), lower_bound=to_integer(self.lower_bound_entry.get()), upper_bound=to_integer(self.upper_bound_entry.get()))
                     
                     self.name_entry.delete(0, 'end')
                     self.lower_bound_entry.delete(0, 'end')
@@ -255,7 +255,7 @@ class ProblemTab(ttk.Frame):
                     return variable
                 
                 else:
-                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(error_list))
+                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(["-" + s for s in error_list]))
                     return None
                 
                 
@@ -309,7 +309,7 @@ class ProblemTab(ttk.Frame):
                     error_list.append( "Invalid step value" )
                     self._invalidate_entry_(self.step_entry)
                     
-                elif self.ps.get() == "points" and (not is_integer(self.points_entry.get()) or int(self.points_entry.get()) < 1):
+                elif self.ps.get() == "points" and (not is_integer(self.points_entry.get()) or to_integer(self.points_entry.get()) < 1):
                     error_list.append( "Invalid number of points" )
                     self._invalidate_entry_(self.step_entry)
                     
@@ -320,6 +320,9 @@ class ProblemTab(ttk.Frame):
                 
                 error_list = self.check_errors()
                 
+                if len(error_list)==0 and self.ps.get() == "step" and float(self.step_entry.get()) >= ( float(self.upper_bound_entry.get()) - float(self.lower_bound_entry.get()) ):
+                    error_list.append("Chosen step value exceeds the range of the variable")
+                    
                 if len(error_list)==0:
                     self._reset_entry_(self.name_entry)
                     self._reset_entry_(self.lower_bound_entry)
@@ -344,7 +347,7 @@ class ProblemTab(ttk.Frame):
                     return variable
                 
                 else:
-                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(error_list))
+                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(["-" + s for s in error_list]))
                     return None
                 
         class BinaryParametersFrame(VariableParametersFrame):
@@ -365,7 +368,7 @@ class ProblemTab(ttk.Frame):
                     return variable
                 
                 else:
-                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(error_list))
+                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(["-" + s for s in error_list]))
                     return None
                 
         class PermutationParametersFrame(VariableParametersFrame):
@@ -390,11 +393,14 @@ class ProblemTab(ttk.Frame):
                 string = string.rstrip("\t")
                 elements = string.split(",")
                 
-                if all( is_integer(e) for e in elements ) and len(elements)>1:
-                    elements_int = [ int(e) for e in elements ]
+                if len(elements)<2:
+                    error_list.append("At least two elements are needed")
+                    
+                elif not all( is_integer(e) for e in elements ):
+                    error_list.append("Non-integer values in permutation")
                     
                 else:
-                    error_list.append("Non-integer values in permutation")
+                    elements_int = [ to_integer(e) for e in elements ]
                     
                 
                 if len(error_list)==0:
@@ -404,12 +410,12 @@ class ProblemTab(ttk.Frame):
                     
                     variable = variable_types.PermutationVariable(keyword=self.name_entry.get(), elements=elements_int)
                     
-                    self.permutation_textbox.delete('1.0', END)
+                    self.permutation_textbox.delete('1.0', tk.END)
                     
                     return variable
                 
                 else:
-                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join(error_list))
+                    tk.messagebox.showerror(title="Error adding variable", message="The following errors where found:\n\n" + "\n".join( ["-" + s for s in error_list] ))
                     return None
         
         def add_variable(self):
@@ -432,10 +438,25 @@ class ProblemTab(ttk.Frame):
                 self.parameters_tree.insert('', 'end', text=var_name, values=(var_type, var_lower_bound, var_upper_bound))
         
         def delete_variable(self):
-            pass
+            
+            # selection = self.parameters_tree.selection()
+            
+            for iid in self.parameters_tree.selection():
+                var_name = self.parameters_tree.item(iid)['text']
+                self.parameters_tree.delete( iid )
+                
+                self.problem_parameters.variables = [ x for x in self.problem_parameters.variables if x.keyword!=var_name ]
+                
         
         def clearall_variable(self):
-            pass
+            
+            var_names = []
+            
+            for iid in self.parameters_tree.get_children():
+                var_names.append( self.parameters_tree.item(iid)['text'] )
+                self.parameters_tree.delete( iid )
+                
+            self.problem_parameters.variables = [ x for x in self.problem_parameters.variables if x.keyword not in var_names ]
         
         def show_variables(self):
             pass
@@ -491,9 +512,6 @@ class ProblemTab(ttk.Frame):
             option_type.config(width=5)
             option_type.place(relx=0.18,rely=0.04, relwidth=0.3)
         
-            # label_bounds_IntFloat = tk.Label(labelframe_add, text = "If not specified, bounds will be taken as \u00B1\u221E")
-            # label_bounds_Binary = tk.Label(labelframe_add, text = "As a binary type, variable will be 0 or 1")
-        
             add = ttk.Button(labelframe_add, text="Add", command=self.add_variable)
             add.place(relx=0.275, rely=0.9, relwidth=0.35)
             
@@ -538,7 +556,7 @@ class ProblemTab(ttk.Frame):
         if selection:
             index = selection[0]
             data = event.widget.get(index)
-            print(data)
+            # print(data)
             self.selected_frame.hide()
             self.selected_frame = self.frames[data]
             self.selected_frame.display()
