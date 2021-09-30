@@ -27,9 +27,11 @@ from collections import defaultdict
 from typing import List
 
 import core.variable as variable_types
+import core.constant as constant_types
 from core.algorithm_parameters import AlgorithmParameters
 from core.problem_parameters import ProblemParameters
 from util.type_check import is_integer, is_float, to_integer
+from util.string_utils import remove_whitespaces
 
 from interface.parameter import *
 from interface.console import Console
@@ -115,24 +117,31 @@ class ProblemTab(ttk.Frame):
                 self.name_label = tk.Label( master=self, text="Name" )
                 self.name_label.place( relx=0.1, rely=0.1 )
                 self.name_entry = tk.Entry( master=self )
-                self.name_entry.place( relx=0.3, rely=0.1, relwidth=0.5 )
+                self.name_entry.place( relx=0.26, rely=0.1, relwidth=0.5 )
                 
             def check_name(self, error_list: List[str]):
                 
                 if not self.name_entry.get():
                     error_list.append("Empty variable name")
+                    self._invalidate_entry_(self.name_entry)
                 
                 elif self.name_entry.get() in { var.keyword for var in self.problem_parameters.variables }:
                     error_list.append("A variable with name '%s' was already defined" % self.name_entry.get())
+                    self._invalidate_entry_(self.name_entry)
             
             
             def _invalidate_entry_(self, entry):
-                entry.config({"background":"Red"})
+                entry.config({"background":"#ffc7c8"})
                 
                 
             def _reset_entry_(self, entry):
                 entry.config({"background":"White"})
                 
+            def clear_errors(self):
+                self._reset_entry_(self.name_entry)
+                
+            def clear_entries(self):
+                self.name_entry.delete(0, 'end')
                 
             def show(self):
                 self.place( relx=0.05, rely=0.1, relwidth=0.9, relheight=0.8 )
@@ -156,6 +165,18 @@ class ProblemTab(ttk.Frame):
                 self.upper_bound_entry.place( relx=0.4, rely=0.4, relwidth=0.5 )
                 
             
+            def clear_errors(self):
+                super(ProblemTab.VariablesFrame.NumericParametersFrame, self).clear_errors()
+                
+                self._reset_entry_(self.lower_bound_entry)
+                self._reset_entry_(self.upper_bound_entry)
+                
+            def clear_entries(self):
+                super(ProblemTab.VariablesFrame.NumericParametersFrame, self).clear_entries()
+                
+                self.lower_bound_entry.delete(0, 'end')
+                self.upper_bound_entry.delete(0, 'end')
+            
             
             def check_errors(self) -> bool:
                 
@@ -163,8 +184,8 @@ class ProblemTab(ttk.Frame):
                 
                 self.check_name(error_list)
                 
-                if len(error_list)>0:
-                    self._invalidate_entry_(self.lower_bound_entry)
+                # if len(error_list)>0:
+                #     self._invalidate_entry_(self.lower_bound_entry)
                 
                 if not self.is_type(self.lower_bound_entry.get()):
                     error_list.append("Lower bound of unsuitable type")
@@ -207,18 +228,15 @@ class ProblemTab(ttk.Frame):
             
             def generate_variable(self):
                 
+                self.clear_errors()
+                
                 error_list = self.check_errors()
                 
                 if len(error_list)==0:
-                    self._reset_entry_(self.name_entry)
-                    self._reset_entry_(self.lower_bound_entry)
-                    self._reset_entry_(self.upper_bound_entry)
                     
                     variable = variable_types.FloatVariable(keyword=self.name_entry.get(), lower_bound=float(self.lower_bound_entry.get()), upper_bound=float(self.upper_bound_entry.get()))
                     
-                    self.name_entry.delete(0, 'end')
-                    self.lower_bound_entry.delete(0, 'end')
-                    self.upper_bound_entry.delete(0, 'end')
+                    self.clear_entries()
                     
                     return variable
                 
@@ -239,18 +257,15 @@ class ProblemTab(ttk.Frame):
             
             def generate_variable(self):
                 
+                self.clear_errors()
+                
                 error_list = self.check_errors()
                 
                 if len(error_list)==0:
-                    self._reset_entry_(self.name_entry)
-                    self._reset_entry_(self.lower_bound_entry)
-                    self._reset_entry_(self.upper_bound_entry)
                     
                     variable = variable_types.IntegerVariable(keyword=self.name_entry.get(), lower_bound=to_integer(self.lower_bound_entry.get()), upper_bound=to_integer(self.upper_bound_entry.get()))
                     
-                    self.name_entry.delete(0, 'end')
-                    self.lower_bound_entry.delete(0, 'end')
-                    self.upper_bound_entry.delete(0, 'end')
+                    self.clear_entries()
                     
                     return variable
                 
@@ -268,11 +283,13 @@ class ProblemTab(ttk.Frame):
                     self.step_entry.config(state=tk.NORMAL)
                     self.points_entry.delete(0, tk.END)
                     self.points_entry.config(state=tk.DISABLED)
+                    self._reset_entry_(self.points_entry)
                     
                 elif value=="points":
                     self.points_entry.config(state=tk.NORMAL)
                     self.step_entry.delete(0, tk.END)
                     self.step_entry.config(state=tk.DISABLED)
+                    self._reset_entry_(self.step_entry)
             
             def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
                 super(ProblemTab.VariablesFrame.DiscretizedParametersFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
@@ -297,6 +314,19 @@ class ProblemTab(ttk.Frame):
             def cast_type(self, value: str):
                 return float(value)
             
+            def clear_errors(self):
+                super(ProblemTab.VariablesFrame.DiscretizedParametersFrame, self).clear_errors()
+                
+                self._reset_entry_(self.step_entry)
+                self._reset_entry_(self.points_entry)
+                
+                
+            def clear_entries(self):
+                super(ProblemTab.VariablesFrame.DiscretizedParametersFrame, self).clear_entries()
+                
+                self.step_entry.delete(0, 'end')
+                self.points_entry.delete(0, 'end')
+            
             
             def check_errors(self) -> bool:
                 
@@ -311,24 +341,22 @@ class ProblemTab(ttk.Frame):
                     
                 elif self.ps.get() == "points" and (not is_integer(self.points_entry.get()) or to_integer(self.points_entry.get()) < 1):
                     error_list.append( "Invalid number of points" )
-                    self._invalidate_entry_(self.step_entry)
+                    self._invalidate_entry_(self.points_entry)
                     
                 return error_list
             
             
             def generate_variable(self):
                 
+                self.clear_errors()
+                
                 error_list = self.check_errors()
                 
                 if len(error_list)==0 and self.ps.get() == "step" and float(self.step_entry.get()) >= ( float(self.upper_bound_entry.get()) - float(self.lower_bound_entry.get()) ):
                     error_list.append("Chosen step value exceeds the range of the variable")
+                    self._invalidate_entry_(self.step_entry)
                     
                 if len(error_list)==0:
-                    self._reset_entry_(self.name_entry)
-                    self._reset_entry_(self.lower_bound_entry)
-                    self._reset_entry_(self.upper_bound_entry)
-                    self._reset_entry_(self.step_entry)
-                    self._reset_entry_(self.points_entry)
                     
                     if self.ps.get() == "step":
                         step = float(self.step_entry.get())
@@ -338,11 +366,7 @@ class ProblemTab(ttk.Frame):
                     
                     variable = variable_types.DiscretizedFloatVariable(keyword=self.name_entry.get(), lower_bound=float(self.lower_bound_entry.get()), upper_bound=float(self.upper_bound_entry.get()), step=step)
                     
-                    self.name_entry.delete(0, 'end')
-                    self.lower_bound_entry.delete(0, 'end')
-                    self.upper_bound_entry.delete(0, 'end')
-                    self.step_entry.delete(0, 'end')
-                    self.points_entry.delete(0, 'end')
+                    self.clear_entries()
                     
                     return variable
                 
@@ -354,16 +378,17 @@ class ProblemTab(ttk.Frame):
             
             def generate_variable(self):
                 
+                self.clear_errors()
+                
                 error_list = []
                 
                 self.check_name(error_list)
                 
                 if len(error_list)==0:
-                    self._reset_entry_(self.name_entry)
                     
                     variable = variable_types.BinaryVariable(keyword=self.name_entry.get())
                     
-                    self.name_entry.delete(0, 'end')
+                    self.clear_entries()
                     
                     return variable
                 
@@ -381,7 +406,14 @@ class ProblemTab(ttk.Frame):
                 self.permutation_textbox = tk.Text( master=self )
                 self.permutation_textbox.place( relx=0.1, rely=0.35, relwidth=0.8, relheight=0.55 )
             
+            def clear_entries(self):
+                super(ProblemTab.VariablesFrame.PermutationParametersFrame, self).clear_entries()
+                
+                self.permutation_textbox.delete('1.0', tk.END)
+            
             def generate_variable(self):
+                
+                self.clear_errors()
                 
                 error_list = []
                 
@@ -389,7 +421,8 @@ class ProblemTab(ttk.Frame):
                 
                 string = self.permutation_textbox.get("1.0", tk.END)
                 string = string.rstrip("\n")
-                string = string.rstrip(" ")
+                # string = string.rstrip(" ")
+                string = remove_whitespaces(string)
                 string = string.rstrip("\t")
                 elements = string.split(",")
                 
@@ -404,13 +437,10 @@ class ProblemTab(ttk.Frame):
                     
                 
                 if len(error_list)==0:
-                    self._reset_entry_(self.name_entry)
-                    
-                    self.name_entry.delete(0, 'end')
                     
                     variable = variable_types.PermutationVariable(keyword=self.name_entry.get(), elements=elements_int)
                     
-                    self.permutation_textbox.delete('1.0', tk.END)
+                    self.clear_entries()
                     
                     return variable
                 
@@ -439,8 +469,6 @@ class ProblemTab(ttk.Frame):
         
         def delete_variable(self):
             
-            # selection = self.parameters_tree.selection()
-            
             for iid in self.parameters_tree.selection():
                 var_name = self.parameters_tree.item(iid)['text']
                 self.parameters_tree.delete( iid )
@@ -458,16 +486,14 @@ class ProblemTab(ttk.Frame):
                 
             self.problem_parameters.variables = [ x for x in self.problem_parameters.variables if x.keyword not in var_names ]
         
-        def show_variables(self):
-            pass
         
         def updateType(self, new_value):
+            self.selected_variable_frame.clear_errors()
+            self.selected_variable_frame.clear_entries()
             self.selected_variable_frame.hide()
             self.selected_variable_frame = self.variable_frames[new_value]
             self.selected_variable_frame.show()
         
-        def radiobutton_StepPoints(self, value):
-            pass
         
         def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
             super(ProblemTab.VariablesFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
@@ -501,16 +527,16 @@ class ProblemTab(ttk.Frame):
             clearall = ttk.Button(labelframe_list, text="Clear All", command=self.clearall_variable)
             clearall.place(relx=0.62, rely=0.025, relwidth=0.17, relheight=0.1 ) 
         
-            labelframe_add = tk.LabelFrame(master=self, text="Add Design Variables")
+            labelframe_add = tk.LabelFrame(master=self, text="Add Variables")
             labelframe_add.place(relx=0.69, rely=0.05, relheight=0.9, relwidth=0.29)
         
-            tk.Label(labelframe_add, text = "Type").place(relx=0.05,rely=0.05)
+            tk.Label(labelframe_add, text = "Type").place(relx=0.1325,rely=0.05)
             optionList_Type = ["Real", "Integer", "Discretized real", "Binary", "Permutation"]
             optionType = tk.StringVar(labelframe_add)
             optionType.set("Real")
             option_type = tk.OptionMenu(labelframe_add, optionType, *optionList_Type, command=self.updateType)
             option_type.config(width=5)
-            option_type.place(relx=0.18,rely=0.04, relwidth=0.3)
+            option_type.place(relx=0.28,rely=0.04, relwidth=0.45)
         
             add = ttk.Button(labelframe_add, text="Add", command=self.add_variable)
             add.place(relx=0.275, rely=0.9, relwidth=0.35)
@@ -531,13 +557,372 @@ class ProblemTab(ttk.Frame):
             self.variable_frames["Real"].show()
             self.selected_variable_frame = self.variable_frames["Real"]
             
+         
             
     class ConstantsFrame(ProblemFrame):
+        
+        class ConstantsParametersFrame(tk.Frame):
+            
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(ProblemTab.ConstantsFrame.ConstantsParametersFrame, self).__init__(master=master, *args, **kwargs)
+                
+                self.problem_parameters = problem_parameters
+                
+                self.name_label = tk.Label( master=self, text="Name" )
+                self.name_label.place( relx=0.1, rely=0.1 )
+                self.name_entry = tk.Entry( master=self )
+                self.name_entry.place( relx=0.26, rely=0.1, relwidth=0.5 )
+                
+            def check_name(self, error_list: List[str]):
+                
+                if not self.name_entry.get():
+                    error_list.append("Empty constant name")
+                    self._invalidate_entry_(self.name_entry)
+                
+                elif self.name_entry.get() in { const.keyword for const in self.problem_parameters.constants }:
+                    error_list.append("A constant with name '%s' was already defined" % self.name_entry.get())
+                    self._invalidate_entry_(self.name_entry)
+            
+            def check_errors(self):
+                
+                error_list = []
+                
+                self.check_name(error_list)
+                
+                return error_list
+            
+            def _invalidate_entry_(self, entry):
+                entry.config({"background":"#ffc7c8"})
+                
+            def _reset_entry_(self, entry):
+                entry.config({"background":"White"})
+                
+            def clear_errors(self):
+                self._reset_entry_(self.name_entry)
+                
+            def clear_entries(self):
+                self.name_entry.delete(0, 'end')
+                
+            def show(self):
+                self.place( relx=0.05, rely=0.1, relwidth=0.9, relheight=0.8 )
+            
+            def hide(self):
+                self.place_forget()
+                
+        class NumericConstantFrame(ConstantsParametersFrame):
+            
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(ProblemTab.ConstantsFrame.NumericConstantFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+                    
+                self.value_label = tk.Label( master=self, text="Value" )
+                self.value_label.place( relx=0.1, rely=0.2 )
+                self.value_entry = tk.Entry( master=self )
+                self.value_entry.place( relx=0.26, rely=0.2, relwidth=0.5 )
+               
+            @abstractmethod
+            def is_type(self, string: str):
+                pass
+            
+            @abstractmethod
+            def cast_type(self, value: str):
+                pass
+              
+            def clear_errors(self):
+                super(ProblemTab.ConstantsFrame.NumericConstantFrame, self).clear_errors()
+                
+                self._reset_entry_(self.value_entry)
+                
+            def clear_entries(self):
+                super(ProblemTab.ConstantsFrame.NumericConstantFrame, self).clear_entries()
+                
+                self.value_entry.delete(0, 'end')  
+              
+            def check_errors(self):
+                
+                error_list = super(ProblemTab.ConstantsFrame.NumericConstantFrame, self).check_errors()
+                
+                if not self.is_type(self.value_entry.get()):
+                    error_list.append("Value of unsuitable type")
+                    self._invalidate_entry_(self.value_entry)
+                    
+                return error_list
+                
+        class FloatConstantFrame(ConstantsParametersFrame):
+        
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(ProblemTab.ConstantsFrame.FloatConstantFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+                
+            def is_type(self, string: str):
+                return is_float(string)
+            
+            def cast_type(self, value: str):
+                return float(value)
+            
+            def generate_constant(self):
+                
+                self.clear_errors()
+                
+                error_list = self.check_errors()
+                
+                if len(error_list)==0:
+                    
+                    variable = constant_types.FloatConstant(keyword=self.name_entry.get(), value=self.cast_type(self.value_entry.get()))
+                    
+                    self.clear_entries()
+                    
+                    return variable
+                
+                else:
+                    tk.messagebox.showerror(title="Error adding constant", message="The following errors where found:\n\n" + "\n".join(["-" + s for s in error_list]))
+                    return None
+        
+        
+        class IntegerConstantFrame(ConstantsParametersFrame):
+        
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(ProblemTab.ConstantsFrame.IntegerConstantFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+        
+            def is_type(self, string: str):
+                return is_integer(string)
+            
+            def cast_type(self, value: str):
+                return to_integer(value)
+            
+            def generate_constant(self):
+                
+                self.clear_errors()
+                
+                error_list = self.check_errors()
+                
+                if len(error_list)==0:
+                    
+                    variable = constant_types.IntegerConstant(keyword=self.name_entry.get(), value=self.cast_type(self.value_entry.get()))
+                    
+                    self.clear_entries()
+                    
+                    return variable
+                
+                else:
+                    tk.messagebox.showerror(title="Error adding constant", message="The following errors where found:\n\n" + "\n".join(["-" + s for s in error_list]))
+                    return None
+             
+                
+        class BinaryConstantFrame(ConstantsParametersFrame):
+        
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(ProblemTab.ConstantsFrame.BinaryConstantFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+        
+                self.value_label = tk.Label(master=self, text = "Value")
+                options = ["True", "False"]
+                self.value_option = tk.StringVar(master=self)
+                self.value_option.set("True")
+                self.option_menu = tk.OptionMenu(master=self, variable=self.value_option, value=self.value_option.get(), *options)
+                
+                self.value_label.place( relx=0.1, rely=0.2 )
+                self.option_menu.place( relx=0.26, rely=0.2, relwidth=0.5 )
+            
+            def cast_type(self, value: str):
+                
+                if value=="True":
+                    return True
+                
+                return False
+            
+            def generate_constant(self):
+                
+                self.clear_errors()
+                
+                error_list = self.check_errors()
+                
+                if len(error_list)==0:
+                    
+                    variable = constant_types.BinaryConstant(keyword=self.name_entry.get(), value=self.cast_type(self.value_option.get()))
+                    
+                    self.clear_entries()
+                    
+                    return variable
+                
+                else:
+                    tk.messagebox.showerror(title="Error adding constant", message="The following errors where found:\n\n" + "\n".join(["-" + s for s in error_list]))
+                    return None
+        
+        
+        class PermutationConstantFrame(ConstantsParametersFrame):
+            
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(ProblemTab.ConstantsFrame.PermutationConstantFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+                
+                self.permutation_label = tk.Label( master=self, text="Insert elements (comma separated):")
+                self.permutation_label.place( relx=0.1, rely=0.3 )
+                self.permutation_textbox = tk.Text( master=self )
+                self.permutation_textbox.place( relx=0.1, rely=0.35, relwidth=0.8, relheight=0.55 )
+            
+            def clear_entries(self):
+                super(ProblemTab.VariablesFrame.PermutationParametersFrame, self).clear_entries()
+                
+                self.permutation_textbox.delete('1.0', tk.END)
+            
+            def check_errors(self):
+                
+                error_list = super(ProblemTab.ConstantsFrame.NumericConstantFrame, self).check_errors()
+                
+                string = self.permutation_textbox.get("1.0", tk.END)
+                string = string.rstrip("\n")
+                string = remove_whitespaces(string)
+                string = string.rstrip("\t")
+                self.elements = string.split(",")
+                
+                if len(elements)<2:
+                    error_list.append("At least two elements are needed")
+                    
+                elif not all( is_integer(e) for e in elements ):
+                    error_list.append("Non-integer values in permutation")
+                
+            
+            def generate_constant(self):
+                
+                self.clear_errors()
+                
+                error_list = self.check_errors()
+                
+                if len(error_list)==0:
+                    elements_int = [ to_integer(e) for e in self.elements ]
+                    variable = constant_types.PermutationConstant(keyword=self.name_entry.get(), value=elements_int)
+                    
+                    self.clear_entries()
+                    
+                    return variable
+                
+                else:
+                    tk.messagebox.showerror(title="Error adding constant", message="The following errors where found:\n\n" + "\n".join( ["-" + s for s in error_list] ))
+                    return None
+                
+            
+        class StringConstantFrame(ConstantsParametersFrame):
+    
+            def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
+                super(ProblemTab.ConstantsFrame.StringConstantFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+        
+                self.string_label = tk.Label( master=self, text="Insert string:")
+                self.string_label.place( relx=0.1, rely=0.3 )
+                self.string_textbox = tk.Text( master=self )
+                self.string_textbox.place( relx=0.1, rely=0.35, relwidth=0.8, relheight=0.55 )
+            
+            def generate_constant(self):
+                
+                self.clear_errors()
+                
+                error_list = self.check_errors()
+                
+                if len(error_list)==0:
+                    
+                    variable = constant_types.BinaryConstant(keyword=self.name_entry.get(), value=self.string_textbox.get("1.0", tk.END))
+                    
+                    self.clear_entries()
+                    
+                    return variable
+                
+                else:
+                    tk.messagebox.showerror(title="Error adding constant", message="The following errors where found:\n\n" + "\n".join(["-" + s for s in error_list]))
+                    return None
+        
+        
+        def add_constant(self):
+            constant = self.selected_constant_frame.generate_constant()
+            
+            if constant != None:
+                
+                const_name = constant.keyword
+                const_type = self.type_dict[type(constant)]
+                    
+                const_value = str(variable.value)
+            
+                self.problem_parameters.constants.append( constant )
+                self.parameters_tree.insert('', 'end', text=const_name, values=(const_type, const_value))
+        
+        def delete_constant(self):
+            
+            for iid in self.constants_tree.selection():
+                const_name = self.constants_tree.item(iid)['text']
+                self.constants_tree.delete( iid )
+                
+                self.problem_parameters.constants = [ x for x in self.problem_parameters.constants if x.keyword!=const_name ]
+                
+        
+        def clearall_constants(self):
+            
+            const_names = []
+            
+            for iid in self.constants_tree.get_children():
+                const_names.append( self.constants_tree.item(iid)['text'] )
+                self.constants_tree.delete( iid )
+                
+            self.problem_parameters.constants = [ x for x in self.problem_parameters.constants if x.keyword not in const_names ]
+        
+        def update_type(self):
+            self.selected_constant_frame.clear_errors()
+            self.selected_constant_frame.clear_entries()
+            self.selected_constant_frame.hide()
+            self.selected_constant_frame = self.constant_frames[new_value]
+            self.selected_constant_frame.show()
         
         def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
             super(ProblemTab.ConstantsFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
             
-            tk.Label( master=self, text="#Constants").place( relx=0.5, rely=0.5 )
+            labelframe_list = tk.LabelFrame(master=self, text="Constants List")
+            labelframe_list.place(relx=0.02, rely=0.05, relheight=0.9, relwidth=0.65)
+            
+            self.variable_headers = ["Type", "Value"]
+            self.constants_tree = ttk.Treeview(master=labelframe_list, columns=self.variable_headers, selectmode="extended")
+            
+            self.constants_tree.heading("#0", text="Name")
+            self.constants_tree.column("#0", minwidth=100, width=200, stretch=tk.NO)
+            
+            self.constants_tree.heading( "Type", text="Type" )
+            self.constants_tree.column( "Type", minwidth=100, width=200, stretch=tk.NO )
+            
+            self.constants_tree.heading( "Value", text="Value" )
+            self.constants_tree.column( "Value", minwidth=100, width=200, stretch=tk.NO )
+            
+            self.constants_tree.place(relx=0.02, rely=0.17, relwidth=0.955, relheight=0.8)
+        
+            
+        
+            delete = ttk.Button(labelframe_list, text="Delete", command=self.delete_constant)
+            delete.place(relx=0.805, rely=0.025, relwidth=0.17, relheight=0.1 )         
+        
+            clearall = ttk.Button(labelframe_list, text="Clear All", command=self.clearall_constants)
+            clearall.place(relx=0.62, rely=0.025, relwidth=0.17, relheight=0.1 ) 
+        
+            labelframe_add = tk.LabelFrame(master=self, text="Add Variables")
+            labelframe_add.place(relx=0.69, rely=0.05, relheight=0.9, relwidth=0.29)
+        
+            tk.Label(labelframe_add, text = "Type").place(relx=0.1325,rely=0.05)
+            optionList_Type = ["Real", "Integer", "Binary", "Permutation", "String"]
+            optionType = tk.StringVar(labelframe_add)
+            optionType.set("Real")
+            option_type = tk.OptionMenu(labelframe_add, optionType, *optionList_Type, command=self.update_type)
+            option_type.config(width=5)
+            option_type.place(relx=0.28,rely=0.04, relwidth=0.45)
+        
+            add = ttk.Button(labelframe_add, text="Add", command=self.add_constant)
+            add.place(relx=0.275, rely=0.9, relwidth=0.35)
+            
+            self.type_dict = { constant_types.FloatConstant:"Real",
+                          constant_types.IntegerConstant:"Integer",
+                          constant_types.BinaryConstant:"Binary",
+                          constant_types.PermutationConstant:"Permutation",
+                          constant_types.StringConstant:"String" }
+            
+            self.constant_frames = {}
+            self.constant_frames["Real"] = ProblemTab.ConstantsFrame.FloatConstantFrame(master=labelframe_add, problem_parameters=self.problem_parameters)
+            self.constant_frames["Integer"] = ProblemTab.ConstantsFrame.IntegerConstantFrame(master=labelframe_add, problem_parameters=self.problem_parameters)
+            self.constant_frames["Binary"] = ProblemTab.ConstantsFrame.BinaryConstantFrame(master=labelframe_add, problem_parameters=self.problem_parameters)
+            self.constant_frames["Permutation"] = ProblemTab.ConstantsFrame.PermutationConstantFrame(master=labelframe_add, problem_parameters=self.problem_parameters)
+            self.constant_frames["String"] = ProblemTab.ConstantsFrame.StringConstantFrame(master=labelframe_add, problem_parameters=self.problem_parameters)
+            
+            self.constant_frames["Real"].show()
+            self.selected_constant_frame = self.constant_frames["Real"]
             
             
     class ConstraintsFrame(ProblemFrame):

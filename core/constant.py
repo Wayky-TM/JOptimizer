@@ -12,6 +12,7 @@ import math
 from enum import Enum
 from abc import *
 
+from typing import List
 
 
 class FloatConstant:
@@ -48,6 +49,31 @@ class BinaryConstant:
         
         self.name = name
         self.keyword = keyword
-        self.value = value    
+        self.value = value
     
+
+class PermutationConstant:
+    
+    def __init__( self,
+                  keyword: str,
+                  value: List[int],
+                  name: str = ""):
+        
+        self.name = name
+        self.keyword = keyword
+        self.value = copy.deepcopy(value)
+        
+        
+class StringConstant:
+    
+    def __init__( self,
+                  keyword: str,
+                  value: str,
+                  name: str = ""):
+        
+        self.name = name
+        self.keyword = keyword
+        self.value = value
+        
+        
     
