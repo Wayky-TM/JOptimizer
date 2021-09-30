@@ -538,8 +538,8 @@ class ProblemTab(ttk.Frame):
             option_type.config(width=5)
             option_type.place(relx=0.28,rely=0.04, relwidth=0.45)
         
-            add = ttk.Button(labelframe_add, text="Add", command=self.add_variable)
-            add.place(relx=0.275, rely=0.9, relwidth=0.35)
+            self.add_button = ttk.Button(labelframe_add, text="Add", command=self.add_variable)
+            self.add_button.place(relx=0.325, rely=0.86, relwidth=0.35, relheight=0.1)
             
             self.type_dict = { variable_types.FloatVariable:"Real",
                           variable_types.IntegerVariable:"Integer",
@@ -556,6 +556,8 @@ class ProblemTab(ttk.Frame):
             
             self.variable_frames["Real"].show()
             self.selected_variable_frame = self.variable_frames["Real"]
+            
+            self.add_button.lift()
             
          
             
@@ -647,7 +649,7 @@ class ProblemTab(ttk.Frame):
                     
                 return error_list
                 
-        class FloatConstantFrame(ConstantsParametersFrame):
+        class FloatConstantFrame(NumericConstantFrame):
         
             def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
                 super(ProblemTab.ConstantsFrame.FloatConstantFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
@@ -677,7 +679,7 @@ class ProblemTab(ttk.Frame):
                     return None
         
         
-        class IntegerConstantFrame(ConstantsParametersFrame):
+        class IntegerConstantFrame(NumericConstantFrame):
         
             def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
                 super(ProblemTab.ConstantsFrame.IntegerConstantFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
@@ -716,7 +718,7 @@ class ProblemTab(ttk.Frame):
                 options = ["True", "False"]
                 self.value_option = tk.StringVar(master=self)
                 self.value_option.set("True")
-                self.option_menu = tk.OptionMenu(master=self, variable=self.value_option, value=self.value_option.get(), *options)
+                self.option_menu = tk.OptionMenu(self, self.value_option, *options)
                 
                 self.value_label.place( relx=0.1, rely=0.2 )
                 self.option_menu.place( relx=0.26, rely=0.2, relwidth=0.5 )
@@ -758,13 +760,13 @@ class ProblemTab(ttk.Frame):
                 self.permutation_textbox.place( relx=0.1, rely=0.35, relwidth=0.8, relheight=0.55 )
             
             def clear_entries(self):
-                super(ProblemTab.VariablesFrame.PermutationParametersFrame, self).clear_entries()
+                super(ProblemTab.ConstantsFrame.PermutationConstantFrame, self).clear_entries()
                 
                 self.permutation_textbox.delete('1.0', tk.END)
             
             def check_errors(self):
                 
-                error_list = super(ProblemTab.ConstantsFrame.NumericConstantFrame, self).check_errors()
+                error_list = super(ProblemTab.ConstantsFrame.PermutationConstantFrame, self).check_errors()
                 
                 string = self.permutation_textbox.get("1.0", tk.END)
                 string = string.rstrip("\n")
@@ -772,11 +774,13 @@ class ProblemTab(ttk.Frame):
                 string = string.rstrip("\t")
                 self.elements = string.split(",")
                 
-                if len(elements)<2:
+                if len(self.elements)<2:
                     error_list.append("At least two elements are needed")
                     
-                elif not all( is_integer(e) for e in elements ):
+                elif not all( is_integer(e) for e in self.elements ):
                     error_list.append("Non-integer values in permutation")
+                    
+                return error_list
                 
             
             def generate_constant(self):
@@ -808,6 +812,11 @@ class ProblemTab(ttk.Frame):
                 self.string_textbox = tk.Text( master=self )
                 self.string_textbox.place( relx=0.1, rely=0.35, relwidth=0.8, relheight=0.55 )
             
+            def clear_entries(self):
+                super(ProblemTab.ConstantsFrame.StringConstantFrame, self).clear_entries()
+                
+                self.string_textbox.delete('1.0', tk.END)
+            
             def generate_constant(self):
                 
                 self.clear_errors()
@@ -816,7 +825,7 @@ class ProblemTab(ttk.Frame):
                 
                 if len(error_list)==0:
                     
-                    variable = constant_types.BinaryConstant(keyword=self.name_entry.get(), value=self.string_textbox.get("1.0", tk.END))
+                    variable = constant_types.StringConstant(keyword=self.name_entry.get(), value=self.string_textbox.get("1.0", tk.END))
                     
                     self.clear_entries()
                     
@@ -835,10 +844,10 @@ class ProblemTab(ttk.Frame):
                 const_name = constant.keyword
                 const_type = self.type_dict[type(constant)]
                     
-                const_value = str(variable.value)
+                const_value = str(constant.value)
             
                 self.problem_parameters.constants.append( constant )
-                self.parameters_tree.insert('', 'end', text=const_name, values=(const_type, const_value))
+                self.constants_tree.insert('', 'end', text=const_name, values=(const_type, const_value))
         
         def delete_constant(self):
             
@@ -859,7 +868,7 @@ class ProblemTab(ttk.Frame):
                 
             self.problem_parameters.constants = [ x for x in self.problem_parameters.constants if x.keyword not in const_names ]
         
-        def update_type(self):
+        def update_type(self, new_value):
             self.selected_constant_frame.clear_errors()
             self.selected_constant_frame.clear_entries()
             self.selected_constant_frame.hide()
@@ -894,7 +903,7 @@ class ProblemTab(ttk.Frame):
             clearall = ttk.Button(labelframe_list, text="Clear All", command=self.clearall_constants)
             clearall.place(relx=0.62, rely=0.025, relwidth=0.17, relheight=0.1 ) 
         
-            labelframe_add = tk.LabelFrame(master=self, text="Add Variables")
+            labelframe_add = tk.LabelFrame(master=self, text="Add Constants")
             labelframe_add.place(relx=0.69, rely=0.05, relheight=0.9, relwidth=0.29)
         
             tk.Label(labelframe_add, text = "Type").place(relx=0.1325,rely=0.05)
@@ -905,8 +914,8 @@ class ProblemTab(ttk.Frame):
             option_type.config(width=5)
             option_type.place(relx=0.28,rely=0.04, relwidth=0.45)
         
-            add = ttk.Button(labelframe_add, text="Add", command=self.add_constant)
-            add.place(relx=0.275, rely=0.9, relwidth=0.35)
+            self.add_button = ttk.Button(labelframe_add, text="Add", command=self.add_constant)
+            self.add_button.place(relx=0.325, rely=0.86, relwidth=0.35, relheight=0.1)
             
             self.type_dict = { constant_types.FloatConstant:"Real",
                           constant_types.IntegerConstant:"Integer",
@@ -923,6 +932,8 @@ class ProblemTab(ttk.Frame):
             
             self.constant_frames["Real"].show()
             self.selected_constant_frame = self.constant_frames["Real"]
+            
+            self.add_button.lift()
             
             
     class ConstraintsFrame(ProblemFrame):
