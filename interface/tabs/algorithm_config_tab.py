@@ -87,7 +87,7 @@ class AlgorithmTab(ttk.Frame):
  
     class SelectionFrame(AlgorithmFrame):
     
-        class SelectionParametersPane(ParameterFrame):
+        class SelectionParametersPane(ParameterLabelFrame):
             
             def __init__(self, master, algorithm_parameters, *args, **kwargs):
                 super(AlgorithmTab.SelectionFrame.SelectionParametersPane,self).__init__(master=master, *args, **kwargs)
@@ -95,7 +95,7 @@ class AlgorithmTab(ttk.Frame):
                 self.algorithm_parameters = algorithm_parameters
                 
             def display(self):
-                self.place( relx=0.18, rely=0.145, relwidth=0.81, relheight=0.615 )
+                self.place( relx=0.05, rely=0.16, relwidth=0.9, relheight=0.79 )
                     
                 
         class NaryParametersPane(SelectionParametersPane):
@@ -107,7 +107,7 @@ class AlgorithmTab(ttk.Frame):
                 
                 self.n_solutions_entry = tk.Entry(master=self, state=tk.NORMAL)
                 self.n_solutions_entry.insert(0, self.algorithm_parameters.selection_parameters["number_of_solutions_to_be_returned"])
-                self.n_solutions_entry.place(relx=0.12, rely=0.05+0.005, relwidth=0.3)
+                self.n_solutions_entry.place(relx=0.185, rely=0.05+0.005, relwidth=0.06)
                 self.n_solutions_entry.config(state=tk.NORMAL)
                 
                 self.n_solutions_parameter = Integer(name="number_of_solutions_to_be_returned", fancy_name="Number of solutions to select", lower_bound=1, upper_bound=10000)
@@ -122,7 +122,18 @@ class AlgorithmTab(ttk.Frame):
             def __init__(self, master, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
                 super(AlgorithmTab.SelectionFrame.RankingAndCrowdingParametersPane,self).__init__(master=master, algorithm_parameters=algorithm_parameters, *args, **kwargs)
     
+                tk.Label( master=self, text="Max. population size").place( relx=0.02, rely=0.05 )
                 
+                self.max_population_entry = tk.Entry(master=self, state=tk.NORMAL)
+                self.max_population_entry.insert(0, self.algorithm_parameters.selection_parameters["max_population_size"])
+                self.max_population_entry.place(relx=0.15, rely=0.05+0.005, relwidth=0.06)
+                self.max_population_entry.config(state=tk.NORMAL)
+                
+                self.max_population_parameter = Integer(name="max_population_size", fancy_name="Max. population size", lower_bound=1, upper_bound=1000)
+                
+                self.parameters_bindings.append( ParameterBinding(parameter=self.max_population_parameter,
+                                                                  widget_read_lambda=lambda: self.max_population_entry.get(),
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.selection_parameters.update({"max_population_size":var})) )        
     
         def update_operator(self, new_value):
             # self.frames[self.selected_frame_key].clear_errors()
@@ -134,7 +145,7 @@ class AlgorithmTab(ttk.Frame):
         def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
             super(AlgorithmTab.SelectionFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
             
-            paceholder_frame = AlgorithmTab.SelectionFrame.SelectionParametersPane( master=self, algorithm_parameters=self.algorithm_parameters )
+            paceholder_frame = AlgorithmTab.SelectionFrame.SelectionParametersPane( master=self, algorithm_parameters=self.algorithm_parameters, borderwidth=0, highlightthickness=0 )
             
             self.selection_options = ["Roulette",
                                       "Binary tournament",
@@ -149,11 +160,11 @@ class AlgorithmTab(ttk.Frame):
             self.frames["Roulette"] = paceholder_frame
             self.frames["Binary tournament"] = paceholder_frame
             self.frames["Best solution"] = paceholder_frame
-            self.frames["n-ary random"] = AlgorithmTab.SelectionFrame.NaryParametersPane(master=self, algorithm_parameters=self.algorithm_parameters)
+            self.frames["n-ary random"] = AlgorithmTab.SelectionFrame.NaryParametersPane(master=self, algorithm_parameters=self.algorithm_parameters, text="Parameters")
             self.frames["Differential evolution"] = paceholder_frame
             self.frames["Random selection"] = paceholder_frame
             self.frames["Roulette"] = paceholder_frame
-            self.frames["Ranking and crowding"] = AlgorithmTab.SelectionFrame.RankingAndCrowdingParametersPane(master=self, algorithm_parameters=self.algorithm_parameters)
+            self.frames["Ranking and crowding"] = AlgorithmTab.SelectionFrame.RankingAndCrowdingParametersPane(master=self, algorithm_parameters=self.algorithm_parameters, text="Parameters")
             
             
             tk.Label( master=self, text="Selection operator").place( relx=0.02, rely=0.05 )
@@ -163,9 +174,9 @@ class AlgorithmTab(ttk.Frame):
             self.selected_frame_key = self.selection_options[0]
             self.frames[self.selected_frame_key].display()
             selection_option = tk.OptionMenu(self, self.SelectionOption, *self.selection_options, command=self.update_operator)
-            selection_option.config( font=('URW Gothic L','11') )
+            # selection_option.config( font=('URW Gothic L','11') )
             selection_option.config( state=tk.NORMAL )
-            selection_option.place( relx=0.08, rely=0.045, relwidth=0.105 )
+            selection_option.place( relx=0.11, rely=0.045, relwidth=0.15 )
             
             self.selection_option_parameter = Parameter(name="selection_operator", fancy_name="Selection operator")
             
@@ -184,6 +195,36 @@ class AlgorithmTab(ttk.Frame):
             
             super(AlgorithmTab.SelectionFrame, self).save_parameters()
             self.frames[self.selected_frame_key].save_parameters()
+            
+            
+    class ByTypeFrame(ParameterLabelFrame):
+            
+        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+            super(AlgorithmTab.CrossoverFrame.ByTypeFrame,self).__init__(master=master, *args, **kwargs)
+            
+            self.algorithm_parameters = algorithm_parameters
+            self.problem_parameters = problem_parameters
+            
+        @abstractmethod
+        def disable(self):
+        
+        @abstractmethod
+        def enable(self):
+            pass
+            
+    class CrossoverFrame(AlgorithmFrame):
+                
+        class FloatCrossoverFrame(ByTypeFrame):
+            
+            def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+                super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame,self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+                
+                
+        
+        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+            super(AlgorithmTab.CrossoverFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+            
+            
     
     def update_algorithm_selection(self, new_selection):
         
