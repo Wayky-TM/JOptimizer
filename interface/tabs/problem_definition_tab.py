@@ -48,10 +48,14 @@ class ProblemTab(ttk.Frame):
             self.problem_parameters = problem_parameters
             self.parameters_bindings = []
             
-        def error_check(self, error_list: List[str]):
+        def check_errors(self):
+            
+            error_list = []
             
             for binding in self.parameters_bindings:
-                binding.error_check(error_list)
+                error_list.extend(binding.error_check())
+                
+            return error_list
                 
         def save_parameters(self):
             
@@ -86,7 +90,7 @@ class ProblemTab(ttk.Frame):
             self.OperatorFilePath.config(state=tk.DISABLED)
             self.button_browse_operator = tk.Button( master=self,  text="Browse", command=lambda: self._browse() ).place(relx=0.43, rely=0.05, relwidth=0.06)
             
-            evaluator_path_parameter = FilePath( fancy_name="Evaluator script path" )
+            self.evaluator_path_parameter = FilePath( fancy_name="Evaluator script path" )
             
             self.parameters_bindings.append( ParameterBinding(parameter=evaluator_path_parameter,
                                                               widget_read_lambda=lambda: self.evaluator_class_entry.get(),
@@ -104,8 +108,17 @@ class ProblemTab(ttk.Frame):
                                                               widget_read_lambda=lambda: self.evaluator_class_entry.get(),
                                                               variable_store_lambda=lambda var: self.problem_parameters.options.update({"evaluator_class":var})) )
             
+            
         
     class VariablesFrame(ProblemFrame):
+        
+        def check_errors(self):
+            error_list = super(ProblemTab.VariablesFrame, self).check_errors()
+            
+            if len(self.problem_parameters.variables) == 0:
+                error_list.append("No optimization variable was specified")
+            
+            return error_list
         
         class VariableParametersFrame(tk.Frame):
             
@@ -979,12 +992,14 @@ class ProblemTab(ttk.Frame):
         self.frames["Constants"] = ProblemTab.ConstantsFrame( master=self, problem_parameters=self.problem_parameters )
         self.frames["Constraints"] = ProblemTab.ConstraintsFrame( master=self, problem_parameters=self.problem_parameters )
         
-        self.selected_frame = self.frames["Evaluator"]
-        self.selected_frame.display()
-        
         self.generic_problem_items = [ "Evaluator", "Variables", "Constants", "Contraints" ]
         self.matlab_problem_items = [ "Script", "Variables", "Constants", "Contraints" ]
         self.CST_problem_items = [ "CST", "Variables", "Constants", "Contraints" ]
+        
+        self.selected_problem_items = self.generic_problem_items
+        
+        self.selected_frame = self.frames["Evaluator"]
+        self.selected_frame.display()
         
         self.parameters_listbox = tk.Listbox( master=self)
         self.parameters_listbox.config( font=('URW Gothic L','11','bold') )
@@ -1006,10 +1021,16 @@ class ProblemTab(ttk.Frame):
         self.console.print_warning("Advertencia\n")
         self.console.print_error("Error\n")
         
-        # self.prueba = ProblemTab.ProblemFrame(master=self, problem_parameters=self.problem_parameters)
-        # self.prueba.display()
         
     def check_errors(self):
-        pass
+        
+        error_list = []
+        
+        for key in self.selected_problem_items:
+            #TODO: check if specified evaluator class name is correct
+            error_list.extend( self.frames[key].check_errors() )
+            
+        
+        return error_list
         
         

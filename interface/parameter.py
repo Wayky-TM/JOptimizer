@@ -53,7 +53,7 @@ class Parameter:
         pass
 
     @abstractmethod
-    def error_check( self, error_list: List[Error] ):
+    def error_check( self ):
         pass
 
 class Float(Parameter):
@@ -74,13 +74,14 @@ class Float(Parameter):
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         
-    def error_check( self, error_list: List[Parameter.Error] ):
+    def error_check( self ):
+        
+        error_list = []
         
         if type(self.value)!=str or not TC.is_float(self.value) or self.value < self.lower_bound or self.value > self.upper_bound:
-            error_list.append( ParameterError( self, "Parameter '%s' must be a real value within [%d,%d]" % (self.fancy_name, self.lower_bound, self.upper_bound) ) )
-            return True
+            error_list.append( "Parameter '%s' must be a real value within [%d,%d]" % (self.fancy_name, self.lower_bound, self.upper_bound) )
             
-        return False
+        return error_list
     
     def get_value( self ):
         return float(self.value)
@@ -105,13 +106,14 @@ class Integer(Parameter):
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         
-    def error_check( self, error_list: List[Parameter.Error] ):
+    def error_check( self ):
+        
+        error_list = []
         
         if type(self.value)!=str or not TC.is_integer(self.value) or self.value < self.lower_bound or self.value > self.upper_bound:
-            error_list.append( ParameterError( self, "Parameter '%s' must be an integer value within [%d,%d]" % (self.fancy_name, self.lower_bound, self.upper_bound) ) )
-            return True
+            error_list.append( "Parameter '%s' must be an integer value within [%d,%d]" % (self.fancy_name, self.lower_bound, self.upper_bound) )
             
-        return False
+        return error_list
     
     def get_value( self ):
         return int(self.value)
@@ -124,17 +126,17 @@ class FilePath(Parameter):
         super( FilePath, self ).__init__( name, fancy_name )
         self.is_folder = is_folder
         
-    def error_check( self, error_list: List[Parameter.Error] ):
+    def error_check( self ):
             
+        error_list = []
+        
         if self.is_folder and not os.path.isdir(self.value):
-            error_list.append( ParameterError( self, "Parameter '%s' must be a directory path" % (self.fancy_name) ) )
-            return True
+            error_list.append( "Parameter '%s' must be a directory path" % (self.fancy_name) )
         
-        if not self.is_folder and not os.path.isfile(self.value):    
-            error_list.append( ParameterError( self, "Parameter '%s' must be a file path" % (self.fancy_name) ) )
-            return True
+        elif not self.is_folder and not os.path.isfile(self.value):    
+            error_list.append( "Parameter '%s' must be a file path" % (self.fancy_name) )
         
-        return False
+        return error_list
     
     def get_value( self ):
         return self.value
