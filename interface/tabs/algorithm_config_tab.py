@@ -34,39 +34,21 @@ from util.type_check import is_integer, is_float
 from interface.parameter import *
 from interface.console import Console
 from interface.parameter_binding import ParameterBinding
-
-
+from interface.parameter_frames import ParameterFrame, ParameterLabelFrame
 
 
 class AlgorithmTab(ttk.Frame):
  
-    class AlgorithmFrame(tk.LabelFrame):
+    class AlgorithmFrame(ParameterLabelFrame):
         def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
             super(AlgorithmTab.AlgorithmFrame, self).__init__(master=master, *args, **kwargs)
             
             self.problem_parameters = problem_parameters
             self.algorithm_parameters = algorithm_parameters
-            self.parameters_bindings = []
-            
-        def check_errors(self):
-            
-            error_list = []
-            
-            for binding in self.parameters_bindings:
-                error_list.extend(binding.error_check())
-                
-            return error_list
-                
-        def save_parameters(self):
-            
-            for binding in self.parameters_bindings:
-                binding.store_value()
                 
         def display(self):
             self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
             
-        def hide(self):
-            self.place_forget()
             
     class PopulationFrame(AlgorithmFrame):
         
@@ -103,22 +85,105 @@ class AlgorithmTab(ttk.Frame):
                                                               widget_read_lambda=lambda: self.offspring_size_entry.get(),
                                                               variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"offspring_size":var})) )        
  
-    # class SelectionFrame(AlgorithmFrame):
+    class SelectionFrame(AlgorithmFrame):
     
-    #     def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
-    #         super(AlgorithmTab.SelectionFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+        class SelectionParametersPane(ParameterFrame):
             
-    #         tk.Label( master=self, text="Offspring size").place( relx=0.02, rely=0.05 )
-    #         self.offspring_size_entry = tk.Entry(master=self, state=tk.NORMAL)
-    #         self.offspring_size_entry.insert(0, self.algorithm_parameters.general_parameters["offspring_size"])
-    #         self.offspring_size_entry.place(relx=0.09, rely=0.05+0.005, relwidth=0.3)
-    #         self.offspring_size_entry.config(state=tk.ENABLED)
+            def __init__(self, master, algorithm_parameters, *args, **kwargs):
+                super(AlgorithmTab.SelectionFrame.SelectionParametersPane,self).__init__(master=master, *args, **kwargs)
+                
+                self.algorithm_parameters = algorithm_parameters
+                
+            def display(self):
+                self.place( relx=0.18, rely=0.145, relwidth=0.81, relheight=0.615 )
+                    
+                
+        class NaryParametersPane(SelectionParametersPane):
             
-    #         self.offspring_size_parameter = Integer(name="offspring_size", fancy_name="Offspring size", lower_bound=3, upper_bound=100000)
+            def __init__(self, master, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+                super(AlgorithmTab.SelectionFrame.NaryParametersPane,self).__init__(master=master, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+                
+                tk.Label( master=self, text="Number of solutions to select").place( relx=0.02, rely=0.05 )
+                
+                self.n_solutions_entry = tk.Entry(master=self, state=tk.NORMAL)
+                self.n_solutions_entry.insert(0, self.algorithm_parameters.selection_parameters["number_of_solutions_to_be_returned"])
+                self.n_solutions_entry.place(relx=0.12, rely=0.05+0.005, relwidth=0.3)
+                self.n_solutions_entry.config(state=tk.NORMAL)
+                
+                self.n_solutions_parameter = Integer(name="number_of_solutions_to_be_returned", fancy_name="Number of solutions to select", lower_bound=1, upper_bound=10000)
+                
+                self.parameters_bindings.append( ParameterBinding(parameter=self.n_solutions_parameter,
+                                                                  widget_read_lambda=lambda: self.n_solutions_entry.get(),
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.selection_parameters.update({"number_of_solutions_to_be_returned":var})) )        
+                
+        
+        class RankingAndCrowdingParametersPane(SelectionParametersPane):
             
-    #         self.parameters_bindings.append( ParameterBinding(parameter=self.offspring_size_parameter,
-    #                                                           widget_read_lambda=lambda: self.offspring_size_entry.get(),
-    #                                                           variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"offspring_size":var})) )        
+            def __init__(self, master, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+                super(AlgorithmTab.SelectionFrame.RankingAndCrowdingParametersPane,self).__init__(master=master, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+    
+                
+    
+        def update_operator(self, new_value):
+            # self.frames[self.selected_frame_key].clear_errors()
+            # self.frames[self.selected_frame_key].clear_entries()
+            self.frames[self.selected_frame_key].hide()
+            self.selected_frame_key = new_value
+            self.frames[self.selected_frame_key].display()
+    
+        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+            super(AlgorithmTab.SelectionFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+            
+            paceholder_frame = AlgorithmTab.SelectionFrame.SelectionParametersPane( master=self, algorithm_parameters=self.algorithm_parameters )
+            
+            self.selection_options = ["Roulette",
+                                      "Binary tournament",
+                                      "Best solution",
+                                      "n-ary random",
+                                      "Differential evolution",
+                                      "Random selection",
+                                      "Roulette",
+                                      "Ranking and crowding"]
+            
+            self.frames = {}
+            self.frames["Roulette"] = paceholder_frame
+            self.frames["Binary tournament"] = paceholder_frame
+            self.frames["Best solution"] = paceholder_frame
+            self.frames["n-ary random"] = AlgorithmTab.SelectionFrame.NaryParametersPane(master=self, algorithm_parameters=self.algorithm_parameters)
+            self.frames["Differential evolution"] = paceholder_frame
+            self.frames["Random selection"] = paceholder_frame
+            self.frames["Roulette"] = paceholder_frame
+            self.frames["Ranking and crowding"] = AlgorithmTab.SelectionFrame.RankingAndCrowdingParametersPane(master=self, algorithm_parameters=self.algorithm_parameters)
+            
+            
+            tk.Label( master=self, text="Selection operator").place( relx=0.02, rely=0.05 )
+            
+            self.SelectionOption = tk.StringVar(self)
+            self.SelectionOption.set(self.selection_options[0])
+            self.selected_frame_key = self.selection_options[0]
+            self.frames[self.selected_frame_key].display()
+            selection_option = tk.OptionMenu(self, self.SelectionOption, *self.selection_options, command=self.update_operator)
+            selection_option.config( font=('URW Gothic L','11') )
+            selection_option.config( state=tk.NORMAL )
+            selection_option.place( relx=0.08, rely=0.045, relwidth=0.105 )
+            
+            self.selection_option_parameter = Parameter(name="selection_operator", fancy_name="Selection operator")
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.selection_option_parameter,
+                                                              widget_read_lambda=lambda: self.offspring_size_entry.get(),
+                                                              variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"offspring_size":var})) )
+            
+        def check_errors(self):
+            
+            error_list = super(AlgorithmTab.SelectionFrame, self).check_errors()
+            error_list.extend( self.frames[self.selected_frame_key].check_errors() )
+                
+            return error_list
+                
+        def save_parameters(self):
+            
+            super(AlgorithmTab.SelectionFrame, self).save_parameters()
+            self.frames[self.selected_frame_key].save_parameters()
     
     def update_algorithm_selection(self, new_selection):
         
@@ -168,7 +233,7 @@ class AlgorithmTab(ttk.Frame):
         self.frames = {}
         self.frames["Population"] = AlgorithmTab.PopulationFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Offspring"] = AlgorithmTab.OffspringFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
-        self.frames["Selection"] = AlgorithmTab.AlgorithmFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["Selection"] = AlgorithmTab.SelectionFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Crossover"] = AlgorithmTab.AlgorithmFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Mutation"] = AlgorithmTab.AlgorithmFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         

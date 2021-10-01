@@ -500,7 +500,7 @@ class ProblemTab(ttk.Frame):
             self.problem_parameters.variables = [ x for x in self.problem_parameters.variables if x.keyword not in var_names ]
         
         
-        def updateType(self, new_value):
+        def update_type(self, new_value):
             self.selected_variable_frame.clear_errors()
             self.selected_variable_frame.clear_entries()
             self.selected_variable_frame.hide()
@@ -547,7 +547,7 @@ class ProblemTab(ttk.Frame):
             optionList_Type = ["Real", "Integer", "Discretized real", "Binary", "Permutation"]
             optionType = tk.StringVar(labelframe_add)
             optionType.set("Real")
-            option_type = tk.OptionMenu(labelframe_add, optionType, *optionList_Type, command=self.updateType)
+            option_type = tk.OptionMenu(labelframe_add, optionType, *optionList_Type, command=self.update_type)
             option_type.config(width=5)
             option_type.place(relx=0.28,rely=0.04, relwidth=0.45)
         
