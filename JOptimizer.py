@@ -83,7 +83,7 @@ class JOptimizer_App(tk.Tk):
         self.tabs = ttk.Notebook( self )
         
         self.problem_tab = ProblemTab(master=self.tabs, problem_parameters=self.problem_parameters)
-        self.algorithm_tab = AlgorithmTab(master=self.tabs)
+        self.algorithm_tab = AlgorithmTab(master=self.tabs, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters)
         self.runtime_enviroment_tab = RuntimeTab(master=self.tabs)
         self.optimize_tab = OptimizeTab(master=self.tabs)
         

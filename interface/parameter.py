@@ -92,7 +92,7 @@ class Integer(Parameter):
     
     def __init__( self, name: str = "", fancy_name: str = "", lower_bound: int = -32768, upper_bound: int = 32767 ):
         
-        if lower_bound <= upper_bound:
+        if lower_bound >= upper_bound:
             raise ValueError( "%s.__init__(): parameter 'lower_bound' must be less than 'upper_bound'" % (type(self).__name__) )
             
         elif type(lower_bound) != int:

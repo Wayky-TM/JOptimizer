@@ -92,7 +92,7 @@ class ProblemTab(ttk.Frame):
             
             self.evaluator_path_parameter = FilePath( fancy_name="Evaluator script path" )
             
-            self.parameters_bindings.append( ParameterBinding(parameter=evaluator_path_parameter,
+            self.parameters_bindings.append( ParameterBinding(parameter=self.evaluator_path_parameter,
                                                               widget_read_lambda=lambda: self.evaluator_class_entry.get(),
                                                               variable_store_lambda=lambda var: self.problem_parameters.options.update({"evaluator_class":var})) )
             
@@ -984,7 +984,7 @@ class ProblemTab(ttk.Frame):
         template_option = tk.OptionMenu(self, self.TemplateOption, *templates_optionlist)
         template_option.config( font=('URW Gothic L','11') )
         template_option.config( state=tk.DISABLED )
-        template_option.place( relx=0.055, rely=0.045, relwidth=0.115 )
+        template_option.place( relx=0.065, rely=0.045, relwidth=0.105 )
         
         self.frames = {}
         self.frames["Evaluator"] = ProblemTab.EvaluatorFrame( master=self, problem_parameters=self.problem_parameters )

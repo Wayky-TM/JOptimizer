@@ -66,8 +66,59 @@ class AlgorithmTab(ttk.Frame):
             self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
             
         def hide(self):
-            self.place_forget()   
+            self.place_forget()
+            
+    class PopulationFrame(AlgorithmFrame):
+        
+        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+            super(AlgorithmTab.PopulationFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+            
+            tk.Label( master=self, text="Population size").place( relx=0.02, rely=0.05 )
+            self.population_size_entry = tk.Entry(master=self, state=tk.NORMAL)
+            self.population_size_entry.insert(0, self.algorithm_parameters.general_parameters["population_size"])
+            self.population_size_entry.place(relx=0.095, rely=0.05+0.005, relwidth=0.08)
+            self.population_size_entry.config(state=tk.NORMAL)
+            
+            self.population_size_parameter = Integer(name="population_size", fancy_name="Population size", lower_bound=3, upper_bound=100000)
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.population_size_parameter,
+                                                              widget_read_lambda=lambda: self.population_size_entry.get(),
+                                                              variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"population_size":var})) )
+            
+            
+    class OffspringFrame(AlgorithmFrame):
+        
+        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+            super(AlgorithmTab.OffspringFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+            
+            tk.Label( master=self, text="Offspring size").place( relx=0.02, rely=0.05 )
+            self.offspring_size_entry = tk.Entry(master=self, state=tk.NORMAL)
+            self.offspring_size_entry.insert(0, self.algorithm_parameters.general_parameters["offspring_size"])
+            self.offspring_size_entry.place(relx=0.095, rely=0.05+0.005, relwidth=0.08)
+            self.offspring_size_entry.config(state=tk.NORMAL)
+            
+            self.offspring_size_parameter = Integer(name="offspring_size", fancy_name="Offspring size", lower_bound=3, upper_bound=100000)
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.offspring_size_parameter,
+                                                              widget_read_lambda=lambda: self.offspring_size_entry.get(),
+                                                              variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"offspring_size":var})) )        
  
+    # class SelectionFrame(AlgorithmFrame):
+    
+    #     def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+    #         super(AlgorithmTab.SelectionFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+            
+    #         tk.Label( master=self, text="Offspring size").place( relx=0.02, rely=0.05 )
+    #         self.offspring_size_entry = tk.Entry(master=self, state=tk.NORMAL)
+    #         self.offspring_size_entry.insert(0, self.algorithm_parameters.general_parameters["offspring_size"])
+    #         self.offspring_size_entry.place(relx=0.09, rely=0.05+0.005, relwidth=0.3)
+    #         self.offspring_size_entry.config(state=tk.ENABLED)
+            
+    #         self.offspring_size_parameter = Integer(name="offspring_size", fancy_name="Offspring size", lower_bound=3, upper_bound=100000)
+            
+    #         self.parameters_bindings.append( ParameterBinding(parameter=self.offspring_size_parameter,
+    #                                                           widget_read_lambda=lambda: self.offspring_size_entry.get(),
+    #                                                           variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"offspring_size":var})) )        
     
     def update_algorithm_selection(self, new_selection):
         
@@ -85,6 +136,17 @@ class AlgorithmTab(ttk.Frame):
             self.parameters_listbox.insert(tk.END, option)
         
         
+    def __listbox_selection_handler__(self, event):
+        
+        selection = event.widget.curselection()
+        
+        if selection:
+            index = selection[0]
+            data = event.widget.get(index)
+            # print(data)
+            self.frames[self.selected_frame_key].hide()
+            self.selected_frame_key = data
+            self.frames[self.selected_frame_key].display()
  
     def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
         super(AlgorithmTab, self).__init__(master=master, *args, **kwargs)
@@ -95,29 +157,37 @@ class AlgorithmTab(ttk.Frame):
         # algorithm_optionlist = [ option.value for option in AlgorithmParameters.SUPPORTED_ALGORITHMS ]
         algorithm_optionlist = [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value ]
         
-        tk.Label( self, text="Problem", font=('URW Gothic L','11','bold') ).place( relx=0.01, rely=0.048 )
+        tk.Label( self, text="Algorithm", font=('URW Gothic L','11','bold') ).place( relx=0.01, rely=0.048 )
         self.AlgorithmOption = tk.StringVar(self)
-        self.AlgorithmOption.set(templates_optionlist[0])
+        self.AlgorithmOption.set(algorithm_optionlist[0])
         algorithm_option = tk.OptionMenu(self, self.AlgorithmOption, *algorithm_optionlist)
         algorithm_option.config( font=('URW Gothic L','11') )
-        algorithm_option.config( state=tk.DISABLED )
-        algorithm_option.place( relx=0.055, rely=0.045, relwidth=0.115 )
+        algorithm_option.config( state=tk.NORMAL )
+        algorithm_option.place( relx=0.065, rely=0.045, relwidth=0.105 )
         
         self.frames = {}
+        self.frames["Population"] = AlgorithmTab.PopulationFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["Offspring"] = AlgorithmTab.OffspringFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["Selection"] = AlgorithmTab.AlgorithmFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["Crossover"] = AlgorithmTab.AlgorithmFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["Mutation"] = AlgorithmTab.AlgorithmFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         
         self.items_list = {}
         self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value] = ["Population", "Offspring", "Selection", "Crossover", "Mutation"]
         self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value] = ["Population", "Offspring", "Selection", "Crossover", "Mutation"]
-        
-        self.selected_frame_key = "Population"
-        self.frames[self.selected_frame_key].display()
         
         self.parameters_listbox = tk.Listbox( master=self)
         self.parameters_listbox.config( font=('URW Gothic L','11','bold') )
         
         self.parameters_listbox.place( relx=0.01, rely=0.115, relwidth=0.16, relheight=0.86 )
         self.parameters_listbox.bind( '<<ListboxSelect>>', self.__listbox_selection_handler__ )
+        
+        self.selected_frame_key = "Population"
+        self.frames[self.selected_frame_key].display()
+        self.update_algorithm_selection( "NSGAII" )
+        
         self.parameters_listbox.activate(0)
+        self.parameters_listbox.selection_set(0)
         
         # self.parameters_listbox.insert(0, "Evaluator")
         # self.parameters_listbox.insert(tk.END, "Variables")
