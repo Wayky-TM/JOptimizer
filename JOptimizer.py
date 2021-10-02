@@ -92,8 +92,17 @@ class JOptimizer_App(tk.Tk):
         self.tabs.add( self.runtime_enviroment_tab, text="   Runtime enviroment   " )
         self.tabs.add( self.optimize_tab, text="   Optimize   " )
         
+        self.tabs.bind('<<NotebookTabChanged>>', self.changed_tag_handler)
+        
         self.tabs.place( relx=0.01, rely=0.03, relwidth=0.98, relheight=0.95 )
         
+        
+    def changed_tag_handler(self, event):
+        index = event.widget.index("current")
+        
+        if index == 1:
+            self.algorithm_tab.update_types()
+        # print( event.widget.index("current") )
         
 
 app = JOptimizer_App()

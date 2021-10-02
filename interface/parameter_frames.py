@@ -56,6 +56,14 @@ class ParameterFrame(tk.Frame):
     
     def hide(self):
         self.place_forget()
+        
+    @abstractmethod
+    def disable(self):
+        pass
+        
+    @abstractmethod
+    def enable(self):
+        pass
                 
                 
 class ParameterLabelFrame(tk.LabelFrame):
@@ -86,4 +94,12 @@ class ParameterLabelFrame(tk.LabelFrame):
     
     def hide(self):
         self.place_forget()
+        
+    @abstractmethod
+    def disable(self):
+        pass
+        
+    @abstractmethod
+    def enable(self):
+        pass
                 

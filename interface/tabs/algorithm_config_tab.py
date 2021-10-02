@@ -207,23 +207,286 @@ class AlgorithmTab(ttk.Frame):
             
         @abstractmethod
         def disable(self):
-        
+            pass
+            
         @abstractmethod
         def enable(self):
             pass
-            
+        
     class CrossoverFrame(AlgorithmFrame):
+        
+        class FloatCrossoverFrame(ParameterLabelFrame):
+            
+            class SBXFrame(ParameterLabelFrame):
                 
-        class FloatCrossoverFrame(ByTypeFrame):
+                def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+                    super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame.SBXFrame,self).__init__(master=master, *args, **kwargs)
+                    
+                    self.probability_label = tk.Label( self, text="Probability" ).place( relx=0.01, rely=0.048 )
+                    self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
+                    self.probability_entry.place(relx=0.155, rely=0.05+0.005, relwidth=0.08)
+                    self.probability_entry.config(state=tk.NORMAL)
+                    
+                    self.distribution_index_label = tk.Label( self, text="Distribution index" ).place( relx=0.01, rely=0.448 )
+                    self.distribution_index_entry = tk.Entry(master=self, state=tk.NORMAL)
+                    self.distribution_index_entry.place(relx=0.23, rely=0.45+0.005, relwidth=0.08)
+                    self.distribution_index_entry.config(state=tk.NORMAL)
+                    
+                    self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
+                    self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index", lower_bound=float("-Inf"), upper_bound=float("Inf"))
+            
+                    self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
+                                                                      widget_read_lambda=lambda: self.probability_entry.get(),
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"probability":var})) )
+                    
+                    self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
+                                                                      widget_read_lambda=lambda: self.distribution_index_entry.get(),
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"distribution_index":var})) )
+                
+                def display(self):
+                    self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
+                    
+                def disable(self):
+                    self.probability_entry.config(state=tk.DISABLED)
+                    self.distribution_index_entry.config(state=tk.DISABLED)
+                
+                def enable(self):
+                    self.probability_entry.config(state=tk.NORMAL)
+                    self.distribution_index_entry.config(state=tk.NORMAL)
+            
+            class DiffEvolFrame(ParameterLabelFrame):
+                
+                def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+                    super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame.DiffEvolFrame,self).__init__(master=master, *args, **kwargs)
+                    
+                    self.probability_label = tk.Label( self, text="Probability" ).place( relx=0.01, rely=0.048 )
+                    self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
+                    self.probability_entry.place(relx=0.155, rely=0.05+0.005, relwidth=0.08)
+                    self.probability_entry.config(state=tk.NORMAL)
+                    
+                    self.F_label = tk.Label( self, text="F" ).place( relx=0.01, rely=0.348 )
+                    self.F_entry = tk.Entry(master=self, state=tk.NORMAL)
+                    self.F_entry.place(relx=0.13, rely=0.35+0.005, relwidth=0.08)
+                    self.F_entry.config(state=tk.NORMAL)
+                    
+                    self.K_label = tk.Label( self, text="K" ).place( relx=0.01, rely=0.648 )
+                    self.K_entry = tk.Entry(master=self, state=tk.NORMAL)
+                    self.K_entry.place(relx=0.13, rely=0.65+0.005, relwidth=0.08)
+                    self.K_entry.config(state=tk.NORMAL)
+                    
+                    self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
+                    self.F_parameter = Float(name="F", fancy_name="F", lower_bound=float("-Inf"), upper_bound=float("Inf"))
+                    self.K_parameter = Float(name="K", fancy_name="K", lower_bound=float("-Inf"), upper_bound=float("Inf"))
+            
+                    self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
+                                                                      widget_read_lambda=lambda: self.probability_entry.get(),
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"probability":var})) )
+                    
+                    self.parameters_bindings.append( ParameterBinding(parameter=self.F_parameter,
+                                                                      widget_read_lambda=lambda: self.F_entry.get(),
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"F":var})) )
+                    
+                    self.parameters_bindings.append( ParameterBinding(parameter=self.K_parameter,
+                                                                      widget_read_lambda=lambda: self.K_entry.get(),
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"K":var})) )
+                    
+                def display(self):
+                    self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
+                
+                def disable(self):
+                    self.probability_entry.config(state=tk.DISABLED)
+                    self.F_entry.config(state=tk.DISABLED)
+                    self.K_entry.config(state=tk.DISABLED)
+                
+                def enable(self):
+                    self.probability_entry.config(state=tk.NORMAL)
+                    self.F_entry.config(state=tk.NORMAL)
+                    self.K_entry.config(state=tk.NORMAL)
+                    
             
             def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
-                super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame,self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+                super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame,self).__init__(master=master, text="Float crossover", *args, **kwargs)
                 
+                self.problem_parameters = problem_parameters
+                self.algorithm_parameters = algorithm_parameters
+                
+                self.crossover_options = [ option.value for option in AlgorithmParameters.FLOAT_CROSSOVER ]
+                
+                tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.05 )
+                self.CrossoverOption = tk.StringVar(self)
+                self.CrossoverOption.set( AlgorithmParameters.FLOAT_CROSSOVER.SBX.value )
+                self.crossover_option = tk.OptionMenu(self, self.CrossoverOption, *self.crossover_options, command=self.option_change)
+                self.crossover_option.config( state=tk.NORMAL )
+                self.crossover_option.place( relx=0.15, rely=0.0425, relwidth=0.3 )
+                
+                self.frames = {}
+                self.frames[AlgorithmParameters.FLOAT_CROSSOVER.SBX.value] = AlgorithmTab.CrossoverFrame.FloatCrossoverFrame.SBXFrame(master=self,
+                                                                                                                                      problem_parameters=self.problem_parameters,
+                                                                                                                                      algorithm_parameters=self.algorithm_parameters)
+                
+                self.frames[AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION.value] = AlgorithmTab.CrossoverFrame.FloatCrossoverFrame.DiffEvolFrame(master=self,
+                                                                                                                                           problem_parameters=self.problem_parameters,
+                                                                                                                                           algorithm_parameters=self.algorithm_parameters)
+                
+                self.selected_frame_key = AlgorithmParameters.FLOAT_CROSSOVER.SBX.value
+                self.frames[self.selected_frame_key].display()
+                
+                self.crossover_option_parameter = Parameter( name="float_crossover_option", fancy_name="Float crossover option" )
+                
+                def __store_float_crossover_option(self, value):
+                    self.algorithm_parameters.float_crossover_choice = value
+                
+                self.parameters_bindings.append( ParameterBinding(parameter=self.crossover_option_parameter,
+                                                                  widget_read_lambda=lambda: self.CrossoverOption.get(),
+                                                                  variable_store_lambda=__store_float_crossover_option) )
+                
+            def option_change(self, new_value):
+                
+                if new_value != self.selected_frame_key:
+                    self.frames[self.selected_frame_key].hide()
+                    self.selected_frame_key = new_value
+                    self.frames[self.selected_frame_key].display()
+                
+            def check_errors(self):
+                error_list = super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame,self).check_errors()
+                error_list.extend( self.frames[self.selected_frame_key].check_errors() )
+                
+                return error_list
+            
+            def save_parameters(self):
+                self.save_parameters()
+                self.frames[self.selected_frame_key].save_parameters()
+                
+            def disable(self):
+                self.configure(text="Float crossover (Disabled)")
+                self.crossover_option.config(state=tk.DISABLED)
+                self.frames[self.selected_frame_key].disable()
+                
+            def enable(self):
+                self.configure(text="Float crossover")
+                self.crossover_option.config(state=tk.NORMAL)
+                self.frames[self.selected_frame_key].enable()
+            
+            
+        class IntCrossoverFrame(ParameterLabelFrame):
+            
+            def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+                super(AlgorithmTab.CrossoverFrame.IntCrossoverFrame,self).__init__(master=master, text="Integer crossover", *args, **kwargs)
+                
+                self.problem_parameters = problem_parameters
+                self.algorithm_parameters = algorithm_parameters
+                
+                self.crossover_options = [AlgorithmParameters.INT_CROSSOVER.INT_SBX.value]
+                
+                tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.05 )
+                self.CrossoverOption = tk.StringVar(self)
+                self.CrossoverOption.set( AlgorithmParameters.INT_CROSSOVER.INT_SBX.value )
+                self.crossover_option = tk.OptionMenu(self, self.CrossoverOption, *self.crossover_options)
+                self.crossover_option.config( state=tk.DISABLED )
+                self.crossover_option.place( relx=0.15, rely=0.0425, relwidth=0.3 )
+                
+                self.labelframe_params = tk.LabelFrame(master=self)
+                
+                tk.Label( master=self.labelframe_params, text="Probability" ).place( relx=0.01, rely=0.05 )
+                self.probability_entry = tk.Entry(master=self.labelframe_params, state=tk.NORMAL)
+                self.probability_entry.place(relx=0.155, rely=0.05+0.005, relwidth=0.08)
+                self.probability_entry.config(state=tk.NORMAL)
+                
+                self.distribution_index_label = tk.Label( self.labelframe_params, text="Distribution index" ).place( relx=0.01, rely=0.448 )
+                self.distribution_index_entry = tk.Entry(master=self.labelframe_params, state=tk.NORMAL)
+                self.distribution_index_entry.place(relx=0.23, rely=0.45+0.005, relwidth=0.08)
+                self.distribution_index_entry.config(state=tk.NORMAL)
+                
+                self.labelframe_params.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
+                
+                self.crossover_option_parameter = Parameter( name="int_crossover_option", fancy_name="Integer crossover option" )
+                self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
+                self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index", lower_bound=float("-Inf"), upper_bound=float("Inf"))
+            
+                self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
+                                                                  widget_read_lambda=lambda: self.probability_entry.get(),
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_crossover_parameters.update({"probability":var})) )
+                
+                self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
+                                                                  widget_read_lambda=lambda: self.distribution_index_entry.get(),
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_crossover_parameters.update({"distribution_index":var})) )
+                
+                def __store_int_crossover_option(self, value):
+                    self.algorithm_parameters.int_crossover_choice = value
+                
+                self.parameters_bindings.append( ParameterBinding(parameter=self.crossover_option_parameter,
+                                                                  widget_read_lambda=lambda: self.CrossoverOption.get(),
+                                                                  variable_store_lambda=__store_int_crossover_option) )
+                
+            def disable(self):
+                self.configure(text="Integer crossover (Disabled)")
+                self.crossover_option.config(state=tk.DISABLED)
+                self.probability_entry.config(state=tk.DISABLED)
+                self.distribution_index_entry.config(state=tk.DISABLED)
+                
+            def enable(self):
+                self.configure(text="Integer crossover")
+                self.crossover_option.config(state=tk.NORMAL)
+                self.probability_entry.config(state=tk.NORMAL)
+                self.distribution_index_entry.config(state=tk.NORMAL)
+                
+        class BinaryCrossoverFrame(ParameterLabelFrame):
+            
+            def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+                super(AlgorithmTab.CrossoverFrame.BinaryCrossoverFrame,self).__init__(master=master, text="Integer crossover", *args, **kwargs)
+                
+                
+            
+        def check_errors(self):
+            error_list = super(AlgorithmTab.CrossoverFrame,self).check_errors()
+            
+            used_variable_types = [ type(x) for x in self.problem_parameters.variables ]
+            
+            if variable_types.FloatVariable in used_variable_types:
+                error_list.extend( self.float_frame.error_check() )
+            
+            if variable_types.IntegerVariable in used_variable_types or variable_types.DiscretizedFloatVariable in used_variable_types:
+                pass
+            
+            if variable_types.BinaryVariable in used_variable_types:
+                pass
+            
+            if variable_types.PermutationVariable in used_variable_types:
+                pass
+            
+            return error_list
+        
+        
+        def save_parameters(self):
+            
+            used_variable_types = [ type(x) for x in self.problem_parameters.variables ]
+            
+            if variable_types.FloatVariable in used_variable_types:
+                self.float_frame.save_parameters()
+            
+            if variable_types.IntegerVariable in used_variable_types or variable_types.DiscretizedFloatVariable in used_variable_types:
+                pass
+            
+            if variable_types.BinaryVariable in used_variable_types:
+                pass
+            
+            if variable_types.PermutationVariable in used_variable_types:
+                pass
                 
         
         def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
             super(AlgorithmTab.CrossoverFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
             
+            self.float_frame = AlgorithmTab.CrossoverFrame.FloatCrossoverFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
+            self.int_frame = AlgorithmTab.CrossoverFrame.IntCrossoverFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
+            
+            self.float_frame.place( relx=0.025, rely=0.05, relwidth=0.4, relheight=0.3 )
+            self.int_frame.place( relx=0.025, rely=0.4, relwidth=0.4, relheight=0.3 )
+            
+            self.float_frame.disable()
+            self.int_frame.disable()
+                
+                
             
     
     def update_algorithm_selection(self, new_selection):
@@ -275,7 +538,7 @@ class AlgorithmTab(ttk.Frame):
         self.frames["Population"] = AlgorithmTab.PopulationFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Offspring"] = AlgorithmTab.OffspringFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Selection"] = AlgorithmTab.SelectionFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
-        self.frames["Crossover"] = AlgorithmTab.AlgorithmFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["Crossover"] = AlgorithmTab.CrossoverFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Mutation"] = AlgorithmTab.AlgorithmFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         
         self.items_list = {}
@@ -295,15 +558,35 @@ class AlgorithmTab(ttk.Frame):
         self.parameters_listbox.activate(0)
         self.parameters_listbox.selection_set(0)
         
-        # self.parameters_listbox.insert(0, "Evaluator")
-        # self.parameters_listbox.insert(tk.END, "Variables")
-        # self.parameters_listbox.insert(tk.END, "Constants")
-        # self.parameters_listbox.insert(tk.END, "Constraints")
-        
         self.console = Console(master=self, font=("Times New Roman", 10, 'bold'))
         self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
         self.console.print_message("Mensaje\n")
         self.console.print_warning("Advertencia\n")
         self.console.print_error("Error\n")
+        
+    def update_types(self):
+        
+        used_variable_types = [ type(x) for x in self.problem_parameters.variables ]
+        
+        crossover_frame = self.frames["Crossover"]
+        mutation_frame = self.frames["Mutation"]
+        
+        if variable_types.FloatVariable in used_variable_types:
+            crossover_frame.float_frame.enable()
+        else:
+            crossover_frame.float_frame.disable()
+        
+        
+        if variable_types.IntegerVariable in used_variable_types or variable_types.DiscretizedFloatVariable in used_variable_types:
+            crossover_frame.int_frame.enable()
+        else:
+            crossover_frame.int_frame.disable()
+        
+        if variable_types.BinaryVariable in used_variable_types:
+            pass
+        
+        if variable_types.PermutationVariable in used_variable_types:
+            pass
+        
         
         
