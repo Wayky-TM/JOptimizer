@@ -86,7 +86,7 @@ class ProblemTab(ttk.Frame):
             tk.Label( master=self, text="Evaluator script path").place( relx=0.02, rely=0.05 )
             self.OperatorFilePath = tk.Entry(master=self, state=tk.NORMAL)
             self.OperatorFilePath.insert(0, problem_parameters.options["evaluator_classname"])
-            self.OperatorFilePath.place(relx=0.11, rely=0.05+0.005, relwidth=0.3)
+            self.OperatorFilePath.place(relx=0.12, rely=0.05+0.005, relwidth=0.3)
             self.OperatorFilePath.config(state=tk.DISABLED)
             self.button_browse_operator = tk.Button( master=self,  text="Browse", command=lambda: self._browse() ).place(relx=0.43, rely=0.05, relwidth=0.06)
             

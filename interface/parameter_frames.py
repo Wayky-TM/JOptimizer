@@ -103,3 +103,26 @@ class ParameterLabelFrame(tk.LabelFrame):
     def enable(self):
         pass
                 
+    
+    
+class NullParameterFrame:
+    
+    def __init__(self, master, *args, **kwargs):
+        pass
+    
+    def display(self):
+        pass
+    
+    def hide(self):
+        pass
+
+    def check_errors(self):
+        
+        error_list = []
+            
+        return error_list
+            
+    def save_parameters(self):
+        pass
+    
+    
