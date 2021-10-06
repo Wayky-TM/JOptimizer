@@ -957,7 +957,7 @@ class AlgorithmTab(ttk.Frame):
         tk.Label( self, text="Algorithm", font=('URW Gothic L','11','bold') ).place( relx=0.01, rely=0.048 )
         self.AlgorithmOption = tk.StringVar(self)
         self.AlgorithmOption.set(algorithm_optionlist[0])
-        algorithm_option = tk.OptionMenu(self, self.AlgorithmOption, *algorithm_optionlist)
+        algorithm_option = tk.OptionMenu(self, self.AlgorithmOption, *algorithm_optionlist, command=self.update_algorithm_selection)
         algorithm_option.config( font=('URW Gothic L','11') )
         algorithm_option.config( state=tk.NORMAL )
         algorithm_option.place( relx=0.065, rely=0.045, relwidth=0.105 )
@@ -981,7 +981,7 @@ class AlgorithmTab(ttk.Frame):
         
         self.selected_frame_key = "Population"
         self.frames[self.selected_frame_key].display()
-        self.update_algorithm_selection( "NSGAII" )
+        self.update_algorithm_selection( AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value )
         
         self.parameters_listbox.activate(0)
         self.parameters_listbox.selection_set(0)

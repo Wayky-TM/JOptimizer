@@ -30,6 +30,7 @@ from typing import List
 import core.variable as variable_types
 from core.algorithm_parameters import AlgorithmParameters
 from core.problem_parameters import ProblemParameters
+from core.engine_parameters import EngineParameters
 from util.type_check import is_integer, is_float
 
 from interface.tabs.problem_definition_tab import ProblemTab
@@ -59,6 +60,7 @@ class JOptimizer_App(tk.Tk):
         """
         self.problem_parameters = ProblemParameters()
         self.algorithm_parameters = AlgorithmParameters()
+        self.engine_parameters = EngineParameters()
 
 
         """
@@ -84,7 +86,7 @@ class JOptimizer_App(tk.Tk):
         
         self.problem_tab = ProblemTab(master=self.tabs, problem_parameters=self.problem_parameters)
         self.algorithm_tab = AlgorithmTab(master=self.tabs, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters)
-        self.runtime_enviroment_tab = RuntimeTab(master=self.tabs)
+        self.runtime_enviroment_tab = RuntimeTab(master=self.tabs, engine_parameters=self.engine_parameters)
         self.optimize_tab = OptimizeTab(master=self.tabs)
         
         self.tabs.add( self.problem_tab, text="   Problem   " )
