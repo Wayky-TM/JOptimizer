@@ -47,7 +47,7 @@ class EngineParameters:
     
     def __init__(self):
         
-        self.temination_criteria=[EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value]
+        self.temination_criteria={EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value}
         self.termination_parameters = defaultdict(lambda: "")
         self.termination_parameters["evaluations"] = 1000
         self.termination_parameters["time"] = 60
