@@ -55,6 +55,7 @@ class OptimizeTab(ttk.Frame):
             self.save_button.config( state=tk.DISABLED )
             
             if self.controller.check_parameter_correctness():
+                self.controller.save_parameters()
                 self.run_pause_button.config( text="Pause" )
                 self.runtime_status = OptimizeTab.RUNTIME_STATUS.RUNNING
                 

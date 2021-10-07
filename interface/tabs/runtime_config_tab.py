@@ -34,7 +34,7 @@ from util.type_check import is_integer, is_float
 
 from interface.parameter import *
 from interface.console import Console
-from interface.parameter_binding import ParameterBinding
+from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
 
 
@@ -101,13 +101,17 @@ class RuntimeTab(ttk.Frame):
                                                               variable_store_lambda=self._save_eval_boolean) )
             
             
-            self.parameters_bindings.append( ParameterBinding(parameter=self.time_parameter,
-                                                              widget_read_lambda=lambda: self.eval_entry.get(),
-                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time":var})) )
-            
             self.parameters_bindings.append( ParameterBinding(parameter=self.eval_parameter,
+                                                              widget_read_lambda=lambda: self.eval_entry.get(),
+                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time":var}),
+                                                              error_set_lambda=EntryInvalidator(self.eval_entry),
+                                                              error_reset_lambda=EntryValidator(self.eval_entry)) )
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.time_parameter,
                                                               widget_read_lambda=lambda: self.time_entry.get(),
-                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"evaluations":var})) )
+                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"evaluations":var}),
+                                                              error_set_lambda=EntryInvalidator(self.time_entry),
+                                                              error_reset_lambda=EntryValidator(self.time_entry)) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.time_scale_parameter,
                                                               widget_read_lambda=lambda: self.TimescaleOption.get(),

@@ -133,10 +133,16 @@ class JOptimizer_App(tk.Tk):
             error_list.append("Runtime enviroment parameters")
         
         if len(error_list)>0:
-            tk.messagebox.showerror(title="Invalid parameter(s)", message="Errors where found on the following tabs:\n\n" + "\n".join(["\t-" + s for s in error_list]) + "\nCheck error consoles for more information")
+            tk.messagebox.showerror(title="Invalid parameter(s)", message="Errors where found on the following tabs:\n\n" + "\n".join(["\t-" + s for s in error_list]) + "\n\nCheck error consoles for more information")
             return False
         
         return true
+    
+    def save_parameters(self):
+        
+        problem_errors = self.problem_tab.save_parameters()
+        algorithm_errors = self.algorithm_tab.save_parameters()
+        runtime_enviroment_errors = self.runtime_enviroment_tab.save_parameters()
         
     def initialize_engine(self):
         pass

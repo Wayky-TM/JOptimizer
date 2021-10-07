@@ -33,7 +33,7 @@ from util.type_check import is_integer, is_float
 
 from interface.parameter import *
 from interface.console import Console
-from interface.parameter_binding import ParameterBinding
+from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
 
 
@@ -65,7 +65,9 @@ class AlgorithmTab(ttk.Frame):
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.population_size_parameter,
                                                               widget_read_lambda=lambda: self.population_size_entry.get(),
-                                                              variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"population_size":var})) )
+                                                              variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"population_size":var}),
+                                                              error_set_lambda=EntryInvalidator(self.population_size_entry),
+                                                              error_reset_lambda=EntryValidator(self.population_size_entry)) )
             
             
     class OffspringFrame(AlgorithmFrame):
@@ -83,7 +85,9 @@ class AlgorithmTab(ttk.Frame):
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.offspring_size_parameter,
                                                               widget_read_lambda=lambda: self.offspring_size_entry.get(),
-                                                              variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"offspring_size":var})) )        
+                                                              variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"offspring_size":var}),
+                                                              error_set_lambda=EntryInvalidator(self.offspring_size_entry),
+                                                              error_reset_lambda=EntryValidator(self.offspring_size_entry)) )        
  
     class SelectionFrame(AlgorithmFrame):
     
@@ -114,7 +118,9 @@ class AlgorithmTab(ttk.Frame):
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.n_solutions_parameter,
                                                                   widget_read_lambda=lambda: self.n_solutions_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.selection_parameters.update({"number_of_solutions_to_be_returned":var})) )        
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.selection_parameters.update({"number_of_solutions_to_be_returned":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.n_solutions_entry),
+                                                                  error_reset_lambda=EntryValidator(self.n_solutions_entry)) )        
                 
         
         class RankingAndCrowdingParametersPane(SelectionParametersPane):
@@ -133,7 +139,9 @@ class AlgorithmTab(ttk.Frame):
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.max_population_parameter,
                                                                   widget_read_lambda=lambda: self.max_population_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.selection_parameters.update({"max_population_size":var})) )        
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.selection_parameters.update({"max_population_size":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.max_population_entry),
+                                                                  error_reset_lambda=EntryValidator(self.max_population_entry)) )        
     
         def update_operator(self, new_value):
             # self.frames[self.selected_frame_key].clear_errors()
@@ -240,11 +248,15 @@ class AlgorithmTab(ttk.Frame):
             
                     self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                       widget_read_lambda=lambda: self.probability_entry.get(),
-                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"probability":var})) )
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"probability":var}),
+                                                                      error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                                      error_reset_lambda=EntryValidator(self.probability_entry)) )
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
                                                                       widget_read_lambda=lambda: self.distribution_index_entry.get(),
-                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"distribution_index":var})) )
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"distribution_index":var}),
+                                                                      error_set_lambda=EntryInvalidator(self.distribution_index_entry),
+                                                                      error_reset_lambda=EntryValidator(self.distribution_index_entry)) )
                 
                 def display(self):
                     self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -283,15 +295,21 @@ class AlgorithmTab(ttk.Frame):
             
                     self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                       widget_read_lambda=lambda: self.probability_entry.get(),
-                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"probability":var})) )
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"probability":var}),
+                                                                      error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                                      error_reset_lambda=EntryValidator(self.probability_entry)) )
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.F_parameter,
                                                                       widget_read_lambda=lambda: self.F_entry.get(),
-                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"F":var})) )
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"F":var}),
+                                                                      error_set_lambda=EntryInvalidator(self.F_entry),
+                                                                      error_reset_lambda=EntryValidator(self.F_entry)) )
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.K_parameter,
                                                                       widget_read_lambda=lambda: self.K_entry.get(),
-                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"K":var})) )
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_crossover_parameters.update({"K":var}),
+                                                                      error_set_lambda=EntryInvalidator(self.K_entry),
+                                                                      error_reset_lambda=EntryValidator(self.K_entry)) )
                     
                 def display(self):
                     self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -408,11 +426,15 @@ class AlgorithmTab(ttk.Frame):
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_crossover_parameters.update({"probability":var})) )
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_crossover_parameters.update({"probability":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                                  error_reset_lambda=EntryValidator(self.probability_entry)) )
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
                                                                   widget_read_lambda=lambda: self.distribution_index_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_crossover_parameters.update({"distribution_index":var})) )
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_crossover_parameters.update({"distribution_index":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.distribution_index_entry),
+                                                                  error_reset_lambda=EntryValidator(self.distribution_index_entry)) )
                 
                 def __store_int_crossover_option(self, value):
                     self.algorithm_parameters.int_crossover_choice = value
@@ -461,7 +483,9 @@ class AlgorithmTab(ttk.Frame):
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.binary_crossover_parameters.update({"probability":var})) )
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.binary_crossover_parameters.update({"probability":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                                  error_reset_lambda=EntryValidator(self.probability_entry)) )
                 
                 def __store_binary_crossover_option(self, value):
                     self.algorithm_parameters.binary_crossover_choice = value
@@ -508,7 +532,9 @@ class AlgorithmTab(ttk.Frame):
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.permutation_crossover_parameters.update({"probability":var})) )
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.permutation_crossover_parameters.update({"probability":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                                  error_reset_lambda=EntryValidator(self.probability_entry)) )
                 
                 def __store_permutation_crossover_option(self, value):
                     self.algorithm_parameters.permutation_crossover_choice = value
@@ -601,7 +627,9 @@ class AlgorithmTab(ttk.Frame):
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
                                                                       widget_read_lambda=lambda: self.distribution_index_entry.get(),
-                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_mutation_parameters.update({"distribution_index":var})) )
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_mutation_parameters.update({"distribution_index":var}),
+                                                                      error_set_lambda=EntryInvalidator(self.distribution_index_entry),
+                                                                      error_reset_lambda=EntryValidator(self.distribution_index_entry)) )
                     
                 def display(self):
                     self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -626,7 +654,9 @@ class AlgorithmTab(ttk.Frame):
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.perturbation_parameter,
                                                                       widget_read_lambda=lambda: self.perturbation_entry.get(),
-                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_mutation_parameters.update({"perturbation":var})) )
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_mutation_parameters.update({"perturbation":var}),
+                                                                      error_set_lambda=EntryInvalidator(self.perturbation_entry),
+                                                                      error_reset_lambda=EntryValidator(self.perturbation_entry)) )
                     
                 def display(self):
                     self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -651,7 +681,9 @@ class AlgorithmTab(ttk.Frame):
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.max_iter_parameter,
                                                                       widget_read_lambda=lambda: self.max_iter_entry.get(),
-                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_mutation_parameters.update({"max_iterations":var})) )
+                                                                      variable_store_lambda=lambda var: self.algorithm_parameters.float_mutation_parameters.update({"max_iterations":var}),
+                                                                      error_set_lambda=EntryInvalidator(self.max_iter_entry),
+                                                                      error_reset_lambda=EntryValidator(self.max_iter_entry)) )
                 
                     
                 def disable(self):
@@ -712,7 +744,9 @@ class AlgorithmTab(ttk.Frame):
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.float_mutation_parameters.update({"probability":var})) )
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.float_mutation_parameters.update({"probability":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                                  error_reset_lambda=EntryValidator(self.probability_entry)) )
                 
             def option_change(self, new_value):
                 
@@ -781,11 +815,15 @@ class AlgorithmTab(ttk.Frame):
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_mutation_parameters.update({"probability":var})) )
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_mutation_parameters.update({"probability":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                                  error_reset_lambda=EntryValidator(self.probability_entry)) )
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
                                                                   widget_read_lambda=lambda: self.distribution_index_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_mutation_parameters.update({"distribution_index":var})) )
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.int_mutation_parameters.update({"distribution_index":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.distribution_index_entry),
+                                                                  error_reset_lambda=EntryValidator(self.distribution_index_entry)) )
                 
                 def __store_int_mutation_option(self, value):
                     self.algorithm_parameters.int_mutation_choice = value
@@ -834,7 +872,9 @@ class AlgorithmTab(ttk.Frame):
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.binary_mutation_parameters.update({"probability":var})) )
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.binary_mutation_parameters.update({"probability":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                                  error_reset_lambda=EntryValidator(self.probability_entry)) )
                 
                 def __store_binary_mutation_option(self, value):
                     self.algorithm_parameters.binary_mutation_choice = value
@@ -881,7 +921,9 @@ class AlgorithmTab(ttk.Frame):
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
-                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.permutation_mutation_parameters.update({"probability":var})) )
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.permutation_mutation_parameters.update({"probability":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                                  error_reset_lambda=EntryValidator(self.probability_entry)) )
                 
                 def __store_permutation_mutation_option(self, value):
                     self.algorithm_parameters.permutation_mutation_choice = value
