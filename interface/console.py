@@ -21,7 +21,8 @@ except ImportError:
     import Tkinter as tk     # python 2
     import tkFont as tkfont  # python 2
 
-
+import time
+from datetime import datetime
 
 class Console(tk.scrolledtext.ScrolledText):
     
@@ -56,4 +57,19 @@ class Console(tk.scrolledtext.ScrolledText):
     
     
     
+class TimedConsole(Console):
     
+    def __get_daytime(self) -> str:
+        return datetime.today().strftime('[%Y-%m-%d-%H:%M:%S]: ')
+    
+    def print_error( self, string: str ):
+        date_string = self.__get_daytime() + string
+        super(TimedConsole, self).print_error(date_string)
+    
+    def print_warning( self, string: str ):
+        date_string = self.__get_daytime() + string
+        super(TimedConsole, self).print_warning(date_string)
+    
+    def print_message( self, string: str ):
+        date_string = self.__get_daytime() + string
+        super(TimedConsole, self).print_message(date_string)

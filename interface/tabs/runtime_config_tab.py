@@ -94,11 +94,11 @@ class RuntimeTab(ttk.Frame):
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.by_time_parameter,
                                                               widget_read_lambda=lambda: self.time_checkbox_var.get(),
-                                                              variable_store_lambda=_save_time_boolean) )
+                                                              variable_store_lambda=self._save_time_boolean) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.by_eval_parameter,
                                                               widget_read_lambda=lambda: self.eval_checkbox_var.get(),
-                                                              variable_store_lambda=_save_eval_boolean) )
+                                                              variable_store_lambda=self._save_eval_boolean) )
             
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.time_parameter,
