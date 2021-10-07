@@ -992,9 +992,9 @@ class ProblemTab(ttk.Frame):
         self.frames["Constants"] = ProblemTab.ConstantsFrame( master=self, problem_parameters=self.problem_parameters )
         self.frames["Constraints"] = ProblemTab.ConstraintsFrame( master=self, problem_parameters=self.problem_parameters )
         
-        self.generic_problem_items = [ "Evaluator", "Variables", "Constants", "Contraints" ]
-        self.matlab_problem_items = [ "Script", "Variables", "Constants", "Contraints" ]
-        self.CST_problem_items = [ "CST", "Variables", "Constants", "Contraints" ]
+        self.generic_problem_items = [ "Evaluator", "Variables", "Constants", "Constraints" ]
+        self.matlab_problem_items = [ "Script", "Variables", "Constants", "Constraints" ]
+        self.CST_problem_items = [ "CST", "Variables", "Constants", "Constraints" ]
         
         self.selected_problem_items = self.generic_problem_items
         
@@ -1029,8 +1029,20 @@ class ProblemTab(ttk.Frame):
         for key in self.selected_problem_items:
             #TODO: check if specified evaluator class name is correct
             error_list.extend( self.frames[key].check_errors() )
-            
         
         return error_list
+    
+    def console_print_error(self, string: str):
+        self.console.print_error( string+"\n" )
+        
+    def console_print_warning(self, string: str):
+        self.console.print_warning( string+"\n" )
+        
+    def console_print_message(self, string: str):
+        self.console.print_message( string+"\n" )
+        
+    def console_clear(self):
+        self.console.clear_all()
+        
         
         

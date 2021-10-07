@@ -50,10 +50,15 @@ class OptimizeTab(ttk.Frame):
     def __run_pause(self):
         
         if self.runtime_status == OptimizeTab.RUNTIME_STATUS.INITIALIZED:
-            self.run_pause_button.config( text="Pause" )
+            self.run_pause_button.config( state=tk.DISABLED )
             self.analysis_button.config( state=tk.DISABLED )
             self.save_button.config( state=tk.DISABLED )
-            self.runtime_status = OptimizeTab.RUNTIME_STATUS.RUNNING
+            
+            if self.controller.check_parameter_correctness():
+                self.run_pause_button.config( text="Pause" )
+                self.runtime_status = OptimizeTab.RUNTIME_STATUS.RUNNING
+                
+            self.run_pause_button.config( state=tk.NORMAL )
             
         elif self.runtime_status == OptimizeTab.RUNTIME_STATUS.RUNNING:
             self.run_pause_button.config( text="Run" )
@@ -75,10 +80,10 @@ class OptimizeTab(ttk.Frame):
     def __save_solutions(self):
         pass
     
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, controller, *args, **kwargs):
         super(OptimizeTab, self).__init__(master=master, *args, **kwargs)
         
-        self.controller = master
+        self.controller = controller
         self.runtime_status = OptimizeTab.RUNTIME_STATUS.INITIALIZED
         
         self.runtime_stats_frame = tk.LabelFrame( master=self, text="Runtime stats", font=('URW Gothic L','10','bold') )
@@ -107,12 +112,12 @@ class OptimizeTab(ttk.Frame):
         self.analysis_button.place( relx=0.835, rely=0.902, relwidth=0.09, relheight=0.074 )
         self.analysis_button.config( state=tk.DISABLED )
         
-        save_icon_path = os.path.join( os.getcwd(), 'interface', 'resources', 'images', 'save_icon.png' )
-        save_icon = tk.PhotoImage( file=save_icon_path )
+        # save_icon_path = os.path.join( os.getcwd(), 'interface', 'resources', 'images', 'save_icon.png' )
+        # save_icon = tk.PhotoImage( file=save_icon_path )
         # save_icon = save_icon.subsample(2,2)
         
-        # self.save_button = tk.Button( master=self, image=save_icon_path, command=self.__run_pause, font=('URW Gothic L','12') )
-        self.save_button = tk.Button( master=self, image=save_icon, command=self.__run_pause, compound=tk.CENTER )
+        self.save_button = tk.Button( master=self, text="Save", command=self.__save_solutions, font=('URW Gothic L','12') )
+        # self.save_button = tk.Button( master=self, image=save_icon, command=self.__save_solutions, compound=tk.CENTER )
         # self.save_button.image = save_icon_tk
         # self.save_button = tk.Button( master=self, command=self.__save_solutions, font=('URW Gothic L','12') )
         self.save_button.place( relx=0.94, rely=0.902, relwidth=0.045, relheight=0.074 )

@@ -87,7 +87,7 @@ class JOptimizer_App(tk.Tk):
         self.problem_tab = ProblemTab(master=self.tabs, problem_parameters=self.problem_parameters)
         self.algorithm_tab = AlgorithmTab(master=self.tabs, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters)
         self.runtime_enviroment_tab = RuntimeTab(master=self.tabs, engine_parameters=self.engine_parameters)
-        self.optimize_tab = OptimizeTab(master=self.tabs)
+        self.optimize_tab = OptimizeTab(master=self.tabs, controller=self)
         
         self.tabs.add( self.problem_tab, text="   Problem   " )
         self.tabs.add( self.algorithm_tab, text="   Algorithm   " )
@@ -98,6 +98,48 @@ class JOptimizer_App(tk.Tk):
         
         self.tabs.place( relx=0.01, rely=0.03, relwidth=0.98, relheight=0.95 )
         
+        
+    def check_parameter_correctness(self):
+        
+        self.problem_tab.console_clear()
+        self.algorithm_tab.console_clear()
+        self.runtime_enviroment_tab.console_clear()
+        
+        error_list = []
+        
+        problem_errors = self.problem_tab.check_errors()
+        algorithm_errors = self.algorithm_tab.check_errors()
+        runtime_enviroment_errors = self.runtime_enviroment_tab.check_errors()
+        
+        if len(problem_errors) > 0:
+            
+            for error in problem_errors:
+                self.problem_tab.console_print_error( error )
+            
+            error_list.append("Problem parameters")
+            
+        if len(algorithm_errors) > 0:
+            
+            for error in algorithm_errors:
+                self.algorithm_tab.console_print_error( error )
+            
+            error_list.append("Algorithm parameters")
+            
+        if len(runtime_enviroment_errors) > 0:
+            
+            for error in runtime_enviroment_errors:
+                self.runtime_enviroment_tab.console_print_error( error )
+            
+            error_list.append("Runtime enviroment parameters")
+        
+        if len(error_list)>0:
+            tk.messagebox.showerror(title="Invalid parameter(s)", message="Errors where found on the following tabs:\n\n" + "\n".join(["\t-" + s for s in error_list]) + "\nCheck error consoles for more information")
+            return False
+        
+        return true
+        
+    def initialize_engine(self):
+        pass
         
     def changed_tag_handler(self, event):
         index = event.widget.index("current")

@@ -181,8 +181,11 @@ class AlgorithmTab(ttk.Frame):
             self.selection_option_parameter = Parameter(name="selection_operator", fancy_name="Selection operator")
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.selection_option_parameter,
-                                                              widget_read_lambda=lambda: self.offspring_size_entry.get(),
-                                                              variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"offspring_size":var})) )
+                                                              widget_read_lambda=lambda: self.SelectionOption.get(),
+                                                              variable_store_lambda=self.__store_selection_option) )
+            
+        def __store_selection_option(self, value):
+            self.algorithm_parameters.selection_choice = value
             
         def check_errors(self):
             
@@ -232,8 +235,8 @@ class AlgorithmTab(ttk.Frame):
                     self.distribution_index_entry.place(relx=0.23, rely=0.45+0.005, relwidth=0.08)
                     self.distribution_index_entry.config(state=tk.NORMAL)
                     
-                    self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
-                    self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index", lower_bound=float("-Inf"), upper_bound=float("Inf"))
+                    self.probability_parameter = Float(name="probability", fancy_name="Probability (float crossover)", lower_bound=0.0, upper_bound=1.0)
+                    self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index (float crossover)", lower_bound=float("-Inf"), upper_bound=float("Inf"))
             
                     self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                       widget_read_lambda=lambda: self.probability_entry.get(),
@@ -274,7 +277,7 @@ class AlgorithmTab(ttk.Frame):
                     self.K_entry.place(relx=0.13, rely=0.65+0.005, relwidth=0.08)
                     self.K_entry.config(state=tk.NORMAL)
                     
-                    self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
+                    self.probability_parameter = Float(name="probability", fancy_name="Probability (float crossover)", lower_bound=0.0, upper_bound=1.0)
                     self.F_parameter = Float(name="F", fancy_name="F", lower_bound=float("-Inf"), upper_bound=float("Inf"))
                     self.K_parameter = Float(name="K", fancy_name="K", lower_bound=float("-Inf"), upper_bound=float("Inf"))
             
@@ -400,8 +403,8 @@ class AlgorithmTab(ttk.Frame):
                 self.labelframe_params.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
                 
                 self.crossover_option_parameter = Parameter( name="int_crossover_option", fancy_name="Integer crossover option" )
-                self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
-                self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index", lower_bound=float("-Inf"), upper_bound=float("Inf"))
+                self.probability_parameter = Float(name="probability", fancy_name="Probability (int crossover)", lower_bound=0.0, upper_bound=1.0)
+                self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index (int crossover)", lower_bound=float("-Inf"), upper_bound=float("Inf"))
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
@@ -454,7 +457,7 @@ class AlgorithmTab(ttk.Frame):
                 
                 
                 self.crossover_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
-                self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
+                self.probability_parameter = Float(name="probability", fancy_name="Probability (binary crossover)", lower_bound=0.0, upper_bound=1.0)
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
@@ -501,7 +504,7 @@ class AlgorithmTab(ttk.Frame):
                 self.probability_entry.config(state=tk.NORMAL)
                 
                 self.crossover_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
-                self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
+                self.probability_parameter = Float(name="probability", fancy_name="Probability (permutation crossover)", lower_bound=0.0, upper_bound=1.0)
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
@@ -530,16 +533,16 @@ class AlgorithmTab(ttk.Frame):
             used_variable_types = [ type(x) for x in self.problem_parameters.variables ]
             
             if variable_types.FloatVariable in used_variable_types:
-                error_list.extend( self.float_frame.error_check() )
+                error_list.extend( self.float_frame.check_errors() )
             
             if variable_types.IntegerVariable in used_variable_types or variable_types.DiscretizedFloatVariable in used_variable_types:
-                error_list.extend( self.int_frame.error_check() )
+                error_list.extend( self.int_frame.check_errors() )
             
             if variable_types.BinaryVariable in used_variable_types:
-                error_list.extend( self.binary_frame.error_check() )
+                error_list.extend( self.binary_frame.check_errors() )
             
             if variable_types.PermutationVariable in used_variable_types:
-                error_list.extend( self.permutation_frame.error_check() )
+                error_list.extend( self.permutation_frame.check_errors() )
             
             return error_list
         
@@ -594,7 +597,7 @@ class AlgorithmTab(ttk.Frame):
                     self.distribution_index_entry.place(relx=0.23, rely=0.048+0.005, relwidth=0.08)
                     self.distribution_index_entry.config(state=tk.NORMAL)
                     
-                    self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index", lower_bound=float("-Inf"), upper_bound=float("Inf"))
+                    self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index (float mutation)", lower_bound=float("-Inf"), upper_bound=float("Inf"))
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
                                                                       widget_read_lambda=lambda: self.distribution_index_entry.get(),
@@ -619,7 +622,7 @@ class AlgorithmTab(ttk.Frame):
                     self.perturbation_entry.place(relx=0.145, rely=0.05+0.005, relwidth=0.08)
                     self.perturbation_entry.config(state=tk.NORMAL)
                     
-                    self.perturbation_parameter = Float(name="perturbation", fancy_name="Perturbation", lower_bound=float("-Inf"), upper_bound=float("Inf"))
+                    self.perturbation_parameter = Float(name="perturbation", fancy_name="Perturbation (float mutation)", lower_bound=float("-Inf"), upper_bound=float("Inf"))
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.perturbation_parameter,
                                                                       widget_read_lambda=lambda: self.perturbation_entry.get(),
@@ -644,7 +647,7 @@ class AlgorithmTab(ttk.Frame):
                     self.max_iter_entry.place(relx=0.145, rely=0.25+0.005, relwidth=0.08)
                     self.max_iter_entry.config(state=tk.NORMAL)
                     
-                    self.max_iter_parameter = Integer(name="max_iterations", fancy_name="Max. iterations", lower_bound=1, upper_bound=100)
+                    self.max_iter_parameter = Integer(name="max_iterations", fancy_name="Max. iterations (float mutation)", lower_bound=1, upper_bound=100)
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.max_iter_parameter,
                                                                       widget_read_lambda=lambda: self.max_iter_entry.get(),
@@ -765,7 +768,7 @@ class AlgorithmTab(ttk.Frame):
                 
                 self.labelframe_params = tk.LabelFrame(master=self)
                 
-                self.distribution_index_label = tk.Label( self.labelframe_params, text="Distribution index" ).place( relx=0.01, rely=0.048 )
+                self.distribution_index_label = tk.Label( self.labelframe_params, text="Distribution index (int mutation)" ).place( relx=0.01, rely=0.048 )
                 self.distribution_index_entry = tk.Entry(master=self.labelframe_params, state=tk.NORMAL)
                 self.distribution_index_entry.place(relx=0.23, rely=0.048+0.005, relwidth=0.08)
                 self.distribution_index_entry.config(state=tk.NORMAL)
@@ -773,8 +776,8 @@ class AlgorithmTab(ttk.Frame):
                 self.labelframe_params.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
                 
                 self.mutation_option_parameter = Parameter( name="int_mutation_option", fancy_name="Integer mutation option" )
-                self.probability_parameter = Float(name="probability", fancy_name="Probability", lower_bound=0.0, upper_bound=1.0)
-                self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index", lower_bound=float("-Inf"), upper_bound=float("Inf"))
+                self.probability_parameter = Float(name="probability", fancy_name="Probability (int mutation)", lower_bound=0.0, upper_bound=1.0)
+                self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index (int mutation)", lower_bound=float("-Inf"), upper_bound=float("Inf"))
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
@@ -827,7 +830,7 @@ class AlgorithmTab(ttk.Frame):
                 
                 
                 self.mutation_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
-                self.probability_parameter = Float(name="probability", fancy_name="Probability", lower_bound=0.0, upper_bound=1.0)
+                self.probability_parameter = Float(name="probability", fancy_name="Probability (Binary mutation)", lower_bound=0.0, upper_bound=1.0)
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
@@ -874,7 +877,7 @@ class AlgorithmTab(ttk.Frame):
                 self.probability_entry.config(state=tk.NORMAL)
                 
                 self.mutation_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
-                self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
+                self.probability_parameter = Float(name="probability", fancy_name="Probability (Permutation mutation)", lower_bound=0.0, upper_bound=1.0)
             
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
@@ -920,6 +923,7 @@ class AlgorithmTab(ttk.Frame):
     def update_algorithm_selection(self, new_selection):
         
         self.parameters_listbox.delete(0,'end')
+        self.selected_algorithm = new_selection
         
         item_list = self.items_list[new_selection]
         
@@ -1029,4 +1033,24 @@ class AlgorithmTab(ttk.Frame):
             mutation_frame.permutation_frame.disable()
         
         
+    def check_errors(self):
         
+        error_list = []
+        
+        for key in self.items_list[self.selected_algorithm]:
+            #TODO: check if specified evaluator class name is correct
+            error_list.extend( self.frames[key].check_errors() )
+        
+        return error_list
+        
+    def console_print_error(self, string: str):
+        self.console.print_error( string+"\n" )
+        
+    def console_print_warning(self, string: str):
+        self.console.print_warning( string+"\n" )
+        
+    def console_print_message(self, string: str):
+        self.console.print_message( string+"\n" )
+        
+    def console_clear(self):
+        self.console.clear_all()

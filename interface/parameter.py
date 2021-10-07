@@ -18,16 +18,20 @@ from typing import List
 import util.type_check as TC
 
 class Parameter:
-
-    class Error:
+    
+    def default_error_lambda( instance: 'Parameter' ):
+        return []
+    
+    # class Error:
         
-        def __init__( self, parameter: 'Parameter', err_str: str = "" )        :
-            self.parameter = parameter
-            self.err_str = err_str
+    #     def __init__( self, parameter: 'Parameter', err_str: str = "" )        :
+    #         self.parameter = parameter
+    #         self.err_str = err_str
     
     def __init__( self,
                   name: str = "",
-                  fancy_name: str = "" ): # Name to display in the GUI
+                  fancy_name: str = "",
+                  error_lambda = default_error_lambda): # Name to display in the GUI
         
         if type(name) != str:
             raise ValueError( "%s.__init__(): parameter 'name' must be a string" )
@@ -42,6 +46,8 @@ class Parameter:
         else:
             self.fancy_name = fancy_name
             
+        self.error_lambda = error_lambda
+            
         self.string_value = ""
         self.value = None
 
@@ -52,9 +58,8 @@ class Parameter:
     def get_value( self ):
         pass
 
-    @abstractmethod
     def error_check( self ):
-        pass
+        return self.error_lambda(self)
 
 class Float(Parameter):
     
@@ -79,7 +84,7 @@ class Float(Parameter):
         error_list = []
         
         if type(self.value)!=str or not TC.is_float(self.value) or self.value < self.lower_bound or self.value > self.upper_bound:
-            error_list.append( "Parameter '%s' must be a real value within [%d,%d]" % (self.fancy_name, self.lower_bound, self.upper_bound) )
+            error_list.append( "Parameter '%s' must be a real value within [%f,%f]" % (self.fancy_name, self.lower_bound, self.upper_bound) )
             
         return error_list
     
@@ -110,7 +115,7 @@ class Integer(Parameter):
         
         error_list = []
         
-        if type(self.value)!=str or not TC.is_integer(self.value) or self.value < self.lower_bound or self.value > self.upper_bound:
+        if type(self.value)!=str or not TC.is_integer(self.value) or int(self.value) < self.lower_bound or int(self.value) > self.upper_bound:
             error_list.append( "Parameter '%s' must be an integer value within [%d,%d]" % (self.fancy_name, self.lower_bound, self.upper_bound) )
             
         return error_list
@@ -121,7 +126,7 @@ class Integer(Parameter):
         
 class FilePath(Parameter):
     
-    def __ini__( self, name: str = "", fancy_name: str = "", is_folder: bool = False ):
+    def __init__( self, name: str = "", fancy_name: str = "", is_folder: bool = False ):
         
         super( FilePath, self ).__init__( name, fancy_name )
         self.is_folder = is_folder

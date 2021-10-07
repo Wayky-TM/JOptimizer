@@ -185,6 +185,7 @@ class RuntimeTab(ttk.Frame):
     def update_mode_selection(self, new_selection):
         
         self.parameters_listbox.delete(0,'end')
+        self.selected_mode = new_selection
         
         item_list = self.items_list[new_selection]
         
@@ -214,6 +215,7 @@ class RuntimeTab(ttk.Frame):
         
         self.items_list = {}
         self.items_list[EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value] = ["Termination criteria", "Runtime state saving", "Runtime statistics", "Runtime plots"]
+        self.selected_mode = EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value
         
         self.frames = {}
         self.frames["Termination criteria"] = RuntimeTab.TerminationCriteriaFrame(master=self, engine_parameters=self.engine_parameters)
@@ -240,3 +242,25 @@ class RuntimeTab(ttk.Frame):
         self.console.print_message("Mensaje\n")
         self.console.print_warning("Advertencia\n")
         self.console.print_error("Error\n")
+        
+    def check_errors(self):
+        
+        error_list = []
+        
+        for key in self.items_list[self.selected_mode]:
+            #TODO: check if specified evaluator class name is correct
+            error_list.extend( self.frames[key].check_errors() )
+        
+        return error_list
+        
+    def console_print_error(self, string: str):
+        self.console.print_error( string+"\n" )
+        
+    def console_print_warning(self, string: str):
+        self.console.print_warning( string+"\n" )
+        
+    def console_print_message(self, string: str):
+        self.console.print_message( string+"\n" )
+        
+    def console_clear(self):
+        self.console.clear_all()

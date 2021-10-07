@@ -52,7 +52,7 @@ class Console(tk.scrolledtext.ScrolledText):
     
     def clear_all(self):
         self.config(state=tk.NORMAL)
-        self.delete('1.0', END)
+        self.delete('1.0', tk.END)
         self.config(state=tk.DISABLED)
     
     
