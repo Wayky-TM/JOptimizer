@@ -126,10 +126,15 @@ class Integer(Parameter):
         
 class FilePath(Parameter):
     
-    def __init__( self, name: str = "", fancy_name: str = "", is_folder: bool = False ):
+    def __init__( self,
+                  name: str = "",
+                  fancy_name: str = "",
+                  is_folder: bool = False,
+                  extension: str = ""):
         
         super( FilePath, self ).__init__( name, fancy_name )
         self.is_folder = is_folder
+        self.extension = extension
         
     def error_check( self ):
             
@@ -140,6 +145,13 @@ class FilePath(Parameter):
         
         elif not self.is_folder and not os.path.isfile(self.value):    
             error_list.append( "Parameter '%s' must be a file path" % (self.fancy_name) )
+            
+        elif self.extension:
+            filename, file_extension = os.path.splitext(self.value)
+            
+            if file_extension != self.extension:
+                error_list.append( "Parameter '%s' must be a file path with extension %s" % (self.fancy_name, self.extension) )
+                
         
         return error_list
     
