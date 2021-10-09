@@ -17,6 +17,39 @@ from abc import *
 from typing import List
 from collections import defaultdict
 
+from jmetal.util.termination_criterion import TerminationCriterion, StoppingByEvaluations, StoppingByTime
+import datetime
+
+
+
+class StoppingByDateTime(TerminationCriterion):
+    
+    def __init__(self, date_time: datetime.datetime):
+        self.date_time = date_time
+
+    def update(self, *args, **kwargs):
+        pass
+    
+    def is_met(self):
+        current_date = datetime.datetime.now()
+        return self.date_time < current_date
+
+
+
+class CompositeTerminationCriterion(TerminationCriterion):
+    
+    def __init__(self, criteria: List[TerminationCriterion]):
+        self.termination_criteria = copy.deepcopy(criteria)
+        
+    def update(self, *args, **kwargs):
+        
+        for criterion in self.termination_criteria:
+            criterion.update(*args, **kwargs)
+
+    def is_met(self):
+        return any( [ criterion.is_met() for criterion in self.termination_criteria ] )
+        
+        
 
 
 class EngineParameters:
@@ -30,6 +63,7 @@ class EngineParameters:
     class TERMINATION_CRITERIA(Enum):
         EVALUATIONS="Evaluations"
         TIME="Time"
+        DATE="Date"
         
     class TIME_SCALE(Enum):
         SECONDS="Seconds"
@@ -53,6 +87,7 @@ class EngineParameters:
         self.termination_parameters["evaluations"] = 1000
         self.termination_parameters["time"] = 60
         self.termination_parameters["time_scale"] = EngineParameters.TIME_SCALE.SECONDS.value
+        self.termination_parameters["datetime"] = datetime.datetime.now()
         
         self.save_runtime_criteria = []
         self.save_runtime_status = defaultdict(lambda: "")
@@ -67,5 +102,30 @@ class EngineParameters:
         self.runtime_statistics["evaluations"] = 100
         
         
+    def compile_termination_criterion(self) -> TerminationCriterion:
         
+        if len( self.temination_criteria ) == 0:
+            raise Exception("EngineParameters.compile_termination_criteria(): no termination criteria available")
+            
+        else:
+            criteria = []
+            
+            if EngineParameters.TERMINATION_CRITERIA.TIME.value in self.temination_criteria:
+                criteria.append( StoppingByTime( max_seconds=int(self.termination_parameters["time"]) ) )
+                
+            if EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.temination_criteria:
+                criteria.append( StoppingByEvaluations( max_evaluations=int(self.termination_parameters["evaluations"]) ) )
+                
+            if EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.temination_criteria:
+                criteria.append( StoppingByDateTime( date_time=int(self.termination_parameters["datetime"]) ) )
+                
+            
+            if len(criteria)>1:
+                return CompositeTerminationCriterion( criteria=criteria )
+            
+            return criteria[0]
+            
+            
+            
+            
         

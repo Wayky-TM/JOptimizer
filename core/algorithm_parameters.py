@@ -32,6 +32,7 @@ import jmetal.util.neighborhood as Neighborhood
 
 import core.variable as var_types
 from core.composite_problem import CompositeProblem
+from jmetal.util.termination_criterion import TerminationCriterion
 from core.null import NullCrossoverOperator, NullMutationOperator
 
 
@@ -175,7 +176,7 @@ class AlgorithmParameters:
         
         
     """ Generates an Algorithm object based on algorithm and problem parameters """
-    def compile_algorithm(self, problem: CompositeProblem):
+    def compile_algorithm(self, problem: CompositeProblem, termination_criterion: TerminationCriterion):
         
         """
             Float

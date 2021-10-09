@@ -53,12 +53,15 @@ class OptimizeTab(ttk.Frame):
             self.run_pause_button.config( state=tk.DISABLED )
             self.analysis_button.config( state=tk.DISABLED )
             self.save_button.config( state=tk.DISABLED )
+            self.console.print_message("Initializing engine...")
             
-            if self.controller.check_parameter_correctness():
-                self.controller.save_parameters()
+            if self.controller.launch_optimization():
                 self.run_pause_button.config( text="Pause" )
                 self.runtime_status = OptimizeTab.RUNTIME_STATUS.RUNNING
-                self.console.print_message("Initializing engine...")
+                self.console.print_message("Successful engine initialization")
+                
+            else:
+                self.console.print_error("Optimization engine could not be launched")
                 
             self.run_pause_button.config( state=tk.NORMAL )
             

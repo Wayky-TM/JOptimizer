@@ -31,6 +31,7 @@ import core.variable as variable_types
 from core.algorithm_parameters import AlgorithmParameters
 from core.problem_parameters import ProblemParameters
 from core.engine_parameters import EngineParameters
+from core.engine import OptimizationEngine
 from util.type_check import is_integer, is_float
 
 from interface.tabs.problem_definition_tab import ProblemTab
@@ -40,6 +41,12 @@ from interface.tabs.optimize_tab import OptimizeTab
 
 
 class JOptimizer_App(tk.Tk):
+    
+    def __endOfGen_callback__(self):
+        pass
+    
+    def __termination_callback__(self):
+        pass
     
     def __init__(self, *args, **kwargs):
         super( JOptimizer_App, self ).__init__(*args, **kwargs)
@@ -58,10 +65,14 @@ class JOptimizer_App(tk.Tk):
         """
             Config. variables
         """
+        self.engine_parameters = EngineParameters()
         self.problem_parameters = ProblemParameters()
         self.algorithm_parameters = AlgorithmParameters()
-        self.engine_parameters = EngineParameters()
-
+        self.engine = OptimizationEngine( engine_parameters=self.engine_parameters,
+                                          problem_parameters=self.problem_parameters,
+                                          algorithm_parameters=self.algorithm_parameters,
+                                          endOfGen_callback=self.__endOfGen_callback__,
+                                          termination_callback=self.__termination_callback__)
 
         """
             Menu
@@ -144,8 +155,15 @@ class JOptimizer_App(tk.Tk):
         self.algorithm_tab.save_parameters()
         self.runtime_enviroment_tab.save_parameters()
         
-    def initialize_engine(self):
-        pass
+    def launch_optimization(self):
+        
+        if self.controller.check_parameter_correctness():    
+            self.save_parameters()
+            self.engine.launch()
+            return True
+            
+        return False
+        
         
     def changed_tag_handler(self, event):
         index = event.widget.index("current")

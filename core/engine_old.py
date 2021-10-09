@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 Created on Mon Sep 20 20:00:36 2021
@@ -21,28 +20,26 @@ from enum import Enum
 from abc import *
 
 from core.engine_parameters import EngineParameters
-from core.problem_parameters import ProblemParameters
-from core.algorithm_parameters import AlgorithmParameters
-# from core.composite_problem import CompositeProblem
+from core.composite_problem import CompositeProblem
 from jmetal.core.algorithm import Algorithm
 import jmetal.util.termination_criterion as jterm
 
 
 class OptimizationEngine:
     
+    class TerminationCriterion(Enum):
+        EVALUATIONS=1
+        TIME=1
+    
     def __null_callback():
         pass
     
     def __init__(self,
-                 engine_parameters: EngineParameters,
-                 problem_parameters: ProblemParameters,
-                 algorithm_parameters: AlgorithmParameters,
+                 problem: CompositeProblem,
                  endOfGen_callback = __null_callback,
                  termination_callback = __null_callback):
         
-        self.engine_parameters = engine_parameters
-        self.problem_parameters = problem_parameters
-        self.algorithm_parameters = algorithm_parameters
+        self.problem = problem
         self.endOfGen_callback = endOfGen_callback
         self.termination_callback = termination_callback
         
@@ -74,7 +71,8 @@ class OptimizationEngine:
             self.algorithm = new_alg
     
     
-    def __singlethread_optimizerTask__(self):
+    def __singlethread_optimizerTask__(self,
+                                       termination_criterion: jterm.TerminationCriterion):
         
         if self.algorithm is None:
             raise Exception("__singlethread_optimizerTask__(): algorithm uninitialized")
@@ -104,11 +102,9 @@ class OptimizationEngine:
     
     
     def launch( self ):
-        self.problem = self.problem_parameters.CompileProblem()
-        termination_criterion = self.engine_parameters.compile_termination_criterion()
-        self.algorithm = self.algorithm_parameters.compile_algorithm( problem=self.problem, termination_criterion=termination_criterion )
+    
         
-        self.optimizer_thread = threading.Thread( target=self.__singlethread_optimizerTask__ )
+        self.optimizer_thread = threading.Thread( target=self.__singlethread_optimizerTask__, args=[termination_criterion] )
         self.optimizer_thread.start()
         
     def wait_termination(self):
