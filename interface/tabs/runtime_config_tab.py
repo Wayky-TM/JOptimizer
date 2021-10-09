@@ -218,14 +218,14 @@ class RuntimeTab(ttk.Frame):
         algorithm_option.place( relx=0.065, rely=0.045, relwidth=0.105 )
         
         self.items_list = {}
-        self.items_list[EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value] = ["Termination criteria", "Runtime state saving", "Runtime statistics", "Runtime plots"]
+        self.items_list[EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value] = ["Termination criteria", "State saving", "Statistics", "Plots"]
         self.selected_mode = EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value
         
         self.frames = {}
         self.frames["Termination criteria"] = RuntimeTab.TerminationCriteriaFrame(master=self, engine_parameters=self.engine_parameters)
-        self.frames["Runtime state saving"] = RuntimeTab.StateSavingFrame(master=self, engine_parameters=self.engine_parameters)
-        self.frames["Runtime statistics"] = RuntimeTab.StatisticsFrame(master=self, engine_parameters=self.engine_parameters)
-        self.frames["Runtime plots"] = RuntimeTab.PlotsFrame(master=self, engine_parameters=self.engine_parameters)
+        self.frames["State saving"] = RuntimeTab.StateSavingFrame(master=self, engine_parameters=self.engine_parameters)
+        self.frames["Statistics"] = RuntimeTab.StatisticsFrame(master=self, engine_parameters=self.engine_parameters)
+        self.frames["Plots"] = RuntimeTab.PlotsFrame(master=self, engine_parameters=self.engine_parameters)
         
         
         self.parameters_listbox = tk.Listbox( master=self)
@@ -243,19 +243,25 @@ class RuntimeTab(ttk.Frame):
         
         self.console = Console(master=self, font=("Times New Roman", 10, 'bold'))
         self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
-        self.console.print_message("Mensaje\n")
-        self.console.print_warning("Advertencia\n")
-        self.console.print_error("Error\n")
+        # self.console.print_message("Mensaje\n")
+        # self.console.print_warning("Advertencia\n")
+        # self.console.print_error("Error\n")
         
     def check_errors(self):
         
         error_list = []
         
         for key in self.items_list[self.selected_mode]:
-            #TODO: check if specified evaluator class name is correct
             error_list.extend( self.frames[key].check_errors() )
         
         return error_list
+    
+    def save_parameters(self):
+        
+        self.engine_parameters.mode = self.ModeOption.get()
+        
+        for key in self.items_list[self.ModeOption.get()]:
+            self.frames[key].save_parameters()
         
     def console_print_error(self, string: str):
         self.console.print_error( string+"\n" )

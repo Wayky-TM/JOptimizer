@@ -83,7 +83,7 @@ class Float(Parameter):
         
         error_list = []
         
-        if type(self.value)!=str or not TC.is_float(self.value) or self.value < self.lower_bound or self.value > self.upper_bound:
+        if type(self.value)!=str or not TC.is_float(self.value) or float(self.value) < self.lower_bound or float(self.value) > self.upper_bound:
             error_list.append( "Parameter '%s' must be a real value within [%f,%f]" % (self.fancy_name, self.lower_bound, self.upper_bound) )
             
         return error_list

@@ -136,13 +136,13 @@ class JOptimizer_App(tk.Tk):
             tk.messagebox.showerror(title="Invalid parameter(s)", message="Errors where found on the following tabs:\n\n" + "\n".join(["\t-" + s for s in error_list]) + "\n\nCheck error consoles for more information")
             return False
         
-        return true
+        return True
     
     def save_parameters(self):
         
-        problem_errors = self.problem_tab.save_parameters()
-        algorithm_errors = self.algorithm_tab.save_parameters()
-        runtime_enviroment_errors = self.runtime_enviroment_tab.save_parameters()
+        self.problem_tab.save_parameters()
+        self.algorithm_tab.save_parameters()
+        self.runtime_enviroment_tab.save_parameters()
         
     def initialize_engine(self):
         pass

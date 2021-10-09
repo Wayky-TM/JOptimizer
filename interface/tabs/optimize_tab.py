@@ -58,6 +58,7 @@ class OptimizeTab(ttk.Frame):
                 self.controller.save_parameters()
                 self.run_pause_button.config( text="Pause" )
                 self.runtime_status = OptimizeTab.RUNTIME_STATUS.RUNNING
+                self.console.print_message("Initializing engine...")
                 
             self.run_pause_button.config( state=tk.NORMAL )
             
@@ -72,7 +73,6 @@ class OptimizeTab(ttk.Frame):
             self.analysis_button.config( state=tk.DISABLED )
             self.save_button.config( state=tk.DISABLED )
             self.runtime_status = OptimizeTab.RUNTIME_STATUS.RUNNING
-            pass
         
     
     def __results_analysis(self):
@@ -95,9 +95,9 @@ class OptimizeTab(ttk.Frame):
         
         self.console = TimedConsole(master=self.console_frame, font=("Times New Roman", 10, 'bold'))
         self.console.place( relx=0.02, rely=0.05, relwidth=0.96, relheight=0.90 )
-        self.console.print_message("Mensaje\n")
-        self.console.print_warning("Advertencia\n")
-        self.console.print_error("Error\n")
+        # self.console.print_message("Mensaje\n")
+        # self.console.print_warning("Advertencia\n")
+        # self.console.print_error("Error\n")
         
         self.progress_stats_frame = tk.LabelFrame( master=self, text="Progress statistics", font=('URW Gothic L','10','bold') )
         self.progress_stats_frame.place( relx=0.43, rely=0.024, relwidth=0.555, relheight=0.854 )

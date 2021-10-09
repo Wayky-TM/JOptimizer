@@ -46,6 +46,7 @@ class EngineParameters:
         BY_EVALUATIONS="Evaluations"
     
     def __init__(self):
+        self.mode = EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value
         
         self.temination_criteria={EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value}
         self.termination_parameters = defaultdict(lambda: "")

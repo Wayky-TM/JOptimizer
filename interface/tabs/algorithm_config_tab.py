@@ -233,6 +233,9 @@ class AlgorithmTab(ttk.Frame):
                 def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
                     super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame.SBXFrame,self).__init__(master=master, *args, **kwargs)
                     
+                    self.problem_parameters = problem_parameters
+                    self.algorithm_parameters = algorithm_parameters
+                    
                     self.probability_label = tk.Label( self, text="Probability" ).place( relx=0.01, rely=0.048 )
                     self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
                     self.probability_entry.place(relx=0.155, rely=0.05+0.005, relwidth=0.08)
@@ -273,6 +276,9 @@ class AlgorithmTab(ttk.Frame):
                 
                 def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
                     super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame.DiffEvolFrame,self).__init__(master=master, *args, **kwargs)
+                    
+                    self.problem_parameters = problem_parameters
+                    self.algorithm_parameters = algorithm_parameters
                     
                     self.probability_label = tk.Label( self, text="Probability" ).place( relx=0.01, rely=0.048 )
                     self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
@@ -354,12 +360,12 @@ class AlgorithmTab(ttk.Frame):
                 
                 self.crossover_option_parameter = Parameter( name="float_crossover_option", fancy_name="Float crossover option" )
                 
-                def __store_float_crossover_option(self, value):
-                    self.algorithm_parameters.float_crossover_choice = value
-                
                 self.parameters_bindings.append( ParameterBinding(parameter=self.crossover_option_parameter,
                                                                   widget_read_lambda=lambda: self.CrossoverOption.get(),
-                                                                  variable_store_lambda=__store_float_crossover_option) )
+                                                                  variable_store_lambda=self.__store_float_crossover_option) )
+                
+            def __store_float_crossover_option(self, value):
+                self.algorithm_parameters.float_crossover_choice = value
                 
             def option_change(self, new_value):
                 
@@ -375,7 +381,7 @@ class AlgorithmTab(ttk.Frame):
                 return error_list
             
             def save_parameters(self):
-                self.save_parameters()
+                super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame, self).save_parameters()
                 self.frames[self.selected_frame_key].save_parameters()
                 
             def disable(self):
@@ -1034,9 +1040,9 @@ class AlgorithmTab(ttk.Frame):
         
         self.console = Console(master=self, font=("Times New Roman", 10, 'bold'))
         self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
-        self.console.print_message("Mensaje\n")
-        self.console.print_warning("Advertencia\n")
-        self.console.print_error("Error\n")
+        # self.console.print_message("Mensaje\n")
+        # self.console.print_warning("Advertencia\n")
+        # self.console.print_error("Error\n")
         
     def update_types(self):
         
@@ -1084,6 +1090,13 @@ class AlgorithmTab(ttk.Frame):
             error_list.extend( self.frames[key].check_errors() )
         
         return error_list
+    
+    def save_parameters(self):
+        
+        self.algorithm_parameters.choice = self.AlgorithmOption.get()
+        
+        for key in self.items_list[self.AlgorithmOption.get()]:
+            self.frames[key].save_parameters()
         
     def console_print_error(self, string: str):
         self.console.print_error( string+"\n" )

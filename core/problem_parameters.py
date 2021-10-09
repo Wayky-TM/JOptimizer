@@ -27,9 +27,9 @@ import core.composite_problem as cproblem
 class ProblemParameters:
     
     class PROBLEM_TEMPLATES(Enum):
-        UNIVERSAL="universal"
-        # CST="CST"
-        # MATLAB="matlab"
+        GENERIC="Generic"
+        CST="CST"
+        MATLAB="Matlab"
     
     def __init__(self):
         self.options = defaultdict(lambda: "")

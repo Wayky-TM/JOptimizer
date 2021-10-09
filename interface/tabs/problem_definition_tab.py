@@ -997,10 +997,23 @@ class ProblemTab(ttk.Frame):
             index = selection[0]
             data = event.widget.get(index)
             # print(data)
-            self.selected_frame.hide()
-            self.selected_frame = self.frames[data]
-            self.selected_frame.display()
+            self.frames[self.selected_frame_key].hide()
+            self.selected_frame_key = data
+            self.frames[self.selected_frame_key].display()
         
+    def __template_change__(self, new_selection):
+        
+        self.parameters_listbox.delete(0,'end')
+        
+        item_list = self.items_list[new_selection]
+        
+        if self.selected_frame_key not in item_list:
+            self.frames[self.selected_frame_key].hide()
+            self.selected_frame_key = item_list[0]
+            self.frames[self.selected_frame_key].display()
+        
+        for option in item_list:
+            self.parameters_listbox.insert(tk.END, option)
     
     def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
         super(ProblemTab, self).__init__(master=master, *args, **kwargs)
@@ -1012,7 +1025,7 @@ class ProblemTab(ttk.Frame):
         tk.Label( self, text="Template", font=('URW Gothic L','11','bold') ).place( relx=0.01, rely=0.048 )
         self.TemplateOption = tk.StringVar(self)
         self.TemplateOption.set(templates_optionlist[0])
-        template_option = tk.OptionMenu(self, self.TemplateOption, *templates_optionlist)
+        template_option = tk.OptionMenu(self, self.TemplateOption, *templates_optionlist, command=self.__template_change__)
         template_option.config( font=('URW Gothic L','11') )
         template_option.config( state=tk.DISABLED )
         template_option.place( relx=0.065, rely=0.045, relwidth=0.105 )
@@ -1023,14 +1036,13 @@ class ProblemTab(ttk.Frame):
         self.frames["Constants"] = ProblemTab.ConstantsFrame( master=self, problem_parameters=self.problem_parameters )
         self.frames["Constraints"] = ProblemTab.ConstraintsFrame( master=self, problem_parameters=self.problem_parameters )
         
-        self.generic_problem_items = [ "Evaluator", "Variables", "Constants", "Constraints" ]
-        self.matlab_problem_items = [ "Script", "Variables", "Constants", "Constraints" ]
-        self.CST_problem_items = [ "CST", "Variables", "Constants", "Constraints" ]
+        self.items_list = {}
+        self.items_list[ ProblemParameters.PROBLEM_TEMPLATES.GENERIC.value ] = [ "Evaluator", "Variables", "Constants", "Constraints" ]
+        self.items_list[ ProblemParameters.PROBLEM_TEMPLATES.MATLAB.value ] = [ "Script", "Variables", "Constants", "Constraints" ]
+        self.items_list[ ProblemParameters.PROBLEM_TEMPLATES.CST.value ] = [ "CST", "Variables", "Constants", "Constraints" ]
         
-        self.selected_problem_items = self.generic_problem_items
-        
-        self.selected_frame = self.frames["Evaluator"]
-        self.selected_frame.display()
+        self.selected_frame_key = "Evaluator"
+        self.frames[self.selected_frame_key].display()
         
         self.parameters_listbox = tk.Listbox( master=self)
         self.parameters_listbox.config( font=('URW Gothic L','11','bold') )
@@ -1048,20 +1060,27 @@ class ProblemTab(ttk.Frame):
         
         self.console = Console(master=self, font=("Times New Roman", 10, 'bold'))
         self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
-        self.console.print_message("Mensaje\n")
-        self.console.print_warning("Advertencia\n")
-        self.console.print_error("Error\n")
+        # self.console.print_message("Mensaje\n")
+        # self.console.print_warning("Advertencia\n")
+        # self.console.print_error("Error\n")
         
         
     def check_errors(self):
         
         error_list = []
         
-        for key in self.selected_problem_items:
-            #TODO: check if specified evaluator class name is correct
+        for key in self.items_list[self.TemplateOption.get()]:
             error_list.extend( self.frames[key].check_errors() )
         
         return error_list
+    
+    def save_parameters(self):
+        
+        self.problem_parameters.options["template"] = self.TemplateOption.get()
+        
+        for key in self.items_list[self.TemplateOption.get()]:
+            self.frames[key].save_parameters()
+            
     
     def console_print_error(self, string: str):
         self.console.print_error( string+"\n" )
