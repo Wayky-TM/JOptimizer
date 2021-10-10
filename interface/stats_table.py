@@ -48,7 +48,7 @@ class StatsTable(ttk.Treeview):
     
     def __init__(self, master, *args, **kwargs):
         self.headers = ["Value"]
-        super(BoundEntry, self).__init__(master=master, *args, columns=self.headers, selectmode="extended", **kwargs)
+        super(StatsTable, self).__init__(master=master, *args, columns=self.headers, selectmode="extended", **kwargs)
     
         self.heading("#0", text="Stat")
         self.column("#0", minwidth=100, width=200, stretch=tk.NO)

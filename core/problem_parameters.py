@@ -65,10 +65,10 @@ class ProblemParameters:
                 permutation_vars.append( v )
         
         """ Problem type selection """
-        if self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.UNIVERSAL:
+        if self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.GENERIC.value:
             # module_evaluator = locate('{package}.{ev_class}'.format(package=self.options["evaluator_path"], ev_class=self.options["evaluator_classname"]))
             evaluator_module = imp.load_source(name=Path(self.options["evaluator_path"]).stem, pathname=self.options["evaluator_path"])
-            evaluator_class = getattr(evaluator_module, self.options["evaluator_classname"])
+            evaluator_class = getattr(evaluator_module, self.options["evaluator_class"])
             
             evaluator = evaluator_class()
         

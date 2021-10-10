@@ -46,19 +46,45 @@ class JOptimizer_App(tk.Tk):
         pass
     
     def __termination_callback__(self):
-        pass
+        self.__refresh_stats__()
+        self.optimize_tab.__finnished()
     
     def __evaluations_callback__(self):
-        pass
+        return self.engine.algorithm.evaluations
     
     def __avgTimeEvaluation_callback__(self):
-        pass
+        if self.engine.algorithm.evaluations > 0:
+            return time.strftime('%H:%M:%S', time.gmtime(self.engine.total_computing_time()/float(self.engine.algorithm.evaluations)))
+                                 
+        return "--:--:--"
     
     def __elapsedTime_callback__(self):
-        pass
+        time = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
+        return time.strftime('%H:%M:%S', time.gmtime( time ))
+    
+    def __elapsedComputingTime_callback__(self):
+        return time.strftime('%H:%M:%S', time.gmtime(self.engine.total_computing_time()))
     
     def __ETA_callback__(self):
-        pass
+        estimations = []
+        
+        if self.engine_parameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria:
+            time = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
+            estimations.append( (time/float(self.engine.algorithm.evaluations))*(int(self.engine_parameters.termination_parameters["evaluations"]) - self.engine.algorithm.evaluations) )
+            
+        if self.engine_parameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
+            time = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
+            estimations.append( float(self.engine_parameters.termination_parameters["time"]) - time )
+            
+        if self.engine_parameters.TERMINATION_CRITERIA.DATE.value in self.engine_parameters.temination_criteria:
+            estimations.append( self.engine_parameters.termination_parameters["datetime"] - datetime.datetime.now() )
+            
+        return time.strftime('%H:%M:%S', time.gmtime( min(estimations) ))
+    
+    
+    def __refresh_stats__(self):
+        self.optimize_tab.__refresh_stats__()
+        
     
     def __init__(self, *args, **kwargs):
         super( JOptimizer_App, self ).__init__(*args, **kwargs)

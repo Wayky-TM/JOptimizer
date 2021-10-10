@@ -79,22 +79,28 @@ class OptimizationEngine:
         if self.algorithm is None:
             raise Exception("__singlethread_optimizerTask__(): algorithm uninitialized")
         
-        self.total_evaluations += self.algorithm.evaluations
+        # self.total_evaluations += self.algorithm.evaluations
         
         self.algorithm.init_progress()
+        self.algorithm.total_computing_time = 0.0
         
-        self.algorithm.start_computing_time = time.time()
+        self.last_execution_time_resume = time.time()
+        self.acum_execution_time = 0.0
         
         while not self.algorithm.stopping_condition_is_met():
             self.pause_semaphore.acquire()
+        
+            prev_time = time.time()
             
             self.algorithm.step()
             self.algorithm.update_progress()
-            self.endOfGen_callback()
             
+            self.algorithm.total_computing_time += time.time() - prev_time
+            
+            self.endOfGen_callback()
             self.pause_semaphore.release()
         
-        self.algorithm.total_computing_time = time.time() - self.algorithm.start_computing_time
+        # self.algorithm.total_computing_time = time.time() - self.algorithm.start_computing_time
         
         self.termination_callback()
     

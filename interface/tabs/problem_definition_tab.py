@@ -102,7 +102,7 @@ class ProblemTab(ttk.Frame):
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.evaluator_path_parameter,
                                                               widget_read_lambda=lambda: self.OperatorFilePath.get(),
-                                                              variable_store_lambda=lambda var: self.problem_parameters.options.update({"evaluator_class":var}),
+                                                              variable_store_lambda=lambda var: self.problem_parameters.options.update({"evaluator_path":var}),
                                                               error_set_lambda=EntryInvalidator(self.OperatorFilePath),
                                                               error_reset_lambda=EntryValidator(self.OperatorFilePath)) )
             

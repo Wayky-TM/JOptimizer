@@ -442,12 +442,12 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.distribution_index_entry),
                                                                   error_reset_lambda=EntryValidator(self.distribution_index_entry)) )
                 
-                def __store_int_crossover_option(self, value):
-                    self.algorithm_parameters.int_crossover_choice = value
-                
                 self.parameters_bindings.append( ParameterBinding(parameter=self.crossover_option_parameter,
                                                                   widget_read_lambda=lambda: self.CrossoverOption.get(),
-                                                                  variable_store_lambda=__store_int_crossover_option) )
+                                                                  variable_store_lambda=self.__store_int_crossover_option) )
+                
+            def __store_int_crossover_option(self, value):
+                self.algorithm_parameters.int_crossover_choice = value
                 
             def disable(self):
                 self.configure(text="Integer crossover (Disabled)")
@@ -624,6 +624,9 @@ class AlgorithmTab(ttk.Frame):
                 def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
                     super(AlgorithmTab.MutationFrame.FloatMutationFrame.PolynomialMutation,self).__init__(master=master, *args, **kwargs)
                     
+                    self.problem_parameters = problem_parameters
+                    self.algorithm_parameters = algorithm_parameters
+                    
                     self.distribution_index_label = tk.Label( master=self, text="Distribution index" ).place( relx=0.01, rely=0.048 )
                     self.distribution_index_entry = tk.Entry(master=self, state=tk.NORMAL)
                     self.distribution_index_entry.place(relx=0.23, rely=0.048+0.005, relwidth=0.08)
@@ -650,6 +653,9 @@ class AlgorithmTab(ttk.Frame):
             
                 def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
                     super(AlgorithmTab.MutationFrame.FloatMutationFrame.UniformMutation,self).__init__(master=master, *args, **kwargs)
+                    
+                    self.problem_parameters = problem_parameters
+                    self.algorithm_parameters = algorithm_parameters
                     
                     self.perturbation_label = tk.Label( self, text="Perturbation" ).place( relx=0.01, rely=0.048 )
                     self.perturbation_entry = tk.Entry(master=self, state=tk.NORMAL)
@@ -741,18 +747,18 @@ class AlgorithmTab(ttk.Frame):
                 self.mutation_option_parameter = Parameter( name="float_mutation_option", fancy_name="Float mutation option" )
                 self.probability_parameter = Float(name="probability", fancy_name="probability", lower_bound=0.0, upper_bound=1.0)
                 
-                def __store_float_mutation_option(self, value):
-                    self.algorithm_parameters.float_mutation_choice = value
-                
                 self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
                                                                   widget_read_lambda=lambda: self.MutationOption.get(),
-                                                                  variable_store_lambda=__store_float_mutation_option) )
+                                                                  variable_store_lambda=self.__store_float_mutation_option) )
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
                                                                   widget_read_lambda=lambda: self.probability_entry.get(),
                                                                   variable_store_lambda=lambda var: self.algorithm_parameters.float_mutation_parameters.update({"probability":var}),
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry)) )
+            def __store_float_mutation_option(self, value):
+                self.algorithm_parameters.float_mutation_choice = value
+                
                 
             def option_change(self, new_value):
                 
@@ -762,13 +768,14 @@ class AlgorithmTab(ttk.Frame):
                     self.frames[self.selected_frame_key].display()
                 
             def check_errors(self):
-                error_list = super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame,self).check_errors()
+                error_list = super(AlgorithmTab.MutationFrame.FloatMutationFrame,self).check_errors()
                 error_list.extend( self.frames[self.selected_frame_key].check_errors() )
                 
                 return error_list
             
             def save_parameters(self):
-                self.save_parameters()
+                # self.save_parameters()
+                super(AlgorithmTab.MutationFrame.FloatMutationFrame,self).save_parameters()
                 self.frames[self.selected_frame_key].save_parameters()
                 
             def disable(self):
@@ -831,12 +838,13 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.distribution_index_entry),
                                                                   error_reset_lambda=EntryValidator(self.distribution_index_entry)) )
                 
-                def __store_int_mutation_option(self, value):
-                    self.algorithm_parameters.int_mutation_choice = value
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
                                                                   widget_read_lambda=lambda: self.MutationOption.get(),
-                                                                  variable_store_lambda=__store_int_mutation_option) )
+                                                                  variable_store_lambda=self.__store_int_mutation_option) )
+
+            def __store_int_mutation_option(self, value):
+                self.algorithm_parameters.int_mutation_choice = value
                 
             def disable(self):
                 self.configure(text="Integer mutation (Disabled)")
@@ -881,13 +889,15 @@ class AlgorithmTab(ttk.Frame):
                                                                   variable_store_lambda=lambda var: self.algorithm_parameters.binary_mutation_parameters.update({"probability":var}),
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry)) )
-                
-                def __store_binary_mutation_option(self, value):
-                    self.algorithm_parameters.binary_mutation_choice = value
+            
                     
                 self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
                                                                   widget_read_lambda=lambda: self.MutationOption.get(),
-                                                                  variable_store_lambda=__store_binary_mutation_option) )
+                                                                  variable_store_lambda=self.__store_binary_mutation_option) )
+                
+            
+            def __store_binary_mutation_option(self, value):
+                self.algorithm_parameters.binary_mutation_choice = value
                 
             def disable(self):
                 self.configure(text="Binary mutation (Disabled)")
@@ -931,12 +941,13 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry)) )
                 
-                def __store_permutation_mutation_option(self, value):
-                    self.algorithm_parameters.permutation_mutation_choice = value
                     
                 self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
                                                                   widget_read_lambda=lambda: self.MutationOption.get(),
-                                                                  variable_store_lambda=__store_permutation_mutation_option) )
+                                                                  variable_store_lambda=self.__store_permutation_mutation_option) )
+                
+            def __store_permutation_mutation_option(self, value):
+                self.algorithm_parameters.permutation_mutation_choice = value
                 
             def disable(self):
                 self.configure(text="Permutation mutation (Disabled)")
@@ -966,6 +977,42 @@ class AlgorithmTab(ttk.Frame):
             self.int_frame.disable()
             self.binary_frame.disable()
             self.permutation_frame.disable()
+            
+        def check_errors(self):
+            error_list = super(AlgorithmTab.MutationFrame,self).check_errors()
+            
+            used_variable_types = [ type(x) for x in self.problem_parameters.variables ]
+            
+            if variable_types.FloatVariable in used_variable_types:
+                error_list.extend( self.float_frame.check_errors() )
+            
+            if variable_types.IntegerVariable in used_variable_types or variable_types.DiscretizedFloatVariable in used_variable_types:
+                error_list.extend( self.int_frame.check_errors() )
+            
+            if variable_types.BinaryVariable in used_variable_types:
+                error_list.extend( self.binary_frame.check_errors() )
+            
+            if variable_types.PermutationVariable in used_variable_types:
+                error_list.extend( self.permutation_frame.check_errors() )
+            
+            return error_list
+        
+        
+        def save_parameters(self):
+            
+            used_variable_types = [ type(x) for x in self.problem_parameters.variables ]
+            
+            if variable_types.FloatVariable in used_variable_types:
+                self.float_frame.save_parameters()
+            
+            if variable_types.IntegerVariable in used_variable_types or variable_types.DiscretizedFloatVariable in used_variable_types:
+                self.int_frame.save_parameters()
+            
+            if variable_types.BinaryVariable in used_variable_types:
+                self.binary_frame.save_parameters()
+            
+            if variable_types.PermutationVariable in used_variable_types:
+                self.permutation_frame.save_parameters()
             
     
     def update_algorithm_selection(self, new_selection):

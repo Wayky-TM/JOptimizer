@@ -48,6 +48,13 @@ class OptimizeTab(ttk.Frame):
         RUNNING="Running"
         PAUSED="Paused"
     
+        
+    def __finnished(self):
+        self.run_pause_button.config( text="Run" )
+        self.analysis_button.config( state=tk.NORMAL )
+        self.save_button.config( state=tk.NORMAL )
+        self.runtime_status = OptimizeTab.RUNTIME_STATUS.PAUSED
+    
     def __run_pause(self):
         
         if self.runtime_status == OptimizeTab.RUNTIME_STATUS.INITIALIZED:
@@ -85,6 +92,9 @@ class OptimizeTab(ttk.Frame):
     def __save_solutions(self):
         pass
     
+    def __refresh_stats__(self):
+        self.stats_tree.update_stats()
+    
     def __init__(self, master, controller, *args, **kwargs):
         super(OptimizeTab, self).__init__(master=master, *args, **kwargs)
         
@@ -94,9 +104,15 @@ class OptimizeTab(ttk.Frame):
         self.runtime_stats_frame = tk.LabelFrame( master=self, text="Runtime stats", font=('URW Gothic L','10','bold') )
         self.runtime_stats_frame.place( relx=0.015, rely=0.024, relwidth=0.4, relheight=0.55 )
         
-        self.stats_tree = StatsTable(master=self.runtime_stats_frame, columns=self.headers, selectmode="extended")
+        self.stats_tree = StatsTable(master=self.runtime_stats_frame)
         
         self.stats_tree.place( relx=0.045, rely=0.05, relwidth=0.91, relheight=0.9 )
+        
+        self.stats_tree.add_stat(name="Evaluations", update_lambda=self.controller.__evaluations_callback__)
+        self.stats_tree.add_stat(name="Avg. Time/evaluation", update_lambda=self.controller.__avgTimeEvaluation_callback__)
+        self.stats_tree.add_stat(name="Elapsed time", update_lambda=self.controller.__elapsedTime_callback__)
+        self.stats_tree.add_stat(name="Elapsed computation time", update_lambda=self.controller.__elapsedComputingTime_callback__)
+        self.stats_tree.add_stat(name="ETA", update_lambda=self.controller.__ETA_callback__)
         
         self.console_frame = tk.LabelFrame( master=self, text="Runtime console", font=('URW Gothic L','10','bold') )
         self.console_frame.place( relx=0.015, rely=0.598, relwidth=0.4, relheight=0.28 )
