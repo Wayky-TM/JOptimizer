@@ -130,38 +130,51 @@ class AlgorithmParameters:
         
         """ General """
         self.general_parameters = defaultdict(lambda: "")
+        self.general_parameters["population_size"] = "100"
+        self.general_parameters["offspring_size"] = "100"
         
         """ Float """
         self.float_crossover_choice = AlgorithmParameters.FLOAT_CROSSOVER.SBX.value
         self.float_crossover_parameters = defaultdict(lambda: "")
+        self.float_crossover_parameters["probability"] = "0.8"
+        self.float_crossover_parameters["distribution_index"] = "20"
         
         self.float_mutation_choice = AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL.value
         self.float_mutation_parameters = defaultdict(lambda: "")
+        self.float_mutation_parameters["probability"] = "0.1"
+        self.float_mutation_parameters["distribution_index"] = "20"
         
         
         
         """ Int """
         self.int_crossover_choice = AlgorithmParameters.INT_CROSSOVER.INT_SBX.value
         self.int_crossover_parameters = defaultdict(lambda: "")
+        self.int_crossover_parameters["probability"] = "0.8"
+        self.int_crossover_parameters["distribution_index"] = "20"
         
         self.int_mutation_choice = AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL.value
         self.int_mutation_parameters = defaultdict(lambda: "")
+        self.int_mutation_parameters["probability"] = "0.8"
         
         
         """ Binary """
         self.binary_crossover_choice = AlgorithmParameters.BINARY_CROSSOVER.SPX.value
         self.binary_crossover_parameters = defaultdict(lambda: "")
+        self.binary_crossover_parameters["probability"] = "0.8"
         
         self.binary_mutation_choice = AlgorithmParameters.BINARY_MUTATION.BIT_FLIP.value
         self.binary_mutation_parameters = defaultdict(lambda: "")
+        self.binary_mutation_parameters["probability"] = "0.8"
         
         
         """ Permutation """
         self.permutation_crossover_choice = AlgorithmParameters.PERMUTATION_CROSSOVER.PMX.value
         self.permutation_crossover_parameters = defaultdict(lambda: "")
+        self.permutation_crossover_parameters["probability"] = "0.8"
         
         self.permutation_mutation_choice = AlgorithmParameters.PERMUTATION_MUTATION.PERMUTATION_SWAP.value
         self.permutation_mutation_parameters = defaultdict(lambda: "")
+        self.permutation_mutation_parameters["probability"] = "0.8"
         
         
         """ Selection """

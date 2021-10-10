@@ -74,12 +74,14 @@ class OptimizeTab(ttk.Frame):
             self.run_pause_button.config( state=tk.NORMAL )
             
         elif self.runtime_status == OptimizeTab.RUNTIME_STATUS.RUNNING:
+            self.console.print_warning("Pause requested, waiting evaluation(s) to complete")
             self.run_pause_button.config( text="Run" )
             self.analysis_button.config( state=tk.NORMAL )
             self.save_button.config( state=tk.NORMAL )
             self.runtime_status = OptimizeTab.RUNTIME_STATUS.PAUSED
             
         elif self.runtime_status == OptimizeTab.RUNTIME_STATUS.PAUSED:
+            self.console.print_message("Resuming execution")
             self.run_pause_button.config( text="Pause" )
             self.analysis_button.config( state=tk.DISABLED )
             self.save_button.config( state=tk.DISABLED )

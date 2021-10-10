@@ -157,15 +157,6 @@ class AlgorithmTab(ttk.Frame):
             
             self.selection_options = [ option.value for option in AlgorithmParameters.SELECTION ]
             
-            # self.selection_options = ["Roulette",
-            #                           "Binary tournament",
-            #                           "Best solution",
-            #                           "n-ary random",
-            #                           "Differential evolution",
-            #                           "Random selection",
-            #                           "Roulette",
-            #                           "Ranking and crowding"]
-            
             self.frames = {}
             self.frames[ AlgorithmParameters.SELECTION.ROULETTE.value ] = paceholder_frame
             self.frames[ AlgorithmParameters.SELECTION.BINARY_TOURNAMENT.value ] = paceholder_frame
@@ -239,11 +230,13 @@ class AlgorithmTab(ttk.Frame):
                     
                     self.probability_label = tk.Label( self, text="Probability" ).place( relx=0.01, rely=0.048 )
                     self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
+                    self.probability_entry.insert(0, self.algorithm_parameters.float_crossover_parameters["probability"])
                     self.probability_entry.place(relx=0.155, rely=0.05+0.005, relwidth=0.08)
                     self.probability_entry.config(state=tk.NORMAL)
                     
                     self.distribution_index_label = tk.Label( self, text="Distribution index" ).place( relx=0.01, rely=0.448 )
                     self.distribution_index_entry = tk.Entry(master=self, state=tk.NORMAL)
+                    self.distribution_index_entry.insert(0, self.algorithm_parameters.float_crossover_parameters["distribution_index"])
                     self.distribution_index_entry.place(relx=0.23, rely=0.45+0.005, relwidth=0.08)
                     self.distribution_index_entry.config(state=tk.NORMAL)
                     
@@ -283,6 +276,7 @@ class AlgorithmTab(ttk.Frame):
                     
                     self.probability_label = tk.Label( self, text="Probability" ).place( relx=0.01, rely=0.048 )
                     self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
+                    self.probability_entry.insert(0, self.algorithm_parameters.float_crossover_parameters["probability"])
                     self.probability_entry.place(relx=0.155, rely=0.05+0.005, relwidth=0.08)
                     self.probability_entry.config(state=tk.NORMAL)
                     
@@ -418,11 +412,13 @@ class AlgorithmTab(ttk.Frame):
                 tk.Label( master=self.labelframe_params, text="Probability" ).place( relx=0.01, rely=0.05 )
                 self.probability_entry = tk.Entry(master=self.labelframe_params, state=tk.NORMAL)
                 self.probability_entry.place(relx=0.155, rely=0.05+0.005, relwidth=0.08)
+                self.probability_entry.insert(0, self.algorithm_parameters.int_crossover_parameters["probability"])
                 self.probability_entry.config(state=tk.NORMAL)
                 
                 self.distribution_index_label = tk.Label( self.labelframe_params, text="Distribution index" ).place( relx=0.01, rely=0.448 )
                 self.distribution_index_entry = tk.Entry(master=self.labelframe_params, state=tk.NORMAL)
                 self.distribution_index_entry.place(relx=0.23, rely=0.45+0.005, relwidth=0.08)
+                self.distribution_index_entry.insert(0, self.algorithm_parameters.int_crossover_parameters["distribution_index"])
                 self.distribution_index_entry.config(state=tk.NORMAL)
                 
                 self.labelframe_params.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -482,6 +478,7 @@ class AlgorithmTab(ttk.Frame):
                 tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.3 )
                 self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
                 self.probability_entry.place(relx=0.65, rely=0.3, relwidth=0.08)
+                self.probability_entry.insert(0, self.algorithm_parameters.binary_crossover_parameters["probability"])
                 self.probability_entry.config(state=tk.NORMAL)
                 
                 
@@ -532,6 +529,7 @@ class AlgorithmTab(ttk.Frame):
                 tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.3 )
                 self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
                 self.probability_entry.place(relx=0.65, rely=0.3, relwidth=0.08)
+                self.probability_entry.insert(0, self.algorithm_parameters.permutation_crossover_parameters["probability"])
                 self.probability_entry.config(state=tk.NORMAL)
                 
                 self.crossover_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
@@ -631,6 +629,7 @@ class AlgorithmTab(ttk.Frame):
                     self.distribution_index_label = tk.Label( master=self, text="Distribution index" ).place( relx=0.01, rely=0.048 )
                     self.distribution_index_entry = tk.Entry(master=self, state=tk.NORMAL)
                     self.distribution_index_entry.place(relx=0.23, rely=0.048+0.005, relwidth=0.08)
+                    self.distribution_index_entry.insert(0, self.algorithm_parameters.float_mutation_parameters["distribution_index"])
                     self.distribution_index_entry.config(state=tk.NORMAL)
                     
                     self.distribution_index_parameter = Float(name="distribution_index", fancy_name="Distribution index (float mutation)", lower_bound=float("-Inf"), upper_bound=float("Inf"))
@@ -726,6 +725,7 @@ class AlgorithmTab(ttk.Frame):
                 tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.05 )
                 self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
                 self.probability_entry.place(relx=0.64, rely=0.055, relwidth=0.08)
+                self.probability_entry.insert(0, self.algorithm_parameters.float_mutation_parameters["probability"])
                 self.probability_entry.config(state=tk.NORMAL)
                 
                 self.frames = {}
@@ -812,6 +812,7 @@ class AlgorithmTab(ttk.Frame):
                 tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.05 )
                 self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
                 self.probability_entry.place(relx=0.64, rely=0.055, relwidth=0.08)
+                self.probability_entry.insert(0, self.algorithm_parameters.int_mutation_parameters["probability"])
                 self.probability_entry.config(state=tk.NORMAL)
                 
                 self.labelframe_params = tk.LabelFrame(master=self)
@@ -819,6 +820,7 @@ class AlgorithmTab(ttk.Frame):
                 self.distribution_index_label = tk.Label( self.labelframe_params, text="Distribution index (int mutation)" ).place( relx=0.01, rely=0.048 )
                 self.distribution_index_entry = tk.Entry(master=self.labelframe_params, state=tk.NORMAL)
                 self.distribution_index_entry.place(relx=0.23, rely=0.048+0.005, relwidth=0.08)
+                self.distribution_index_entry.insert(0, self.algorithm_parameters.int_mutation_parameters["distribution_index"])
                 self.distribution_index_entry.config(state=tk.NORMAL)
                 
                 self.labelframe_params.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -879,6 +881,7 @@ class AlgorithmTab(ttk.Frame):
                 tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.3 )
                 self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
                 self.probability_entry.place(relx=0.65, rely=0.3, relwidth=0.08)
+                self.probability_entry.insert(0, self.algorithm_parameters.binary_mutation_parameters["probability"])
                 self.probability_entry.config(state=tk.NORMAL)
                 
                 
@@ -931,6 +934,7 @@ class AlgorithmTab(ttk.Frame):
                 tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.3 )
                 self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
                 self.probability_entry.place(relx=0.65, rely=0.3, relwidth=0.08)
+                self.probability_entry.insert(0, self.algorithm_parameters.permutation_mutation_parameters["probability"])
                 self.probability_entry.config(state=tk.NORMAL)
                 
                 self.mutation_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )

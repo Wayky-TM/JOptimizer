@@ -56,27 +56,27 @@ class JOptimizer_App(tk.Tk):
     
     def __avgTimeEvaluation_callback__(self):
         if self.engine.algorithm.evaluations > 0:
-            return time.strftime('%H:%M:%S', time.gmtime(self.engine.algorithm.total_computing_time()/float(self.engine.algorithm.evaluations)))
+            return time.strftime('%H:%M:%S', time.gmtime(self.engine.algorithm.total_computing_time/float(self.engine.algorithm.evaluations)))
                                  
         return "--:--:--"
     
     def __elapsedTime_callback__(self):
-        time = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
-        return time.strftime('%H:%M:%S', time.gmtime( time ))
+        time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
+        return time.strftime('%H:%M:%S', time.gmtime( time_elapsed ))
     
     def __elapsedComputingTime_callback__(self):
-        return time.strftime('%H:%M:%S', time.gmtime(self.engine.total_computing_time()))
+        return time.strftime('%H:%M:%S', time.gmtime(self.engine.algorithm.total_computing_time))
     
     def __ETA_callback__(self):
         estimations = []
         
         if self.engine_parameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria:
-            time = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
-            estimations.append( (time/float(self.engine.algorithm.evaluations))*(int(self.engine_parameters.termination_parameters["evaluations"]) - self.engine.algorithm.evaluations) )
+            time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
+            estimations.append( (time_elapsed/float(self.engine.algorithm.evaluations))*(int(self.engine_parameters.termination_parameters["evaluations"]) - self.engine.algorithm.evaluations) )
             
         if self.engine_parameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
-            time = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
-            estimations.append( float(self.engine_parameters.termination_parameters["time"]) - time )
+            time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
+            estimations.append( float(self.engine_parameters.termination_parameters["time"]) - time_elapsed )
             
         if self.engine_parameters.TERMINATION_CRITERIA.DATE.value in self.engine_parameters.temination_criteria:
             estimations.append( self.engine_parameters.termination_parameters["datetime"] - datetime.datetime.now() )
