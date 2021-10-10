@@ -91,12 +91,12 @@ class ProblemTab(ttk.Frame):
         def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
             super(ProblemTab.EvaluatorFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
             
-            tk.Label( master=self, text="Evaluator script path").place( relx=0.02, rely=0.05 )
-            self.OperatorFilePath = tk.Entry(master=self, state=tk.NORMAL)
+            ttk.Label( master=self, text="Evaluator script path").place( relx=0.02, rely=0.05 )
+            self.OperatorFilePath = ttk.Entry(master=self, state=tk.NORMAL)
             self.OperatorFilePath.insert(0, problem_parameters.options["evaluator_path"])
             self.OperatorFilePath.place(relx=0.12, rely=0.05+0.005, relwidth=0.3)
             self.OperatorFilePath.config(state=tk.DISABLED)
-            self.button_browse_operator = tk.Button( master=self,  text="Browse", command=lambda: self._browse() ).place(relx=0.43, rely=0.05, relwidth=0.06)
+            self.button_browse_operator = ttk.Button( master=self,  text="Browse", command=lambda: self._browse() ).place(relx=0.43, rely=0.05, relwidth=0.06)
             
             self.evaluator_path_parameter = FilePath( fancy_name="Evaluator script path", extension=".py" )
             
@@ -109,7 +109,7 @@ class ProblemTab(ttk.Frame):
             
             
             tk.Label( master=self, text="Evaluator class").place( relx=0.02, rely=0.15 )
-            self.evaluator_class_entry = tk.Entry( master=self , state=tk.NORMAL)
+            self.evaluator_class_entry = ttk.Entry( master=self , state=tk.NORMAL)
             self.evaluator_class_entry.place(relx=0.1, rely=0.15)
             
             self.evaluator_class_parameter = Parameter( fancy_name="Evaluator class", error_lambda=self.__is_evaluator_instance )
@@ -1022,7 +1022,7 @@ class ProblemTab(ttk.Frame):
         
         templates_optionlist = [ option.value for option in ProblemParameters.PROBLEM_TEMPLATES ]
         
-        tk.Label( self, text="Template", font=('URW Gothic L','11','bold') ).place( relx=0.01, rely=0.048 )
+        ttk.Label( self, text="Template", font=('URW Gothic L','11','bold') ).place( relx=0.01, rely=0.048 )
         self.TemplateOption = tk.StringVar(self)
         self.TemplateOption.set(templates_optionlist[0])
         template_option = tk.OptionMenu(self, self.TemplateOption, *templates_optionlist, command=self.__template_change__)

@@ -132,6 +132,8 @@ class JOptimizer_App(tk.Tk):
         """
         s = ttk.Style()
         s.configure('TNotebook.Tab', font=('URW Gothic L','11','bold') )
+        s.theme_use('vista')
+        # print( s.theme_use() )
         
         self.tabs = ttk.Notebook( self )
         
