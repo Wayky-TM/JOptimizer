@@ -48,6 +48,18 @@ class JOptimizer_App(tk.Tk):
     def __termination_callback__(self):
         pass
     
+    def __evaluations_callback__(self):
+        pass
+    
+    def __avgTimeEvaluation_callback__(self):
+        pass
+    
+    def __elapsedTime_callback__(self):
+        pass
+    
+    def __ETA_callback__(self):
+        pass
+    
     def __init__(self, *args, **kwargs):
         super( JOptimizer_App, self ).__init__(*args, **kwargs)
         
@@ -157,7 +169,7 @@ class JOptimizer_App(tk.Tk):
         
     def launch_optimization(self):
         
-        if self.controller.check_parameter_correctness():    
+        if self.check_parameter_correctness():    
             self.save_parameters()
             self.engine.launch()
             return True
@@ -170,7 +182,6 @@ class JOptimizer_App(tk.Tk):
         
         if index == 1:
             self.algorithm_tab.update_types()
-        # print( event.widget.index("current") )
         
 
 app = JOptimizer_App()

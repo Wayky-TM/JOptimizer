@@ -35,6 +35,7 @@ from interface.parameter import *
 from interface.console import Console, TimedConsole
 from interface.parameter_binding import ParameterBinding
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
+from interface.stats_table import StatsTable
 
 # from PIL import Image, ImageTk
 # import Image
@@ -53,7 +54,7 @@ class OptimizeTab(ttk.Frame):
             self.run_pause_button.config( state=tk.DISABLED )
             self.analysis_button.config( state=tk.DISABLED )
             self.save_button.config( state=tk.DISABLED )
-            self.console.print_message("Initializing engine...")
+            # self.console.print_message("Initializing engine...")
             
             if self.controller.launch_optimization():
                 self.run_pause_button.config( text="Pause" )
@@ -92,6 +93,10 @@ class OptimizeTab(ttk.Frame):
         
         self.runtime_stats_frame = tk.LabelFrame( master=self, text="Runtime stats", font=('URW Gothic L','10','bold') )
         self.runtime_stats_frame.place( relx=0.015, rely=0.024, relwidth=0.4, relheight=0.55 )
+        
+        self.stats_tree = StatsTable(master=self.runtime_stats_frame, columns=self.headers, selectmode="extended")
+        
+        self.stats_tree.place( relx=0.045, rely=0.05, relwidth=0.91, relheight=0.9 )
         
         self.console_frame = tk.LabelFrame( master=self, text="Runtime console", font=('URW Gothic L','10','bold') )
         self.console_frame.place( relx=0.015, rely=0.598, relwidth=0.4, relheight=0.28 )

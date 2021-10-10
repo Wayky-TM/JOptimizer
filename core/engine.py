@@ -79,10 +79,6 @@ class OptimizationEngine:
         if self.algorithm is None:
             raise Exception("__singlethread_optimizerTask__(): algorithm uninitialized")
         
-        self.algorithm.observable.deregister( self.algorithm.termination_criterion )
-        self.algorithm.termination_criterion = termination_criterion
-        self.algorithm.observable.register( self.algorithm.termination_criterion )
-        
         self.total_evaluations += self.algorithm.evaluations
         
         self.algorithm.init_progress()

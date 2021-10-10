@@ -63,13 +63,13 @@ class TimedConsole(Console):
         return datetime.today().strftime('[%Y-%m-%d-%H:%M:%S]: ')
     
     def print_error( self, string: str ):
-        date_string = self.__get_daytime() + string
+        date_string = self.__get_daytime() + string + "\n"
         super(TimedConsole, self).print_error(date_string)
     
     def print_warning( self, string: str ):
-        date_string = self.__get_daytime() + string
+        date_string = self.__get_daytime() + string + "\n"
         super(TimedConsole, self).print_warning(date_string)
     
     def print_message( self, string: str ):
-        date_string = self.__get_daytime() + string
+        date_string = self.__get_daytime() + string + "\n"
         super(TimedConsole, self).print_message(date_string)
