@@ -49,7 +49,7 @@ class OptimizeTab(ttk.Frame):
         PAUSED="Paused"
     
         
-    def __finnished(self):
+    def finished(self):
         self.run_pause_button.config( text="Run" )
         self.analysis_button.config( state=tk.NORMAL )
         self.save_button.config( state=tk.NORMAL )

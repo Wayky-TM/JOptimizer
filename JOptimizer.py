@@ -25,6 +25,7 @@ except ImportError:
 from win32api import GetSystemMetrics
 from collections import defaultdict
 from typing import List
+import time
 # import numpy as np
 
 import core.variable as variable_types
@@ -40,6 +41,7 @@ from interface.tabs.runtime_config_tab import RuntimeTab
 from interface.tabs.optimize_tab import OptimizeTab
 
 
+
 class JOptimizer_App(tk.Tk):
     
     def __endOfGen_callback__(self):
@@ -47,14 +49,14 @@ class JOptimizer_App(tk.Tk):
     
     def __termination_callback__(self):
         self.__refresh_stats__()
-        self.optimize_tab.__finnished()
+        self.optimize_tab.finished()
     
     def __evaluations_callback__(self):
         return self.engine.algorithm.evaluations
     
     def __avgTimeEvaluation_callback__(self):
         if self.engine.algorithm.evaluations > 0:
-            return time.strftime('%H:%M:%S', time.gmtime(self.engine.total_computing_time()/float(self.engine.algorithm.evaluations)))
+            return time.strftime('%H:%M:%S', time.gmtime(self.engine.algorithm.total_computing_time()/float(self.engine.algorithm.evaluations)))
                                  
         return "--:--:--"
     

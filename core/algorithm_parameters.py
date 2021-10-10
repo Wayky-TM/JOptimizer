@@ -344,7 +344,8 @@ class AlgorithmParameters:
                                               offspring_population_size=offspring_size,
                                               mutation=composite_mutation,
                                               crossover=composite_crossover,
-                                              selection=selection_operator)
+                                              selection=selection_operator,
+                                              termination_criterion=termination_criterion)
             
             
         elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value:
@@ -354,7 +355,8 @@ class AlgorithmParameters:
                                                          offspring_population_size=offspring_size,
                                                          mutation=composite_mutation,
                                                          crossover=composite_crossover,
-                                                         selection=selection_operator)
+                                                         selection=selection_operator,
+                                                         termination_criterion=termination_criterion)
             
             
         elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value:
@@ -370,7 +372,8 @@ class AlgorithmParameters:
                                              neighbourhood_selection_probability=float(self.specific_options["neighborhood_selection_probability"]),
                                              max_number_of_replaced_solutions=int(self.specific_options["max_number_of_replaced_solutions"]),
                                              neighbor_size=int(self.specific_options["neighborhood_size"]),
-                                             weight_files_path=self.specific_options["weight_files_path"])
+                                             weight_files_path=self.specific_options["weight_files_path"],
+                                             termination_criterion=termination_criterion)
         
         elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL.value:
             
@@ -386,7 +389,8 @@ class AlgorithmParameters:
                                               neighborhood=neighborhood_operator,
                                               archive=archive_operator,
                                               mutation=composite_mutation,
-                                              crossover=composite_crossover)
+                                              crossover=composite_crossover,
+                                              termination_criterion=termination_criterion)
             
         
         return algorithm

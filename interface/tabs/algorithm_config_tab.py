@@ -155,24 +155,25 @@ class AlgorithmTab(ttk.Frame):
             
             paceholder_frame = AlgorithmTab.SelectionFrame.SelectionParametersPane( master=self, algorithm_parameters=self.algorithm_parameters, borderwidth=0, highlightthickness=0 )
             
-            self.selection_options = ["Roulette",
-                                      "Binary tournament",
-                                      "Best solution",
-                                      "n-ary random",
-                                      "Differential evolution",
-                                      "Random selection",
-                                      "Roulette",
-                                      "Ranking and crowding"]
+            self.selection_options = [ option.value for option in AlgorithmParameters.SELECTION ]
+            
+            # self.selection_options = ["Roulette",
+            #                           "Binary tournament",
+            #                           "Best solution",
+            #                           "n-ary random",
+            #                           "Differential evolution",
+            #                           "Random selection",
+            #                           "Roulette",
+            #                           "Ranking and crowding"]
             
             self.frames = {}
-            self.frames["Roulette"] = paceholder_frame
-            self.frames["Binary tournament"] = paceholder_frame
-            self.frames["Best solution"] = paceholder_frame
-            self.frames["n-ary random"] = AlgorithmTab.SelectionFrame.NaryParametersPane(master=self, algorithm_parameters=self.algorithm_parameters, text="Parameters")
-            self.frames["Differential evolution"] = paceholder_frame
-            self.frames["Random selection"] = paceholder_frame
-            self.frames["Roulette"] = paceholder_frame
-            self.frames["Ranking and crowding"] = AlgorithmTab.SelectionFrame.RankingAndCrowdingParametersPane(master=self, algorithm_parameters=self.algorithm_parameters, text="Parameters")
+            self.frames[ AlgorithmParameters.SELECTION.ROULETTE.value ] = paceholder_frame
+            self.frames[ AlgorithmParameters.SELECTION.BINARY_TOURNAMENT.value ] = paceholder_frame
+            self.frames[ AlgorithmParameters.SELECTION.BEST_SOLUTION.value ] = paceholder_frame
+            self.frames[ AlgorithmParameters.SELECTION.NARY_RANDOM.value ] = AlgorithmTab.SelectionFrame.NaryParametersPane(master=self, algorithm_parameters=self.algorithm_parameters, text="Parameters")
+            self.frames[ AlgorithmParameters.SELECTION.DIFF_EVOLUTION.value ] = paceholder_frame
+            self.frames[ AlgorithmParameters.SELECTION.RANDOM.value ] = paceholder_frame
+            self.frames[ AlgorithmParameters.SELECTION.RANKING_AND_CROWDING.value ] = AlgorithmTab.SelectionFrame.RankingAndCrowdingParametersPane(master=self, algorithm_parameters=self.algorithm_parameters, text="Parameters")
             
             
             tk.Label( master=self, text="Selection operator").place( relx=0.02, rely=0.05 )

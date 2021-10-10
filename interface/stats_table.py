@@ -61,6 +61,7 @@ class StatsTable(ttk.Treeview):
     def add_stat(self, name: str, update_lambda):
         #TODO: check if item already exists
         self.stats_lambdas[name] = update_lambda
+        self.insert('', 'end', text=name, values=("-"))
         
     
     def update_stats(self):
