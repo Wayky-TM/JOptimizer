@@ -87,9 +87,12 @@ class OptimizationEngine:
         self.last_execution_time_resume = time.time()
         self.acum_execution_time = 0.0
         
-        while not self.algorithm.stopping_condition_is_met():
-            self.pause_semaphore.acquire()
+        self.algorithm.solutions = self.algorithm.create_initial_solutions()
+        self.algorithm.solutions = self.algorithm.evaluate(self.algorithm.solutions)
         
+        while not self.algorithm.stopping_condition_is_met():
+            # self.pause_semaphore.acquire()
+            
             prev_time = time.time()
             
             self.algorithm.step()
@@ -98,7 +101,7 @@ class OptimizationEngine:
             self.algorithm.total_computing_time += time.time() - prev_time
             
             self.endOfGen_callback()
-            self.pause_semaphore.release()
+            # self.pause_semaphore.release()
         
         # self.algorithm.total_computing_time = time.time() - self.algorithm.start_computing_time
         

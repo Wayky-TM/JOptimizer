@@ -30,6 +30,7 @@ class StoppingByDateTime(TerminationCriterion):
     def update(self, *args, **kwargs):
         pass
     
+    @property
     def is_met(self):
         current_date = datetime.datetime.now()
         return self.date_time < current_date
@@ -46,6 +47,7 @@ class CompositeTerminationCriterion(TerminationCriterion):
         for criterion in self.termination_criteria:
             criterion.update(*args, **kwargs)
 
+    @property
     def is_met(self):
         return any( [ criterion.is_met() for criterion in self.termination_criteria ] )
         
@@ -110,14 +112,16 @@ class EngineParameters:
         else:
             criteria = []
             
+            # return StoppingByEvaluations( max_evaluations=1000 )
+            
             if EngineParameters.TERMINATION_CRITERIA.TIME.value in self.temination_criteria:
                 criteria.append( StoppingByTime( max_seconds=int(self.termination_parameters["time"]) ) )
                 
             if EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.temination_criteria:
                 criteria.append( StoppingByEvaluations( max_evaluations=int(self.termination_parameters["evaluations"]) ) )
                 
-            if EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.temination_criteria:
-                criteria.append( StoppingByDateTime( date_time=int(self.termination_parameters["datetime"]) ) )
+            if EngineParameters.TERMINATION_CRITERIA.DATE.value in self.temination_criteria:
+                criteria.append( StoppingByDateTime( date_time=self.termination_parameters["datetime"]) )
                 
             
             if len(criteria)>1:

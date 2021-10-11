@@ -47,13 +47,17 @@ class OptimizeTab(ttk.Frame):
         INITIALIZED="Initialized"
         RUNNING="Running"
         PAUSED="Paused"
+        FINISHED="Paused"
     
         
     def finished(self):
-        self.run_pause_button.config( text="Run" )
+        self.run_pause_button.config( text="Run", state=tk.DISABLED )
         self.analysis_button.config( state=tk.NORMAL )
         self.save_button.config( state=tk.NORMAL )
-        self.runtime_status = OptimizeTab.RUNTIME_STATUS.PAUSED
+        self.runtime_status = OptimizeTab.RUNTIME_STATUS.FINISHED
+        self.console.print_message("Algorithm execution finished")
+        self.controller.bell()
+        self.controller._enable_tabs()
     
     def __run_pause(self):
         
@@ -67,6 +71,8 @@ class OptimizeTab(ttk.Frame):
                 self.run_pause_button.config( text="Pause" )
                 self.runtime_status = OptimizeTab.RUNTIME_STATUS.RUNNING
                 self.console.print_message("Successful engine initialization")
+                self.controller._disable_tabs()
+                self.console.print_message("Launching algorithm")
                 
             else:
                 self.console.print_error("Optimization engine could not be launched")

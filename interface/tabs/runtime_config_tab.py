@@ -103,13 +103,13 @@ class RuntimeTab(ttk.Frame):
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.eval_parameter,
                                                               widget_read_lambda=lambda: self.eval_entry.get(),
-                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time":var}),
+                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"evaluations":var}),
                                                               error_set_lambda=EntryInvalidator(self.eval_entry),
                                                               error_reset_lambda=EntryValidator(self.eval_entry)) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.time_parameter,
                                                               widget_read_lambda=lambda: self.time_entry.get(),
-                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"evaluations":var}),
+                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time":var}),
                                                               error_set_lambda=EntryInvalidator(self.time_entry),
                                                               error_reset_lambda=EntryValidator(self.time_entry)) )
             
@@ -122,14 +122,16 @@ class RuntimeTab(ttk.Frame):
             if var:
                 self.engine_parameters.temination_criteria.add( EngineParameters.TERMINATION_CRITERIA.TIME.value )
             else:
-                self.engine_parameters.temination_criteria.remove( EngineParameters.TERMINATION_CRITERIA.TIME.value )
+                if EngineParameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
+                    self.engine_parameters.temination_criteria.remove( EngineParameters.TERMINATION_CRITERIA.TIME.value )
                 
         def _save_eval_boolean(self, var):
             
             if var:
                 self.engine_parameters.temination_criteria.add( EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value )
             else:
-                self.engine_parameters.temination_criteria.remove( EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value )
+                if EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria:
+                    self.engine_parameters.temination_criteria.remove( EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value )
             
         def _time_checkbox_command_(self):
             

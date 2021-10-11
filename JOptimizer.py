@@ -5,6 +5,7 @@ Created on Fri Sep 24 12:05:45 2021
 @author: Álvaro
 """
 
+import os
 import sys
 sys.path.append(r"./../..")
 
@@ -48,7 +49,12 @@ class JOptimizer_App(tk.Tk):
         pass
     
     def __termination_callback__(self):
-        self.__refresh_stats__()
+        
+        if self._update_job != None:
+            self.after_cancel(self._update_job)
+            self._update_job = None
+        
+        self.optimize_tab.__refresh_stats__()
         self.optimize_tab.finished()
     
     def __evaluations_callback__(self):
@@ -67,7 +73,7 @@ class JOptimizer_App(tk.Tk):
     def __elapsedComputingTime_callback__(self):
         return time.strftime('%H:%M:%S', time.gmtime(self.engine.algorithm.total_computing_time))
     
-    def __ETA_callback__(self):
+    def _compute_ETA_(self):
         estimations = []
         
         if self.engine_parameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria:
@@ -81,12 +87,51 @@ class JOptimizer_App(tk.Tk):
         if self.engine_parameters.TERMINATION_CRITERIA.DATE.value in self.engine_parameters.temination_criteria:
             estimations.append( self.engine_parameters.termination_parameters["datetime"] - datetime.datetime.now() )
             
-        return time.strftime('%H:%M:%S', time.gmtime( min(estimations) ))
+        self.ETA = min(estimations)
+    
+    def __ETA_callback__(self):
+        # estimations = []
+        
+        # if self.engine_parameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria:
+        #     time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
+        #     estimations.append( (time_elapsed/float(self.engine.algorithm.evaluations))*(int(self.engine_parameters.termination_parameters["evaluations"]) - self.engine.algorithm.evaluations) )
+            
+        # if self.engine_parameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
+        #     time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
+        #     estimations.append( float(self.engine_parameters.termination_parameters["time"]) - time_elapsed )
+            
+        # if self.engine_parameters.TERMINATION_CRITERIA.DATE.value in self.engine_parameters.temination_criteria:
+        #     estimations.append( self.engine_parameters.termination_parameters["datetime"] - datetime.datetime.now() )
+            
+        return time.strftime('%H:%M:%S', time.gmtime( self.ETA ))
     
     
     def __refresh_stats__(self):
+        self._compute_ETA_()
         self.optimize_tab.__refresh_stats__()
+        time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
+        self.optimize_tab.progressbar.step( 100.0*(time_elapsed)/(time_elapsed+self.ETA) )
+        self._update_job =  self.after(ms=1000, func=self.__refresh_stats__)
         
+    
+    def _disable_tabs(self):
+        tabs = self.tabs.tabs()
+        
+        self.tabs.tab(0, state='disabled')
+        self.tabs.tab(1, state='disabled')
+        self.tabs.tab(2, state='disabled')
+
+        
+    
+    def _enable_tabs(self):
+        tabs = self.tabs.tabs()
+        
+        # for i, item in enumerate(tabs): 
+        #     self.tabs.tab(item, state='normal')
+        
+        self.tabs.tab(0, state='normal')
+        self.tabs.tab(1, state='normal')
+        self.tabs.tab(2, state='normal')
     
     def __init__(self, *args, **kwargs):
         super( JOptimizer_App, self ).__init__(*args, **kwargs)
@@ -101,6 +146,7 @@ class JOptimizer_App(tk.Tk):
         self.geometry("%dx%d+%d+%d" % (self.window_width, self.window_height, ((self.screen_width/2)-(self.window_width/2)), ((self.screen_height/2)-(self.window_height/2))))
         self.title_font = tkfont.Font(family='Helvetica', size=int(0.01*self.screen_width), weight="bold", slant="italic")
 
+        self.iconbitmap( os.path.join(os.getcwd(), 'interface', 'resources', 'images', 'joptimizer_icon.ico') )
 
         """
             Config. variables
@@ -202,6 +248,7 @@ class JOptimizer_App(tk.Tk):
         if self.check_parameter_correctness():    
             self.save_parameters()
             self.engine.launch()
+            self._update_job =  self.after(ms=1000, func=self.__refresh_stats__)
             return True
             
         return False
