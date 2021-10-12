@@ -36,7 +36,7 @@ from interface.console import Console, TimedConsole
 from interface.parameter_binding import ParameterBinding
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
 from interface.stats_table import StatsTable
-
+from interface.popups.solution_analysis_popup import solution_analysis_popup
 
 class OptimizeTab(ttk.Frame):
     
@@ -100,7 +100,7 @@ class OptimizeTab(ttk.Frame):
         
     
     def __results_analysis(self):
-        pass
+        solution_analysis_popup( controller=self.controller )
     
     def __save_solutions(self):
         pass
@@ -119,6 +119,10 @@ class OptimizeTab(ttk.Frame):
         
         self.stats_tree = StatsTable(master=self.runtime_stats_frame)
         
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=('Liberation Mono','10','bold'))
+        style.configure("Treeview.Item", font=('Liberation Mono','10'))
+        
         self.stats_tree.place( relx=0.045, rely=0.05, relwidth=0.91, relheight=0.9 )
         
         self.stats_tree.add_stat(name="Evaluations", update_lambda=self.controller.__evaluations_callback__)
@@ -130,7 +134,7 @@ class OptimizeTab(ttk.Frame):
         self.console_frame = tk.LabelFrame( master=self, text="Runtime console", font=('URW Gothic L','10','bold') )
         self.console_frame.place( relx=0.015, rely=0.598, relwidth=0.4, relheight=0.28 )
         
-        self.console = TimedConsole(master=self.console_frame, font=("Times New Roman", 10, 'bold'))
+        self.console = TimedConsole(master=self.console_frame, font=("Liberation Mono", 11))
         self.console.place( relx=0.02, rely=0.05, relwidth=0.96, relheight=0.90 )
         # self.console.print_message("Mensaje\n")
         # self.console.print_warning("Advertencia\n")

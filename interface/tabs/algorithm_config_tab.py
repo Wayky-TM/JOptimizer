@@ -1090,7 +1090,7 @@ class AlgorithmTab(ttk.Frame):
         self.parameters_listbox.activate(0)
         self.parameters_listbox.selection_set(0)
         
-        self.console = Console(master=self, font=("Times New Roman", 10, 'bold'))
+        self.console = Console(master=self, font=("Liberation Mono", 11))
         self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
         # self.console.print_message("Mensaje\n")
         # self.console.print_warning("Advertencia\n")

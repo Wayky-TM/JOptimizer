@@ -1058,7 +1058,7 @@ class ProblemTab(ttk.Frame):
         self.parameters_frame = tk.Frame(master=self)
         self.parameters_frame.place()
         
-        self.console = Console(master=self, font=("Times New Roman", 10, 'bold'))
+        self.console = Console(master=self, font=("Liberation Mono", 11))
         self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
         # self.console.print_message("Mensaje\n")
         # self.console.print_warning("Advertencia\n")
