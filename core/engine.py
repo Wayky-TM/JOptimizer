@@ -38,21 +38,24 @@ class OptimizationEngine:
                  problem_parameters: ProblemParameters,
                  algorithm_parameters: AlgorithmParameters,
                  endOfGen_callback = __null_callback,
-                 termination_callback = __null_callback):
+                 termination_callback = __null_callback,
+                 paused_callback = __null_callback):
         
         self.engine_parameters = engine_parameters
         self.problem_parameters = problem_parameters
         self.algorithm_parameters = algorithm_parameters
         self.endOfGen_callback = endOfGen_callback
         self.termination_callback = termination_callback
+        self.paused_callback = paused_callback
         
         self.total_elapsed_time = 0.0
         self.algorithm_time = 0.0
         self.total_evaluations = 0
         self.algorithm = None
         
-        self.pause_semaphore = threading.Semaphore()
-        
+        # self.pause_semaphore = threading.Semaphore()
+        self.pause_event = threading.Event()
+        self.pause_event.set()
         
         
     def configure(self,
@@ -83,15 +86,23 @@ class OptimizationEngine:
         
         self.algorithm.init_progress()
         self.algorithm.total_computing_time = 0.0
+        self.problem.evaluations = 0
         
         self.last_execution_time_resume = time.time()
         self.acum_execution_time = 0.0
         
+        """ Evaluation of initial solutions """
+        prev_time = time.time()
         self.algorithm.solutions = self.algorithm.create_initial_solutions()
         self.algorithm.solutions = self.algorithm.evaluate(self.algorithm.solutions)
+        self.algorithm.total_computing_time += time.time() - prev_time
         
+        """ Optimization loop """
         while not self.algorithm.stopping_condition_is_met():
-            # self.pause_semaphore.acquire()
+            
+            if not self.pause_event.is_set():
+                self.paused_callback()
+                self.pause_event.wait()
             
             prev_time = time.time()
             
@@ -101,9 +112,6 @@ class OptimizationEngine:
             self.algorithm.total_computing_time += time.time() - prev_time
             
             self.endOfGen_callback()
-            # self.pause_semaphore.release()
-        
-        # self.algorithm.total_computing_time = time.time() - self.algorithm.start_computing_time
         
         self.termination_callback()
     
@@ -121,12 +129,10 @@ class OptimizationEngine:
             self.optimizer_thread.join()
         
     def pause(self):
-        if self.pause_semaphore._value > 0:
-            self.pause_semaphore.acquire( blocking=False )
+        self.pause_event.clear()
     
     def resume(self):
-        if self.pause_semaphore._value == 0:
-            self.pause_semaphore.release( blocking=False )
+        self.pause_event.set()
     
     
     def get_front(self):

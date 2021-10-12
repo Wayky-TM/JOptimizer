@@ -115,7 +115,19 @@ class EngineParameters:
             # return StoppingByEvaluations( max_evaluations=1000 )
             
             if EngineParameters.TERMINATION_CRITERIA.TIME.value in self.temination_criteria:
-                criteria.append( StoppingByTime( max_seconds=int(self.termination_parameters["time"]) ) )
+                
+                time = int(self.termination_parameters["time"])
+                
+                if self.termination_parameters["time_scale"] == EngineParameters.TIME_SCALE.MINUTES.value:
+                    time *= 60
+                    
+                elif self.termination_parameters["time_scale"] == EngineParameters.TIME_SCALE.HOURS.value:
+                    time *= 3600
+                    
+                elif self.termination_parameters["time_scale"] == EngineParameters.TIME_SCALE.DAYS.value:
+                    time *= 86400
+                
+                criteria.append( StoppingByTime( max_seconds=time ) )
                 
             if EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.temination_criteria:
                 criteria.append( StoppingByEvaluations( max_evaluations=int(self.termination_parameters["evaluations"]) ) )

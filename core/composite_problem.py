@@ -74,6 +74,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         if self.include_discretized:
             self.discretized_lower_bounds = [0]*len(discretized_vars)
             self.discretized_upper_bounds = [ x.resolution for x in discretized_vars ]
+            
+        self.evaluations = 0
         
 
     def create_solution(self) -> jsol.CompositeSolution:
@@ -145,6 +147,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             arguments.update( const_args )
         
         solution.objectives = self.evaluator.evaluate( **arguments )
+        
+        self.evaluations += 1
         
         return solution
     

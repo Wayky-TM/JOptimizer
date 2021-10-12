@@ -40,10 +40,13 @@ from interface.tabs.problem_definition_tab import ProblemTab
 from interface.tabs.algorithm_config_tab import AlgorithmTab
 from interface.tabs.runtime_config_tab import RuntimeTab
 from interface.tabs.optimize_tab import OptimizeTab
-
+from interface.threadSafe_callable import ThreadSafeCallable
 
 
 class JOptimizer_App(tk.Tk):
+    
+    def __paused_callback__(self):
+        self.optimize_tab.paused()
     
     def __endOfGen_callback__(self):
         pass
@@ -57,12 +60,14 @@ class JOptimizer_App(tk.Tk):
         self.optimize_tab.__refresh_stats__()
         self.optimize_tab.finished()
     
+    
+    
     def __evaluations_callback__(self):
-        return self.engine.algorithm.evaluations
+        return self.engine.problem.evaluations
     
     def __avgTimeEvaluation_callback__(self):
-        if self.engine.algorithm.evaluations > 0:
-            return time.strftime('%H:%M:%S', time.gmtime(self.engine.algorithm.total_computing_time/float(self.engine.algorithm.evaluations)))
+        if self.engine.problem.evaluations > 0:
+            return time.strftime('%H:%M:%S', time.gmtime(self.engine.algorithm.total_computing_time/float(self.engine.problem.evaluations)))
                                  
         return "--:--:--"
     
@@ -78,7 +83,7 @@ class JOptimizer_App(tk.Tk):
         
         if self.engine_parameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria:
             time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
-            estimations.append( (time_elapsed/float(self.engine.algorithm.evaluations))*(int(self.engine_parameters.termination_parameters["evaluations"]) - self.engine.algorithm.evaluations) )
+            estimations.append( (time_elapsed/float(self.engine.problem.evaluations))*(int(self.engine_parameters.termination_parameters["evaluations"]) - self.engine.problem.evaluations) )
             
         if self.engine_parameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
             time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
@@ -90,27 +95,18 @@ class JOptimizer_App(tk.Tk):
         self.ETA = min(estimations)
     
     def __ETA_callback__(self):
-        # estimations = []
         
-        # if self.engine_parameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria:
-        #     time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
-        #     estimations.append( (time_elapsed/float(self.engine.algorithm.evaluations))*(int(self.engine_parameters.termination_parameters["evaluations"]) - self.engine.algorithm.evaluations) )
-            
-        # if self.engine_parameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
-        #     time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
-        #     estimations.append( float(self.engine_parameters.termination_parameters["time"]) - time_elapsed )
-            
-        # if self.engine_parameters.TERMINATION_CRITERIA.DATE.value in self.engine_parameters.temination_criteria:
-        #     estimations.append( self.engine_parameters.termination_parameters["datetime"] - datetime.datetime.now() )
-            
+        self._compute_ETA_()
+        
         return time.strftime('%H:%M:%S', time.gmtime( self.ETA ))
     
     
     def __refresh_stats__(self):
-        self._compute_ETA_()
+        # self._compute_ETA_()
         self.optimize_tab.__refresh_stats__()
         time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
-        self.optimize_tab.progressbar.step( 100.0*(time_elapsed)/(time_elapsed+self.ETA) )
+        # self.optimize_tab.progressbar.step( 100.0*(time_elapsed)/(time_elapsed+self.ETA) )
+        self.optimize_tab.progressbar['value'] = 100.0*(time_elapsed)/(time_elapsed+self.ETA)
         self._update_job =  self.after(ms=1000, func=self.__refresh_stats__)
         
     
@@ -158,7 +154,8 @@ class JOptimizer_App(tk.Tk):
                                           problem_parameters=self.problem_parameters,
                                           algorithm_parameters=self.algorithm_parameters,
                                           endOfGen_callback=self.__endOfGen_callback__,
-                                          termination_callback=self.__termination_callback__)
+                                          termination_callback=ThreadSafeCallable(master=self, callback=self.__termination_callback__),
+                                          paused_callback=ThreadSafeCallable(master=self, callback=self.__paused_callback__))
 
         """
             Menu
@@ -252,7 +249,18 @@ class JOptimizer_App(tk.Tk):
             return True
             
         return False
+    
+    def pause_optimization(self):
         
+        if self._update_job != None:
+            self.after_cancel(self._update_job)
+            self._update_job = None
+            
+        self.engine.pause()
+        
+    def resume_optimization(self):
+        self.engine.resume()
+        self._update_job =  self.after(ms=1000, func=self.__refresh_stats__)
         
     def changed_tag_handler(self, event):
         index = event.widget.index("current")

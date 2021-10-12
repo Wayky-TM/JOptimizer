@@ -37,9 +37,6 @@ from interface.parameter_binding import ParameterBinding
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
 from interface.stats_table import StatsTable
 
-# from PIL import Image, ImageTk
-# import Image
-# import ImageTk
 
 class OptimizeTab(ttk.Frame):
     
@@ -58,6 +55,15 @@ class OptimizeTab(ttk.Frame):
         self.console.print_message("Algorithm execution finished")
         self.controller.bell()
         self.controller._enable_tabs()
+        self.progressbar['value'] = 100
+    
+    def paused(self):
+        self.run_pause_button.config( text="Run" )
+        self.run_pause_button.config( state=tk.NORMAL )
+        self.analysis_button.config( state=tk.NORMAL )
+        self.save_button.config( state=tk.NORMAL )
+        self.runtime_status = OptimizeTab.RUNTIME_STATUS.PAUSED
+        self.console.print_message("Algorithm execution paused")
     
     def __run_pause(self):
         
@@ -81,13 +87,12 @@ class OptimizeTab(ttk.Frame):
             
         elif self.runtime_status == OptimizeTab.RUNTIME_STATUS.RUNNING:
             self.console.print_warning("Pause requested, waiting evaluation(s) to complete")
-            self.run_pause_button.config( text="Run" )
-            self.analysis_button.config( state=tk.NORMAL )
-            self.save_button.config( state=tk.NORMAL )
-            self.runtime_status = OptimizeTab.RUNTIME_STATUS.PAUSED
+            self.run_pause_button.config( state=tk.DISABLED )
+            self.controller.pause_optimization()
             
         elif self.runtime_status == OptimizeTab.RUNTIME_STATUS.PAUSED:
             self.console.print_message("Resuming execution")
+            self.controller.resume_optimization()
             self.run_pause_button.config( text="Pause" )
             self.analysis_button.config( state=tk.DISABLED )
             self.save_button.config( state=tk.DISABLED )
@@ -135,7 +140,7 @@ class OptimizeTab(ttk.Frame):
         self.progress_stats_frame.place( relx=0.43, rely=0.024, relwidth=0.555, relheight=0.854 )
         tk.Label( master=self.progress_stats_frame, text="#To be implemented", font=('URW Gothic L','11','bold') ).place(relx=0.45, rely=0.45)
         
-        self.progressbar = ttk.Progressbar( master=self )
+        self.progressbar = ttk.Progressbar( master=self, mode='determinate' )
         self.progressbar.place( relx=0.015, rely=0.902, relwidth=0.7, relheight=0.074 )
         
         self.run_pause_button = tk.Button( master=self, text="Run", command=self.__run_pause, font=('URW Gothic L','12') )
