@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 pypy/
+tests/yaml_examples
 
 # C extensions
 *.so

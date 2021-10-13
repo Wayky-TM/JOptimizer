@@ -156,6 +156,7 @@ class AlgorithmParameters:
         self.int_mutation_choice = AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL.value
         self.int_mutation_parameters = defaultdict(lambda: "")
         self.int_mutation_parameters["probability"] = "0.8"
+        self.int_mutation_parameters["distribution_index"] = "20"
         
         
         """ Binary """

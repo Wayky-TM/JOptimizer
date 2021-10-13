@@ -33,20 +33,19 @@ class ParameterBinding:
                   parameter: Parameter,
                   widget_read_lambda,
                   variable_store_lambda,
+                  variable_read_lambda = lambda *args: None,
+                  widget_update_lambda = lambda *args: None,
                   error_set_lambda = lambda *args: None,
                   error_reset_lambda = lambda *args: None):
         
         self.parameter = parameter
         self.widget_read_lambda = widget_read_lambda
         self.variable_store_lambda = variable_store_lambda
+        self.variable_read_lambda = variable_read_lambda
+        self.widget_update_lambda = widget_update_lambda
         self.error_set_lambda = error_set_lambda
         self.error_reset_lambda = error_reset_lambda
         
-        
-    # def error_check( self, error_list: List[str] ):
-        
-    #     self.parameter.value = self.widget_read_lambda()
-    #     self.parameter.error_check( error_list=error_list )
         
     def error_check( self ):
         self.parameter.value = self.widget_read_lambda()
@@ -65,6 +64,9 @@ class ParameterBinding:
         
     def store_value( self ):
         self.variable_store_lambda( self.parameter.value )
+        
+    def load_value(self):
+        self.widget_update_lambda( self.variable_read_lambda )
         
 
 class EntryInvalidator:

@@ -178,9 +178,8 @@ class JOptimizer_App(tk.Tk):
         s = ttk.Style()
         s.configure('TNotebook.Tab', font=('TkDefaultFont','11','bold') )
         s.theme_use('vista')
-        # style = ttk.Style()
         s.configure("Treeview.Heading", font=('TkDefaultFont','10','bold'))
-        s.configure("Treeview", font=('TkDefaultFont','10'))
+        s.configure("Treeview", font=('TkDefaultFont','10'), rowheight=30)
         # print( s.theme_use() )
         
         self.tabs = ttk.Notebook( self )
@@ -246,6 +245,9 @@ class JOptimizer_App(tk.Tk):
         self.runtime_enviroment_tab.save_parameters()
         
     def launch_optimization(self):
+        
+        self.engine_parameters.save_state( os.path.join(os.getcwd(), "tests", "yaml_examples") )
+        self.engine_parameters.load_state( os.path.join(os.getcwd(), "tests", "yaml_examples") )
         
         if self.check_parameter_correctness():    
             self.save_parameters()

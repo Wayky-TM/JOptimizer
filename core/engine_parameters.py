@@ -11,6 +11,8 @@ sys.path.append(r"./..")
 import copy
 import random
 import math
+import yaml
+import os
 
 from enum import Enum
 from abc import *
@@ -21,6 +23,7 @@ from jmetal.util.termination_criterion import TerminationCriterion, StoppingByEv
 from jmetal.util.evaluator import Evaluator, SequentialEvaluator, MultiprocessEvaluator, MapEvaluator
 import datetime
 
+import util.type_check as TC
 
 
 class StoppingByDateTime(TerminationCriterion):
@@ -83,10 +86,13 @@ class EngineParameters:
         BY_EVALUATIONS="Evaluations"
     
     def __init__(self):
+        
+        """ Mode """
         self.mode = EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value
         self.mode_parameters = defaultdict(lambda: "")
         self.mode_parameters["threads"] = 2
         
+        """ Termination """
         self.temination_criteria={EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value}
         self.termination_parameters = defaultdict(lambda: "")
         self.termination_parameters["evaluations"] = 1000
@@ -94,12 +100,14 @@ class EngineParameters:
         self.termination_parameters["time_scale"] = EngineParameters.TIME_SCALE.SECONDS.value
         self.termination_parameters["datetime"] = datetime.datetime.now()
         
+        """ Runtime save """
         self.save_runtime_criteria = []
         self.save_runtime_status = defaultdict(lambda: "")
         self.save_runtime_status["on_pause"] = False
         self.save_runtime_status["every_pause"] = False
-        self.save_runtime_status["folder_path"]
+        self.save_runtime_status["folder_path"] = ""
         
+        """ Runtime stats """
         self.runtime_statistics_criteria = [EngineParameters.RUNTIME_STATS_CRITERIA.BY_TIME.value]
         self.runtime_statistics = defaultdict(lambda: "")
         self.runtime_statistics["time"] = 10
@@ -152,3 +160,88 @@ class EngineParameters:
         #     return SequentialEvaluator()
         
         return SequentialEvaluator()
+    
+    def save_state(self,
+                   dir_path: str,
+                   file_name: str = "engine_parameters.yaml"):
+        
+        if TC.is_dir( dir_path ):
+            
+            output = {}
+            
+            """ Mode """
+            output["mode"] = {}
+            output["mode"]["option"] = self.mode
+            output["mode"]["parameters"] = {}
+            
+            for key, value in self.mode_parameters.items():
+                output["mode"]["parameters"][key] = value
+                
+            """ Termination """
+            output["termination"] = {}
+            output["termination"]["criteria"] = self.temination_criteria
+            output["termination"]["parameters"] = {}
+            
+            for key, value in self.termination_parameters.items():
+                output["termination"]["parameters"][key] = value
+            
+            """ Runtime save """
+            output["save_runtime"] = {}
+            output["save_runtime"]["criteria"] = self.save_runtime_criteria
+            output["save_runtime"]["parameters"] = {}
+            
+            for key, value in self.save_runtime_status.items():
+                output["save_runtime"]["parameters"][key] = value
+            
+            """ Runtime stats """
+            output["runtime_statistics"] = {}
+            output["runtime_statistics"]["criteria"] = self.runtime_statistics_criteria
+            output["runtime_statistics"]["parameters"] = {}
+            
+            for key, value in self.runtime_statistics.items():
+                output["runtime_statistics"]["parameters"][key] = value
+                
+                
+            with open( os.path.join(dir_path, file_name), 'w') as file:
+                documents = yaml.dump(output, file)
+        
+        else:
+            raise ValueError("Path '%s' is not a valid directory" % (dir_path))
+            
+    def load_state(self,
+                   dir_path: str,
+                   file_name: str = "engine_parameters.yaml"):
+        
+        if TC.is_file( os.path.join(dir_path, file_name) ):
+            
+            yaml_file = open( os.path.join(dir_path, file_name), 'r')
+            yaml_content = yaml.safe_load(yaml_file)
+            
+            """ Mode """
+            self.mode = yaml_content["mode"]["option"]
+            
+            for key, value in yaml_content["mode"]["parameters"].items():
+                self.mode_parameters[key] = value
+                
+            """ Termination """
+            self.temination_criteria = yaml_content["termination"]["criteria"]
+            
+            for key, value in yaml_content["termination"]["parameters"].items():
+                self.termination_parameters[key] = value
+                
+            """ Runtime save """
+            self.save_runtime_criteria = yaml_content["save_runtime"]["criteria"]
+            
+            for key, value in yaml_content["save_runtime"]["parameters"].items():
+                self.save_runtime_status[key] = value
+                
+            """ Runtime stats """
+            self.runtime_statistics_criteria = yaml_content["runtime_statistics"]["criteria"]
+            
+            for key, value in yaml_content["runtime_statistics"]["parameters"].items():
+                self.runtime_statistics[key] = value    
+            
+        
+        else:
+            raise ValueError("File '%s' is not a valid file" % (os.path.join(dir_path, file_name)))
+        

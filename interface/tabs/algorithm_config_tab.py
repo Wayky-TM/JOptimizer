@@ -817,7 +817,7 @@ class AlgorithmTab(ttk.Frame):
                 
                 self.labelframe_params = tk.LabelFrame(master=self)
                 
-                self.distribution_index_label = tk.Label( self.labelframe_params, text="Distribution index (int mutation)" ).place( relx=0.01, rely=0.048 )
+                self.distribution_index_label = tk.Label( self.labelframe_params, text="Distribution index" ).place( relx=0.01, rely=0.048 )
                 self.distribution_index_entry = tk.Entry(master=self.labelframe_params, state=tk.NORMAL)
                 self.distribution_index_entry.place(relx=0.23, rely=0.048+0.005, relwidth=0.08)
                 self.distribution_index_entry.insert(0, self.algorithm_parameters.int_mutation_parameters["distribution_index"])

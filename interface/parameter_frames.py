@@ -49,6 +49,11 @@ class ParameterFrame(tk.Frame):
         
         for binding in self.parameters_bindings:
             binding.store_value()
+            
+    def load_parameters(self):
+        
+        for binding in self.parameters_bindings:
+            binding.load_value()
         
     @abstractmethod
     def display(self):
@@ -87,6 +92,10 @@ class ParameterLabelFrame(tk.LabelFrame):
         for binding in self.parameters_bindings:
             binding.store_value()
             
+    def load_parameters(self):
+        
+        for binding in self.parameters_bindings:
+            binding.load_value()
             
     @abstractmethod
     def display(self):

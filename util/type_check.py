@@ -6,8 +6,9 @@ Created on Sat Jul 24 20:25:37 2021
 """
 
 import re
+import os
 
-""" Validation methods for Tkinter callbacks """
+
 
 def is_integer(value):
     
@@ -27,6 +28,7 @@ def to_integer(value):
     
     return int(re.sub(u"\u2212", "-", value))
 
+
 def is_float(value):
     
     if type(value) == float:
@@ -39,6 +41,14 @@ def is_float(value):
     
     return True
 
-def is_alpha(text: str):
-    return text.isalpha()
 
+def is_alpha(value: str):
+    return value.isalpha()
+
+
+def is_dir(value: str):
+    return os.path.isdir(value)
+
+
+def is_file(value: str):
+    return os.path.isfile(value)
