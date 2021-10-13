@@ -176,8 +176,11 @@ class JOptimizer_App(tk.Tk):
             Tabs
         """
         s = ttk.Style()
-        s.configure('TNotebook.Tab', font=('URW Gothic L','11','bold') )
+        s.configure('TNotebook.Tab', font=('TkDefaultFont','11','bold') )
         s.theme_use('vista')
+        # style = ttk.Style()
+        s.configure("Treeview.Heading", font=('TkDefaultFont','10','bold'))
+        s.configure("Treeview", font=('TkDefaultFont','10'))
         # print( s.theme_use() )
         
         self.tabs = ttk.Notebook( self )

@@ -114,14 +114,10 @@ class OptimizeTab(ttk.Frame):
         self.controller = controller
         self.runtime_status = OptimizeTab.RUNTIME_STATUS.INITIALIZED
         
-        self.runtime_stats_frame = tk.LabelFrame( master=self, text="Runtime stats", font=('URW Gothic L','10','bold') )
+        self.runtime_stats_frame = tk.LabelFrame( master=self, text="Runtime stats", font=('TkDefaultFont','10','bold') )
         self.runtime_stats_frame.place( relx=0.015, rely=0.024, relwidth=0.4, relheight=0.55 )
         
         self.stats_tree = StatsTable(master=self.runtime_stats_frame)
-        
-        style = ttk.Style()
-        style.configure("Treeview.Heading", font=('Liberation Mono','10','bold'))
-        style.configure("Treeview.Item", font=('Liberation Mono','10'))
         
         self.stats_tree.place( relx=0.045, rely=0.05, relwidth=0.91, relheight=0.9 )
         

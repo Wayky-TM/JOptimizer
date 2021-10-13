@@ -50,11 +50,15 @@ class StatsTable(ttk.Treeview):
         self.headers = ["Value"]
         super(StatsTable, self).__init__(master=master, *args, columns=self.headers, selectmode="extended", **kwargs)
     
-        self.heading("#0", text="Stat")
-        self.column("#0", minwidth=100, width=200, stretch=tk.NO)
+        self.update()
+        width = self.winfo_width()
+    
+        self.heading("#0", text="Statistic")
+        # self.column("#0", minwidth=100, width=200, stretch=tk.NO)
+        self.column("#0", width=width, stretch=tk.YES)
         
         self.heading( "Value", text="Value" )
-        self.column( "Value", minwidth=100, width=200, stretch=tk.NO )
+        self.column("Value", width=width, stretch=tk.YES)
         
         self.stats_lambdas = {}
         
