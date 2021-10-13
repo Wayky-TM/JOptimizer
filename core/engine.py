@@ -119,7 +119,10 @@ class OptimizationEngine:
     def launch( self ):
         self.problem = self.problem_parameters.CompileProblem()
         termination_criterion = self.engine_parameters.compile_termination_criterion()
-        self.algorithm = self.algorithm_parameters.compile_algorithm( problem=self.problem, termination_criterion=termination_criterion )
+        evaluator = self.engine_parameters.compile_evaluator()
+        self.algorithm = self.algorithm_parameters.compile_algorithm( problem=self.problem,
+                                                                      termination_criterion=termination_criterion,
+                                                                      evaluator=evaluator)
         
         self.optimizer_thread = threading.Thread( target=self.__singlethread_optimizerTask__ )
         self.optimizer_thread.start()

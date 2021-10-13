@@ -9,15 +9,31 @@ import re
 
 """ Validation methods for Tkinter callbacks """
 
-def is_integer(text: str):
-    return re.sub(u"\u2212|-", "", text).isdigit()
+def is_integer(value):
+    
+    if type(value) == int:
+        return True
+    
+    if type(value) == str:
+        return re.sub(u"\u2212|-", "", value).isdigit()
+    
+    return False
+    
 
-def to_integer(text: str):
-    return int(re.sub(u"\u2212", "-", text))
+def to_integer(value):
+    
+    if type(value) == int:
+        return value
+    
+    return int(re.sub(u"\u2212", "-", value))
 
-def is_float(text: str):
+def is_float(value):
+    
+    if type(value) == float:
+        return True
+
     try:
-        float(text)
+        float(value)
     except:
         return False
     

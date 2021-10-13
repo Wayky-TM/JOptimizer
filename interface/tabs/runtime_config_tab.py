@@ -24,6 +24,7 @@ except ImportError:
     
 from win32api import GetSystemMetrics
 from collections import defaultdict
+import multiprocessing
 # import numpy as np
 
 import core.variable as variable_types
@@ -150,7 +151,27 @@ class RuntimeTab(ttk.Frame):
                 self.eval_entry.configure( state=tk.DISABLED )
             
                 
+    class ThreadsFrame(RuntimeFrame):
+        
+        def __init__(self, master, engine_parameters: EngineParameters, *args, **kwargs):
+            super(RuntimeTab.ThreadsFrame, self).__init__(master=master, engine_parameters=engine_parameters, *args, **kwargs)
             
+            self.threads_label = tk.Label(master=self, text="Threads")
+            self.threads_label.place( relx=0.02, rely=0.05 )
+            
+            self.threads_optionlist = [i for i in range(2,2*multiprocessing.cpu_count()+1)]
+            self.ThreadsOption = tk.IntVar(master=self)
+            self.ThreadsOption.set( self.threads_optionlist[0] )
+            self.threads_option = tk.OptionMenu(self, self.ThreadsOption, *self.threads_optionlist)
+            self.threads_option.place(relx=0.08,rely=0.05-0.005, relwidth=0.06)
+            self.threads_option.config(state=tk.NORMAL)
+            
+            # self.threads_parameter = Integer( name="threads", fancy_name="Threads", lower_bound=2, upper_bound=2*multiprocessing.cpu_count() )
+            self.threads_parameter = Parameter( name="threads", fancy_name="Threads" )
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.threads_parameter,
+                                                              widget_read_lambda=lambda: self.ThreadsOption.get(),
+                                                              variable_store_lambda=lambda var: self.engine_parameters.mode_parameters.update( {"threads":var} )) )
             
             
     class StateSavingFrame(RuntimeFrame):
@@ -221,10 +242,12 @@ class RuntimeTab(ttk.Frame):
         
         self.items_list = {}
         self.items_list[EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value] = ["Termination criteria", "State saving", "Statistics", "Plots"]
+        self.items_list[EngineParameters.SUPPORTED_MODES.MULTITHREADED.value] = ["Termination criteria", "Threads", "State saving", "Statistics", "Plots"]
         self.selected_mode = EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value
         
         self.frames = {}
         self.frames["Termination criteria"] = RuntimeTab.TerminationCriteriaFrame(master=self, engine_parameters=self.engine_parameters)
+        self.frames["Threads"] = RuntimeTab.ThreadsFrame(master=self, engine_parameters=self.engine_parameters)
         self.frames["State saving"] = RuntimeTab.StateSavingFrame(master=self, engine_parameters=self.engine_parameters)
         self.frames["Statistics"] = RuntimeTab.StatisticsFrame(master=self, engine_parameters=self.engine_parameters)
         self.frames["Plots"] = RuntimeTab.PlotsFrame(master=self, engine_parameters=self.engine_parameters)

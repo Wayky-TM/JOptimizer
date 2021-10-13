@@ -18,6 +18,7 @@ from typing import List
 from collections import defaultdict
 
 from jmetal.util.termination_criterion import TerminationCriterion, StoppingByEvaluations, StoppingByTime
+from jmetal.util.evaluator import Evaluator, SequentialEvaluator, MultiprocessEvaluator, MapEvaluator
 import datetime
 
 
@@ -58,7 +59,7 @@ class EngineParameters:
     
     class SUPPORTED_MODES(Enum):
         SINGLE_THREAD="Single thread"
-        # PARALLEL="Parallel"
+        MULTITHREADED="Multithreaded"
         # MASTER_SLAVE="Master/Slave"
         # CLUSTER="Cluster"
     
@@ -83,6 +84,8 @@ class EngineParameters:
     
     def __init__(self):
         self.mode = EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value
+        self.mode_parameters = defaultdict(lambda: "")
+        self.mode_parameters["threads"] = 2
         
         self.temination_criteria={EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value}
         self.termination_parameters = defaultdict(lambda: "")
@@ -112,8 +115,6 @@ class EngineParameters:
         else:
             criteria = []
             
-            # return StoppingByEvaluations( max_evaluations=1000 )
-            
             if EngineParameters.TERMINATION_CRITERIA.TIME.value in self.temination_criteria:
                 
                 time = int(self.termination_parameters["time"])
@@ -142,6 +143,12 @@ class EngineParameters:
             return criteria[0]
             
             
+    def compile_evaluator(self) -> TerminationCriterion:
             
-            
+        if EngineParameters.SUPPORTED_MODES.MULTITHREADED.value == self.mode:
+            return MapEvaluator( processes=self.mode_parameters["threads"] )
         
+        # elif EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value == self.mode:
+        #     return SequentialEvaluator()
+        
+        return SequentialEvaluator()

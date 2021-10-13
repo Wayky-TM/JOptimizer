@@ -23,7 +23,7 @@ except ImportError:
     import tkFont as tkfont  # python 2
 
 
-from win32api import GetSystemMetrics
+# from win32api import GetSystemMetrics
 from collections import defaultdict
 from typing import List
 import time
@@ -132,8 +132,10 @@ class JOptimizer_App(tk.Tk):
     def __init__(self, *args, **kwargs):
         super( JOptimizer_App, self ).__init__(*args, **kwargs)
         
-        self.screen_width = GetSystemMetrics(0)
-        self.screen_height = GetSystemMetrics(1)
+        # self.screen_width = GetSystemMetrics(0)
+        # self.screen_height = GetSystemMetrics(1)
+        self.screen_width = self.winfo_screenwidth()
+        self.screen_height = self.winfo_screenheight()
         
         self.window_width = int(self.screen_width*0.8)
         self.window_height = int(self.screen_height*0.8)

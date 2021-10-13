@@ -29,6 +29,7 @@ import jmetal.algorithm.singleobjective as Singleobjective
 import jmetal.util.aggregative_function as Aggregative
 import jmetal.util.archive as Archive
 import jmetal.util.neighborhood as Neighborhood
+from jmetal.util.evaluator import Evaluator, SequentialEvaluator
 
 import core.variable as var_types
 from core.composite_problem import CompositeProblem
@@ -189,7 +190,10 @@ class AlgorithmParameters:
         
         
     """ Generates an Algorithm object based on algorithm and problem parameters """
-    def compile_algorithm(self, problem: CompositeProblem, termination_criterion: TerminationCriterion):
+    def compile_algorithm(self,
+                          problem: CompositeProblem,
+                          termination_criterion: TerminationCriterion,
+                          evaluator: Evaluator = SequentialEvaluator()):
         
         """
             Float
@@ -358,7 +362,8 @@ class AlgorithmParameters:
                                               mutation=composite_mutation,
                                               crossover=composite_crossover,
                                               selection=selection_operator,
-                                              termination_criterion=termination_criterion)
+                                              termination_criterion=termination_criterion,
+                                              population_evaluator=evaluator)
             
             
         elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value:
@@ -369,7 +374,8 @@ class AlgorithmParameters:
                                                          mutation=composite_mutation,
                                                          crossover=composite_crossover,
                                                          selection=selection_operator,
-                                                         termination_criterion=termination_criterion)
+                                                         termination_criterion=termination_criterion,
+                                                         population_evaluator=evaluator)
             
             
         elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value:
@@ -386,7 +392,8 @@ class AlgorithmParameters:
                                              max_number_of_replaced_solutions=int(self.specific_options["max_number_of_replaced_solutions"]),
                                              neighbor_size=int(self.specific_options["neighborhood_size"]),
                                              weight_files_path=self.specific_options["weight_files_path"],
-                                             termination_criterion=termination_criterion)
+                                             termination_criterion=termination_criterion,
+                                             population_evaluator=evaluator)
         
         elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOCELL.value:
             
@@ -403,7 +410,8 @@ class AlgorithmParameters:
                                               archive=archive_operator,
                                               mutation=composite_mutation,
                                               crossover=composite_crossover,
-                                              termination_criterion=termination_criterion)
+                                              termination_criterion=termination_criterion,
+                                              population_evaluator=evaluator)
             
         
         return algorithm

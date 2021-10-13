@@ -23,7 +23,7 @@ except ImportError:
     import tkFont as tkfont  # python 2
 
 
-from win32api import GetSystemMetrics
+# from win32api import GetSystemMetrics
 from collections import defaultdict
 
 from interface.parameter_frames import *
@@ -71,6 +71,9 @@ def solution_analysis_popup( controller ):
 
     screen_width = GetSystemMetrics(0)
     screen_height = GetSystemMetrics(1)
+    
+    screen_width = win.winfo_screenwidth()
+    screen_height = win.winfo_screenheight()
     
     window_width = screen_width/2
     window_height = screen_height/2
