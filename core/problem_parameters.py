@@ -22,6 +22,7 @@ from typing import List
 from collections import defaultdict
 
 import core.variable as Variables
+import core.constant as Constants
 import core.composite_problem as cproblem
 
 class ProblemParameters:
@@ -82,3 +83,144 @@ class ProblemParameters:
         
         return composite_problem
         
+    
+    def save_state(self,
+                   dir_path: str,
+                   file_name: str = "problem_parameters.yaml"):
+        
+        if TC.is_dir( dir_path ):
+            
+            var_dict = { Variables.FloatVariable : "float",
+                         Variables.IntegerVariable : "integer",
+                         Variables.DiscretizedFloatVariable : "discretized",
+                         Variables.BinaryVariable : "binary",
+                         Variables.PermutationVariable : "permutation"}
+            
+            const_dict = { Constants.FloatConstant : "float",
+                           Constants.IntegerConstant : "integer",
+                           Constants.BinaryConstant : "binary",
+                           Constants.PermutationConstant : "permutation",
+                           Constants.StringConstant : "string"}
+            
+            output = {}
+            output["options"] = {}
+            
+            """ Options """
+            for key, value in self.options.items():
+                output["options"][key] = value
+            
+            
+            """ Variables """
+            output["variables"] = {}
+            
+            for var in self.variables:
+                var_data = {}
+                
+                var_data["name"] = var.name
+                var_data["type"] = var_dict[type(var)]
+                
+                if var_data["type"] == "float":
+                    var_data["lower_bound"] = var.lower_bound
+                    var_data["upper_bound"] = var.upper_bound
+                    
+                elif var_data["type"] == "integer":
+                    var_data["lower_bound"] = var.lower_bound
+                    var_data["upper_bound"] = var.upper_bound
+                    
+                elif var_data["type"] == "discretized":
+                    var_data["lower_bound"] = var.lower_bound
+                    var_data["upper_bound"] = var.upper_bound
+                    var_data["step"] = var.step
+                    # var_data["resolution"] = var.resolution
+                    
+                elif var_data["type"] == "permutation":
+                    var_data["elements"] = var.elements
+                
+                output["variables"][var.keyword] = var_data
+            
+            """ Constants """    
+            output["constants"] = {}
+            
+            for const in self.constants:
+                const_data = {}
+                
+                const_data["name"] = const.name
+                const_data["type"] = const_dict[type(const)]
+                const_data["value"] = const.value
+                
+                output["constants"][const.keyword] = const_data
+            
+            with open( os.path.join(dir_path, file_name), 'w') as file:
+                documents = yaml.dump(output, file)
+        
+        else:
+            raise ValueError("Path '%s' is not a valid directory" % (dir_path))
+            
+    def load_state(self,
+                   dir_path: str,
+                   file_name: str = "problem_parameters.yaml"):
+    
+        
+        if TC.is_file( os.path.join(dir_path, file_name) ):
+            
+            yaml_file = open( os.path.join(dir_path, file_name), 'r')
+            yaml_content = yaml.safe_load(yaml_file)
+            
+            for key, option in yaml_content["options"].items():
+                self.options[key] = option
+                
+            """ Variables """
+            self.variables = []
+                
+            for key, var_data in yaml_content["variables"].items():
+                
+                if var_data["type"] == "float":
+                    self.variables.append( Variables.FloatVariable(keyword=key,
+                                                                   name=var_data["name"]
+                                                                   lower_bound=var_data["lower_bound"],
+                                                                   upper_bound=var_data["upper_bound"]) )
+                    
+                elif var_data["type"] == "integer":
+                    self.variables.append( Variables.IntegerVariable(keyword=key,
+                                                                     name=var_data["name"]
+                                                                     lower_bound=var_data["lower_bound"],
+                                                                     upper_bound=var_data["upper_bound"]) )
+                    
+                elif var_data["type"] == "integer":
+                    self.variables.append( Variables.DiscretizedVariable(keyword=key,
+                                                                         name=var_data["name"]
+                                                                         lower_bound=var_data["lower_bound"],
+                                                                         upper_bound=var_data["upper_bound"],
+                                                                         step=var_data["step"]) )
+                
+                elif var_data["type"] == "binary":
+                    self.variables.append( Variables.BinaryVariable(keyword=key,
+                                                                    name=var_data["name"]) )
+                    
+                elif var_data["type"] == "permutation":
+                    self.variables.append( Variables.BinaryVariable(keyword=key,
+                                                                    name=var_data["name"],
+                                                                    elements=var_data["elements"]) )
+            """ Constants """  
+            self.constants = []
+                    
+            for key, const_data in yaml_content["constants"].items():
+                
+                if const_data["type"] == "float":
+                    self.constants.append( Constants.FloatConstant(keyword=key, value=const_data["value"]) )
+                
+                elif const_data["type"] == "integer":
+                    self.constants.append( Constants.IntegeConstant(keyword=key, value=const_data["value"]) )
+                
+                elif const_data["type"] == "binary":
+                    self.constants.append( Constants.BinaryConstant(keyword=key, value=const_data["value"]) )
+                
+                elif const_data["type"] == "permutation":
+                    self.constants.append( Constants.PermutationConstant(keyword=key, value=const_data["value"]) )
+                    
+                elif const_data["type"] == "string":
+                    self.constants.append( Constants.StringConstant(keyword=key, value=const_data["value"]) )
+            
+        
+        else:
+            raise ValueError("File '%s' is not a valid file" % (os.path.join(dir_path, file_name)))

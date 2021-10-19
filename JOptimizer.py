@@ -246,8 +246,8 @@ class JOptimizer_App(tk.Tk):
         
     def launch_optimization(self):
         
-        self.engine_parameters.save_state( os.path.join(os.getcwd(), "tests", "yaml_examples") )
-        self.engine_parameters.load_state( os.path.join(os.getcwd(), "tests", "yaml_examples") )
+        # self.engine_parameters.save_state( os.path.join(os.getcwd(), "tests", "yaml_examples") )
+        # self.engine_parameters.load_state( os.path.join(os.getcwd(), "tests", "yaml_examples") )
         
         if self.check_parameter_correctness():    
             self.save_parameters()
