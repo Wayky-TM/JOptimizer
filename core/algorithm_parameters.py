@@ -416,3 +416,128 @@ class AlgorithmParameters:
             
         
         return algorithm
+    
+    def save_state(self,
+                   dir_path: str,
+                   file_name: str = "algorithm_parameters.yaml"):
+        
+        if TC.is_dir( dir_path ):
+            
+            output = {}
+            
+            output["general_parameters"] = {}
+            
+            for key, value in self.general_parameters.items():
+                output["general_parameters"][key] = value
+                
+            """ Float """
+            output["float"] = {}
+            output["float"]["crossover"] = {}
+            output["float"]["crossover"]["choice"] = self.float_crossover_choice
+            output["float"]["crossover"]["parameters"] = {}
+            
+            output["float"]["mutation"] = {}
+            output["float"]["mutation"]["choice"] = self.float_mutation_choice
+            output["float"]["mutation"]["parameters"] = {}
+            
+            for key, value in self.float_crossover_parameters:
+                output["float"]["crossover"]["parameters"][key] = value
+                
+            for key, value in self.float_mutation_parameters:
+                output["float"]["mutation"]["parameters"][key] = value
+                
+            """ Integer """
+            output["integer"] = {}
+            output["integer"]["crossover"] = {}
+            output["integer"]["crossover"]["choice"] = self.int_crossover_choice
+            output["integer"]["crossover"]["parameters"] = {}
+            
+            output["integer"]["mutation"] = {}
+            output["integer"]["mutation"]["choice"] = self.int_mutation_choice
+            output["integer"]["mutation"]["parameters"] = {}
+            
+            for key, value in self.int_crossover_parameters:
+                output["integer"]["crossover"]["parameters"][key] = value
+                
+            for key, value in self.int_mutation_parameters:
+                output["integer"]["mutation"]["parameters"][key] = value
+                
+            """ Binary """
+            output["binary"] = {}
+            output["binary"]["crossover"] = {}
+            output["binary"]["crossover"]["choice"] = self.binary_crossover_choice
+            output["binary"]["crossover"]["parameters"] = {}
+            
+            output["binary"]["mutation"] = {}
+            output["binary"]["mutation"]["choice"] = self.binary_mutation_choice
+            output["binary"]["mutation"]["parameters"] = {}
+            
+            for key, value in self.binary_crossover_parameters:
+                output["binary"]["crossover"]["parameters"][key] = value
+                
+            for key, value in self.binary_mutation_parameters:
+                output["binary"]["mutation"]["parameters"][key] = value
+                
+            """ Permutation """
+            output["permutation"] = {}
+            output["permutation"]["crossover"] = {}
+            output["permutation"]["crossover"]["choice"] = self.permutation_crossover_choice
+            output["permutation"]["crossover"]["parameters"] = {}
+            
+            output["permutation"]["mutation"] = {}
+            output["permutation"]["mutation"]["choice"] = self.permutation_mutation_choice
+            output["permutation"]["mutation"]["parameters"] = {}
+            
+            for key, value in self.permutation_crossover_parameters:
+                output["permutation"]["crossover"]["parameters"][key] = value
+                
+            for key, value in self.permutation_mutation_parameters:
+                output["permutation"]["mutation"]["parameters"][key] = value
+                
+            """ Selection """
+            output["selection"] = {}
+            output["selection"]["choice"] = self.selection_choice
+            output["selection"]["parameters"] = {}
+            
+            for key, value in self.selection_parameters.items():
+                output["selection"]["parameters"][key] = value
+             
+                
+            """ Algorithm specific """
+            output["specific"] = {}
+            output["specific"]["options"] = {}
+            output["specific"]["parameters"] = {}
+            
+            for key, value in self.specific_options.items():
+                output["specific"]["options"][key] = value
+                
+            for key, value in self.specific_parameters.items():
+                parameter_dict = {}
+                
+                for key1, value1 in value.items():
+                    parameter_dict[key1] = value1
+                    
+                output["specific"]["parameters"][key] = parameter_dict
+                
+                
+            with open( os.path.join(dir_path, file_name), 'w') as file:
+                documents = yaml.dump(output, file)
+        
+        else:
+            raise ValueError("Path '%s' is not a valid directory" % (dir_path))    
+    
+    def load_state(self,
+                   dir_path: str,
+                   file_name: str = "algorithm_parameters.yaml"):
+        
+        if TC.is_file( os.path.join(dir_path, file_name) ):
+            
+            yaml_file = open( os.path.join(dir_path, file_name), 'r')
+            yaml_content = yaml.safe_load(yaml_file)
+            
+            """ Float """
+            yaml_content["float"]["crossover"]
+            
+            
+        else:
+            raise ValueError("File '%s' is not a valid file" % (os.path.join(dir_path, file_name)))

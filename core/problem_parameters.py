@@ -201,7 +201,7 @@ class ProblemParameters:
                     self.variables.append( Variables.BinaryVariable(keyword=key,
                                                                     name=var_data["name"],
                                                                     elements=var_data["elements"]) )
-            """ Constants """  
+            """ Constants """
             self.constants = []
                     
             for key, const_data in yaml_content["constants"].items():
