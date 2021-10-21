@@ -536,8 +536,70 @@ class AlgorithmParameters:
             yaml_content = yaml.safe_load(yaml_file)
             
             """ Float """
-            yaml_content["float"]["crossover"]
+            self.float_crossover_choice = yaml_content["float"]["crossover"]["choice"]
             
+            for key, value in yaml_content["float"]["crossover"]["parameters"].items():
+                self.float_crossover_parameters[key] = value
+                
+            self.float_mutation_choice = yaml_content["float"]["mutation"]["choice"]
+            
+            for key, value in yaml_content["float"]["mutation"]["parameters"].items():
+                self.float_mutation_parameters[key] = value
+                
+            """ Integer """
+            self.int_crossover_choice = yaml_content["int"]["crossover"]["choice"]
+            
+            for key, value in yaml_content["int"]["crossover"]["parameters"].items():
+                self.int_crossover_parameters[key] = value
+                
+            self.int_mutation_choice = yaml_content["int"]["mutation"]["choice"]
+            
+            for key, value in yaml_content["int"]["mutation"]["parameters"].items():
+                self.int_mutation_parameters[key] = value
+                
+            """ Binary """
+            self.binary_crossover_choice = yaml_content["binary"]["crossover"]["choice"]
+            
+            for key, value in yaml_content["binary"]["crossover"]["parameters"].items():
+                self.binary_crossover_parameters[key] = value
+                
+            self.binary_mutation_choice = yaml_content["binary"]["mutation"]["choice"]
+            
+            for key, value in yaml_content["binary"]["mutation"]["parameters"].items():
+                self.binary_mutation_parameters[key] = value
+                
+            """ Permutation """
+            self.permutation_crossover_choice = yaml_content["permutation"]["crossover"]["choice"]
+            
+            for key, value in yaml_content["permutation"]["crossover"]["parameters"].items():
+                self.permutation_crossover_parameters[key] = value
+                
+            self.permutation_mutation_choice = yaml_content["permutation"]["mutation"]["choice"]
+            
+            for key, value in yaml_content["permutation"]["mutation"]["parameters"].items():
+                self.permutation_mutation_parameters[key] = value
+                
+            """ Selection """
+            self.selection_choice = yaml_content["selection"]["choice"]
+            
+            for key, value in yaml_content["selection"]["parameters"].items():
+                self.selection_parameters[key] = value
+            
+            """ Algorithm-specific """
+            output["specific"]["options"] = {}
+            output["specific"]["parameters"] = {}
+            
+            for key, value in yaml_content["specific"]["options"].items():
+                self.specific_options[key] = value
+                
+            for key, value in yaml_content["specific"]["parameters"].items():
+                parameter_dict = defaultdict( lambda: "" )
+                
+                for key1, value1 in value.items():
+                    parameter_dict[key1] = value1
+                    
+                self.specific_parameters[key] = parameter_dict
+                
             
         else:
             raise ValueError("File '%s' is not a valid file" % (os.path.join(dir_path, file_name)))

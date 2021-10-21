@@ -176,19 +176,19 @@ class ProblemParameters:
                 
                 if var_data["type"] == "float":
                     self.variables.append( Variables.FloatVariable(keyword=key,
-                                                                   name=var_data["name"]
+                                                                   name=var_data["name"],
                                                                    lower_bound=var_data["lower_bound"],
                                                                    upper_bound=var_data["upper_bound"]) )
                     
                 elif var_data["type"] == "integer":
                     self.variables.append( Variables.IntegerVariable(keyword=key,
-                                                                     name=var_data["name"]
+                                                                     name=var_data["name"],
                                                                      lower_bound=var_data["lower_bound"],
                                                                      upper_bound=var_data["upper_bound"]) )
                     
                 elif var_data["type"] == "integer":
                     self.variables.append( Variables.DiscretizedVariable(keyword=key,
-                                                                         name=var_data["name"]
+                                                                         name=var_data["name"],
                                                                          lower_bound=var_data["lower_bound"],
                                                                          upper_bound=var_data["upper_bound"],
                                                                          step=var_data["step"]) )

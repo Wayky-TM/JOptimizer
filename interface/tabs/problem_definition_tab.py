@@ -67,6 +67,11 @@ class ProblemTab(ttk.Frame):
             for binding in self.parameters_bindings:
                 binding.store_value()
                 
+        def load_parameters(self):
+            
+            for binding in self.parameters_bindings:
+                binding.load_value()
+                
         def display(self):
             self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
             
@@ -537,6 +542,32 @@ class ProblemTab(ttk.Frame):
             self.selected_variable_frame.hide()
             self.selected_variable_frame = self.variable_frames[new_value]
             self.selected_variable_frame.show()
+            
+        def load_variables(self):
+            
+            self.clearall_variable()
+            
+            for variable in self.problem_parameters.variables:
+                
+                var_name = variable.keyword
+                var_type = self.type_dict[type(variable)]
+                
+                if type(variable) in [variable_types.BinaryVariable, variable_types.PermutationVariable]:
+                    var_lower_bound = "-"
+                    var_upper_bound = "-"
+                    
+                else:
+                    var_lower_bound = str(variable.lower_bound)
+                    var_upper_bound = str(variable.upper_bound)
+            
+                self.parameters_tree.insert('', 'end', text=var_name, values=(var_type, var_lower_bound, var_upper_bound))
+            
+        
+        def load_parameters(self):
+            
+            super(ProblemTab.VariablesFrame, self).load_parameters()
+            
+            self.load_variables()
         
         
         def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
@@ -912,6 +943,25 @@ class ProblemTab(ttk.Frame):
                 
             self.problem_parameters.constants = [ x for x in self.problem_parameters.constants if x.keyword not in const_names ]
         
+        def load_constants(self):
+            
+            self.clearall_constants()
+            
+            for constant in self.problem_parameters.constants:
+                
+                const_name = constant.keyword
+                const_type = self.type_dict[type(constant)]
+                    
+                const_value = str(constant.value)
+            
+                self.constants_tree.insert('', 'end', text=const_name, values=(const_type, const_value))
+                
+        def load_parameters(self):
+            
+            super(ProblemTab.ConstantsFrame, self).load_parameters()
+            
+            self.load_constants()
+        
         def update_type(self, new_value):
             self.selected_constant_frame.clear_errors()
             self.selected_constant_frame.clear_entries()
@@ -1081,6 +1131,12 @@ class ProblemTab(ttk.Frame):
         for key in self.items_list[self.TemplateOption.get()]:
             self.frames[key].save_parameters()
             
+    def load_parameters(self):
+        
+        self.problem_parameters.options["template"] = self.TemplateOption.get()
+        
+        for key in self.items_list[self.TemplateOption.get()]:
+            self.frames[key].load_parameters()
     
     def console_print_error(self, string: str):
         self.console.print_error( string+"\n" )

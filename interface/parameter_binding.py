@@ -66,7 +66,7 @@ class ParameterBinding:
         self.variable_store_lambda( self.parameter.value )
         
     def load_value(self):
-        self.widget_update_lambda( self.variable_read_lambda )
+        self.widget_update_lambda( self.variable_read_lambda() )
         
 
 class EntryInvalidator:

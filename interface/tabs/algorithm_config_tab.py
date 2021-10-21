@@ -199,6 +199,11 @@ class AlgorithmTab(ttk.Frame):
             super(AlgorithmTab.SelectionFrame, self).save_parameters()
             self.frames[self.selected_frame_key].save_parameters()
             
+        def load_parameters(self):
+            
+            super(AlgorithmTab.SelectionFrame, self).load_parameters()
+            self.frames[self.selected_frame_key].load_parameters()
+            
             
     class ByTypeFrame(ParameterLabelFrame):
             
@@ -378,6 +383,10 @@ class AlgorithmTab(ttk.Frame):
             def save_parameters(self):
                 super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame, self).save_parameters()
                 self.frames[self.selected_frame_key].save_parameters()
+                
+            def load_parameters(self):
+                super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame, self).load_parameters()
+                self.frames[self.selected_frame_key].load_parameters()
                 
             def disable(self):
                 self.configure(text="Float crossover (Disabled)")
@@ -594,6 +603,27 @@ class AlgorithmTab(ttk.Frame):
             if variable_types.PermutationVariable in used_variable_types:
                 self.permutation_frame.save_parameters()
                 
+        def load_parameters(self):
+            
+            used_variable_types = [ type(x) for x in self.problem_parameters.variables ]
+            
+            self.float_frame.load_parameters()
+            self.int_frame.load_parameters()
+            self.binary_frame.load_parameters()
+            self.permutation_frame.load_parameters()
+            
+            # if variable_types.FloatVariable in used_variable_types:
+            #     self.float_frame.load_parameters()
+            
+            # if variable_types.IntegerVariable in used_variable_types or variable_types.DiscretizedFloatVariable in used_variable_types:
+            #     self.int_frame.load_parameters()
+            
+            # if variable_types.BinaryVariable in used_variable_types:
+            #     self.binary_frame.load_parameters()
+            
+            # if variable_types.PermutationVariable in used_variable_types:
+            #     self.permutation_frame.load_parameters()
+                
         
         def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
             super(AlgorithmTab.CrossoverFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
@@ -775,9 +805,14 @@ class AlgorithmTab(ttk.Frame):
                 return error_list
             
             def save_parameters(self):
-                # self.save_parameters()
+                
                 super(AlgorithmTab.MutationFrame.FloatMutationFrame,self).save_parameters()
                 self.frames[self.selected_frame_key].save_parameters()
+                
+            def load_parameters(self):
+                
+                super(AlgorithmTab.MutationFrame.FloatMutationFrame,self).load_parameters()
+                self.frames[self.selected_frame_key].load_parameters()
                 
             def disable(self):
                 self.configure(text="Float mutation (Disabled)")
@@ -1018,6 +1053,15 @@ class AlgorithmTab(ttk.Frame):
             
             if variable_types.PermutationVariable in used_variable_types:
                 self.permutation_frame.save_parameters()
+                
+        def load_parameters(self):
+            
+            # used_variable_types = [ type(x) for x in self.problem_parameters.variables ]
+            
+            self.float_frame.load_parameters()
+            self.int_frame.load_parameters()
+            self.binary_frame.load_parameters()
+            self.permutation_frame.load_parameters()
             
     
     def update_algorithm_selection(self, new_selection):
@@ -1149,6 +1193,13 @@ class AlgorithmTab(ttk.Frame):
         
         for key in self.items_list[self.AlgorithmOption.get()]:
             self.frames[key].save_parameters()
+            
+    def load_parameters(self):
+        
+        self.algorithm_parameters.choice = self.AlgorithmOption.get()
+        
+        for key in self.items_list[self.AlgorithmOption.get()]:
+            self.frames[key].load_parameters()
         
     def console_print_error(self, string: str):
         self.console.print_error( string+"\n" )
