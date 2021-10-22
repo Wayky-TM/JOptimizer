@@ -95,29 +95,40 @@ class RuntimeTab(ttk.Frame):
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.by_time_parameter,
                                                               widget_read_lambda=lambda: self.time_checkbox_var.get(),
-                                                              variable_store_lambda=self._save_time_boolean) )
+                                                              variable_store_lambda=self._save_time_boolean,
+                                                              variable_read_lambda=lambda: EngineParameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria,
+                                                              widget_update_lambda=lambda var: self.time_checkbox_var.set(var)) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.by_eval_parameter,
                                                               widget_read_lambda=lambda: self.eval_checkbox_var.get(),
-                                                              variable_store_lambda=self._save_eval_boolean) )
+                                                              variable_store_lambda=self._save_eval_boolean,
+                                                              variable_read_lambda=lambda: EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria,
+                                                              widget_update_lambda=lambda var: self.eval_checkbox_var.set(var)) )
             
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.eval_parameter,
                                                               widget_read_lambda=lambda: self.eval_entry.get(),
                                                               variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"evaluations":var}),
                                                               error_set_lambda=EntryInvalidator(self.eval_entry),
-                                                              error_reset_lambda=EntryValidator(self.eval_entry)) )
+                                                              error_reset_lambda=EntryValidator(self.eval_entry),
+                                                              variable_read_lambda=lambda: self.engine_parameters.termination_parameters["evaluations"],
+                                                              widget_update_lambda=lambda var: self.eval_entry.set(var)) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.time_parameter,
                                                               widget_read_lambda=lambda: self.time_entry.get(),
                                                               variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time":var}),
                                                               error_set_lambda=EntryInvalidator(self.time_entry),
-                                                              error_reset_lambda=EntryValidator(self.time_entry)) )
+                                                              error_reset_lambda=EntryValidator(self.time_entry),
+                                                              variable_read_lambda=lambda: self.engine_parameters.termination_parameters["time"],
+                                                              widget_update_lambda=lambda var: self.time_entry.set(var)) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.time_scale_parameter,
                                                               widget_read_lambda=lambda: self.TimescaleOption.get(),
-                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time_scale":var})) )
-            
+                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time_scale":var}),
+                                                              variable_read_lambda=lambda: self.engine_parameters.termination_parameters["time_scale"],
+                                                              widget_update_lambda=lambda var: self.timescale_option.set(var)) )
+        
+        
         def _save_time_boolean(self, var):
             
             if var:
@@ -171,7 +182,9 @@ class RuntimeTab(ttk.Frame):
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.threads_parameter,
                                                               widget_read_lambda=lambda: self.ThreadsOption.get(),
-                                                              variable_store_lambda=lambda var: self.engine_parameters.mode_parameters.update( {"threads":var} )) )
+                                                              variable_store_lambda=lambda var: self.engine_parameters.mode_parameters.update( {"threads":var} ),
+                                                              variable_read_lambda=lambda: self.engine_parameters.termination_parameters["threads"],
+                                                              widget_update_lambda=lambda var: self.ThreadsOption.set(var)) )
             
             
     class StateSavingFrame(RuntimeFrame):
@@ -287,6 +300,13 @@ class RuntimeTab(ttk.Frame):
         
         for key in self.items_list[self.ModeOption.get()]:
             self.frames[key].save_parameters()
+            
+    def load_parameters(self):
+        
+        self.ModeOption.set( self.engine_parameters.mode )
+        
+        for key in self.items_list[ self.engine_parameters.mode ]:
+            self.frames[key].load_parameters()
         
     def console_print_error(self, string: str):
         self.console.print_error( string+"\n" )
