@@ -168,6 +168,9 @@ class JOptimizer_App(tk.Tk):
         self.file_menu = tk.Menu(self.menu_bar, tearoff=0)
         self.help_menu = tk.Menu(self.menu_bar, tearoff=0)
         
+        self.file_menu.add_command( label="Save configuration", command=self.SaveConfigCommand )
+        self.file_menu.add_command( label="Load configuration", command=self.LoadConfigCommand )
+        
         self.menu_bar.add_cascade(label="File", menu=self.file_menu)
         self.menu_bar.add_cascade(label="Help", menu=self.help_menu)
         
@@ -197,7 +200,14 @@ class JOptimizer_App(tk.Tk):
         self.tabs.bind('<<NotebookTabChanged>>', self.changed_tag_handler)
         
         self.tabs.place( relx=0.01, rely=0.03, relwidth=0.98, relheight=0.95 )
+    
         
+    def SaveConfigCommand(self):
+        pass
+    
+    def LoadConfigCommand(self):
+        pass
+    
         
     def check_parameter_correctness(self):
         

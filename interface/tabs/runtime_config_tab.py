@@ -170,7 +170,7 @@ class RuntimeTab(ttk.Frame):
             self.threads_label = tk.Label(master=self, text="Threads")
             self.threads_label.place( relx=0.02, rely=0.05 )
             
-            self.threads_optionlist = [i for i in range(2,2*multiprocessing.cpu_count()+1)]
+            self.threads_optionlist = [i for i in range(1,multiprocessing.cpu_count()+1)]
             self.ThreadsOption = tk.IntVar(master=self)
             self.ThreadsOption.set( self.threads_optionlist[0] )
             self.threads_option = tk.OptionMenu(self, self.ThreadsOption, *self.threads_optionlist)
