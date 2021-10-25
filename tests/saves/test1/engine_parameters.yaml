@@ -1,0 +1,24 @@
+mode:
+  option: Single thread
+  parameters:
+    threads: 2
+runtime_statistics:
+  criteria:
+  - Time
+  parameters:
+    evaluations: 100
+    time: 10
+    time_escale: Seconds
+save_runtime:
+  criteria: []
+  parameters:
+    every_pause: false
+    folder_path: ''
+    on_pause: false
+termination:
+  criteria: !!set {}
+  parameters:
+    datetime: 2021-10-25 10:16:03.899416
+    evaluations: null
+    time: null
+    time_scale: null

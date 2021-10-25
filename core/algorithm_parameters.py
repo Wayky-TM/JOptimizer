@@ -12,6 +12,8 @@ sys.path.append(r"./..")
 import copy
 import random
 import math
+import yaml
+import os
 
 from enum import Enum
 from abc import *
@@ -36,7 +38,7 @@ from core.composite_problem import CompositeProblem
 from jmetal.util.termination_criterion import TerminationCriterion
 from core.null import NullCrossoverOperator, NullMutationOperator
 
-
+import util.type_check as TC
 
 
 class AlgorithmParameters:
