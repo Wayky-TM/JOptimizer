@@ -27,6 +27,8 @@ from typing import List
 
 from interface.parameter import Parameter
 
+
+
 class ParameterBinding:
     
     def __init__( self,
@@ -85,4 +87,10 @@ class EntryValidator:
     def __call__(self):
         self.entry.config({"background":"White"})
         
+     
         
+def ClearInsertEntry( entry: tk.Entry, text: str ):
+    entry.delete(0,tk.END)
+    entry.insert(0,text)
+    
+    

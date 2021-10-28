@@ -33,7 +33,7 @@ from util.type_check import is_integer, is_float
 
 from interface.parameter import *
 from interface.console import Console
-from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator
+from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator, ClearInsertEntry
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
 
 
@@ -69,7 +69,7 @@ class AlgorithmTab(ttk.Frame):
                                                               error_set_lambda=EntryInvalidator(self.population_size_entry),
                                                               error_reset_lambda=EntryValidator(self.population_size_entry),
                                                               variable_read_lambda=lambda: self.algorithm_parameters.general_parameters["population_size"],
-                                                              widget_update_lambda=lambda var: self.population_size_entry.set(var)) )
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.population_size_entry, str(var))) )
             
             
     class OffspringFrame(AlgorithmFrame):
@@ -91,7 +91,7 @@ class AlgorithmTab(ttk.Frame):
                                                               error_set_lambda=EntryInvalidator(self.offspring_size_entry),
                                                               error_reset_lambda=EntryValidator(self.offspring_size_entry),
                                                               variable_read_lambda=lambda: self.algorithm_parameters.general_parameters["offspring_size"],
-                                                              widget_update_lambda=lambda var: self.offspring_size_entry.set(var)) )        
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.offspring_size_entry, str(var))) )        
  
     class SelectionFrame(AlgorithmFrame):
     
@@ -126,7 +126,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.n_solutions_entry),
                                                                   error_reset_lambda=EntryValidator(self.n_solutions_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.selection_parameters["number_of_solutions_to_be_returned"],
-                                                                  widget_update_lambda=lambda var: self.n_solutions_entry.set(var)) )        
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.n_solutions_entry, str(var)) ) )        
                 
         
         class RankingAndCrowdingParametersPane(SelectionParametersPane):
@@ -149,7 +149,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.max_population_entry),
                                                                   error_reset_lambda=EntryValidator(self.max_population_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.selection_parameters["max_population_size"],
-                                                                  widget_update_lambda=lambda var: self.max_population_entry.set(var)) )        
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.max_population_entry, str(var)) ) )        
     
         def update_operator(self, new_value):
             # self.frames[self.selected_frame_key].clear_errors()
@@ -264,7 +264,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                       error_reset_lambda=EntryValidator(self.probability_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_crossover_parameters["probability"],
-                                                                      widget_update_lambda=lambda var: self.probability_entry.set(var)) )
+                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
                                                                       widget_read_lambda=lambda: self.distribution_index_entry.get(),
@@ -272,7 +272,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.distribution_index_entry),
                                                                       error_reset_lambda=EntryValidator(self.distribution_index_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_crossover_parameters["distribution_index"],
-                                                                      widget_update_lambda=lambda var: self.distribution_index_entry.set(var)) )
+                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.distribution_index_entry, str(var))) )
                 
                 def display(self):
                     self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -319,7 +319,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                       error_reset_lambda=EntryValidator(self.probability_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_crossover_parameters["probability"],
-                                                                      widget_update_lambda=lambda var: self.probability_entry.set(var)) )
+                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var))) )
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.F_parameter,
                                                                       widget_read_lambda=lambda: self.F_entry.get(),
@@ -327,7 +327,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.F_entry),
                                                                       error_reset_lambda=EntryValidator(self.F_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_crossover_parameters["F"],
-                                                                      widget_update_lambda=lambda var: self.F_entry.set(var)) )
+                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.F_entry, str(var)) ) )
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.K_parameter,
                                                                       widget_read_lambda=lambda: self.K_entry.get(),
@@ -335,7 +335,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.K_entry),
                                                                       error_reset_lambda=EntryValidator(self.K_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_crossover_parameters["K"],
-                                                                      widget_update_lambda=lambda var: self.K_entry.set(var)) )
+                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.K_entry, str(var)) ) )
                     
                 def display(self):
                     self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -464,7 +464,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.int_crossover_parameters["probability"],
-                                                                  widget_update_lambda=lambda var: self.probability_entry.set(var)) )
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
                                                                   widget_read_lambda=lambda: self.distribution_index_entry.get(),
@@ -472,7 +472,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.distribution_index_entry),
                                                                   error_reset_lambda=EntryValidator(self.distribution_index_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.int_crossover_parameters["distribution_index"],
-                                                                  widget_update_lambda=lambda var: self.distribution_index_entry.set(var)) )
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.distribution_index_entry, str(var)) ) )
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.crossover_option_parameter,
                                                                   widget_read_lambda=lambda: self.CrossoverOption.get(),
@@ -528,7 +528,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.binary_crossover_parameters["distribution_index"],
-                                                                  widget_update_lambda=lambda var: self.probability_entry.set(var)) )
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
                 
                     
                 self.parameters_bindings.append( ParameterBinding(parameter=self.crossover_option_parameter,
@@ -583,7 +583,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.permutation_crossover_parameters["probability"],
-                                                                  widget_update_lambda=lambda var: self.probability_entry.set(var)) )
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var))) )
                 
                     
                 self.parameters_bindings.append( ParameterBinding(parameter=self.crossover_option_parameter,
@@ -708,7 +708,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.distribution_index_entry),
                                                                       error_reset_lambda=EntryValidator(self.distribution_index_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_mutation_parameters["distribution_index"],
-                                                                      widget_update_lambda=lambda var: self.distribution_index_entry.set(var)) )
+                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.distribution_index_entry, str(var)) ) )
                     
                 def display(self):
                     self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -740,7 +740,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.perturbation_entry),
                                                                       error_reset_lambda=EntryValidator(self.perturbation_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_mutation_parameters["perturbation"],
-                                                                      widget_update_lambda=lambda var: self.perturbation_entry.set(var)) )
+                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.perturbation_entry, str(var)) ) )
                     
                 def display(self):
                     self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -769,7 +769,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.max_iter_entry),
                                                                       error_reset_lambda=EntryValidator(self.max_iter_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_mutation_parameters["max_iterations"],
-                                                                      widget_update_lambda=lambda var: self.max_iter_entry.set(var)) )
+                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.max_iter_entry, str(var)) ) )
                 
                     
                 def disable(self):
@@ -834,7 +834,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.float_mutation_parameters["probability"],
-                                                                  widget_update_lambda=lambda var: self.probability_entry.set(var)) )
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
                 
             def __store_float_mutation_option(self, value):
                 self.algorithm_parameters.float_mutation_choice = value
@@ -919,7 +919,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.int_mutation_parameters["probability"],
-                                                                  widget_update_lambda=lambda var: self.probability_entry.set(var)) )
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
                                                                   widget_read_lambda=lambda: self.distribution_index_entry.get(),
@@ -927,7 +927,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.distribution_index_entry),
                                                                   error_reset_lambda=EntryValidator(self.distribution_index_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.int_mutation_parameters["distribution_index"],
-                                                                  widget_update_lambda=lambda var: self.distribution_index_entry.set(var)) )
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.distribution_index_entry, str(var)) ) )
                 
                 
                 self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
@@ -984,7 +984,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.binary_mutation_parameters["probability"],
-                                                                  widget_update_lambda=lambda var: self.probability_entry.set(var)) )
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
             
                     
                 self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
@@ -1040,7 +1040,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                   error_reset_lambda=EntryValidator(self.probability_entry),
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.permutation_mutation_parameters["probability"],
-                                                                  widget_update_lambda=lambda var: self.probability_entry.set(var)) )
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
                 
                     
                 self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
@@ -1125,7 +1125,156 @@ class AlgorithmTab(ttk.Frame):
             self.int_frame.load_parameters()
             self.binary_frame.load_parameters()
             self.permutation_frame.load_parameters()
+      
+        
+      
+    class AggregativeFrame(AlgorithmFrame):
+        
+        class Tschebycheff(ParameterLabelFrame):
             
+            def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+                super(AlgorithmTab.AggregativeFrame.Tschebycheff, self).__init__(master=master, *args, **kwargs)
+                
+                self.problem_parameters = problem_parameters
+                self.algorithm_parameters = algorithm_parameters
+                
+                tk.Label( master=self, text="Dimension").place( relx=0.02, rely=0.05 )
+                
+                self.dimension_entry = tk.Entry(master=self, state=tk.NORMAL)
+                self.dimension_entry.insert(0, self.algorithm_parameters.specific_parameters["aggregative"]["dimension"])
+                self.dimension_entry.place(relx=0.105, rely=0.05+0.005, relwidth=0.06)
+                self.dimension_entry.config(state=tk.NORMAL)
+                
+                self.dimension_parameter = Integer(name="dimension", fancy_name="Dimension", lower_bound=1, upper_bound=100)
+                
+                self.parameters_bindings.append( ParameterBinding(parameter=self.dimension_parameter,
+                                                                  widget_read_lambda=lambda: self.dimension_entry.get(),
+                                                                  variable_store_lambda=lambda var: self.algorithm_parameters.specific_parameters["aggregative"].update({"dimension":var}),
+                                                                  error_set_lambda=EntryInvalidator(self.dimension_entry),
+                                                                  error_reset_lambda=EntryValidator(self.dimension_entry),
+                                                                  variable_read_lambda=lambda: self.algorithm_parameters.specific_parameters["aggregative"]["dimension"],
+                                                                  widget_update_lambda=lambda var: ClearInsertEntry(self.dimension_entry, str(var)) ) )
+                
+            def display(self):
+                self.place( relx=0.05, rely=0.16, relwidth=0.9, relheight=0.79 )
+        
+        def _option_update(self, new_key):
+            self.frames[self.selected_frame_key].hide()
+            self.selected_frame_key = new_key
+            self.frames[self.selected_frame_key].display()
+        
+        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+            super(AlgorithmTab.AggregativeFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+        
+            self.aggregative_option_list = [ option.value for option in AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION ]
+        
+            tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.05 )
+            self.AggregativeOption = tk.StringVar(self)
+            self.AggregativeOption.set( AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.WEIGHTED_SUM.value )
+            self.aggregative_option = tk.OptionMenu(self, self.AggregativeOption, *self.aggregative_option_list, command=self._option_update)
+            self.aggregative_option.config( state=tk.NORMAL )
+            self.aggregative_option.place( relx=0.07, rely=0.045, relwidth=0.1 )
+            
+            self.frames = {}
+            self.frames[AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.TSCHEBYCHEFF.value] = AlgorithmTab.AggregativeFrame.Tschebycheff(master=self,
+                                                                                                                                        problem_parameters=problem_parameters,
+                                                                                                                                        algorithm_parameters=algorithm_parameters)
+            self.frames[AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.WEIGHTED_SUM.value] = NullParameterFrame(master=self)
+            
+            self.selected_frame_key = AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.WEIGHTED_SUM.value
+            
+            self.function_parameter = Parameter(name="Aggregative function", fancy_name="aggregative_function")
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.function_parameter,
+                                                                widget_read_lambda=lambda: self.AggregativeOption.get(),
+                                                                variable_store_lambda=lambda var: self.algorithm_parameters.specific_options.update({"aggregative":var}),
+                                                                variable_read_lambda=lambda: self.algorithm_parameters.specific_options["aggregative"],
+                                                                widget_update_lambda=lambda var: AggregativeOption.set(str(var)) ) )
+            
+            
+    class MOEADParametersFrame(AlgorithmFrame):
+        
+        def _browse(self): 
+            
+            path = filedialog.askdirectory(title = "Select a folder to store weights", initialdir=os.getcwd() )
+            
+            self.weight_files_path_entry.config(state=tk.NORMAL)
+            self.weight_files_path_entry.delete( 0, tk.END )
+            self.weight_files_path_entry.insert( 0, path )
+            self.weight_files_path_entry.config(state="readonly")
+        
+        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+            super(AlgorithmTab.MOEADParametersFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+            
+            tk.Label( master=self, text="Neighbourhood selection probability").place( relx=0.02, rely=0.05 )
+            self.neighborhood_selection_probability_entry = tk.Entry(master=self, state=tk.NORMAL)
+            self.neighborhood_selection_probability_entry.insert(0, self.algorithm_parameters.specific_options["neighborhood_selection_probability"])
+            self.neighborhood_selection_probability_entry.place(relx=0.19, rely=0.05+0.005, relwidth=0.08)
+            self.neighborhood_selection_probability_entry.config(state=tk.NORMAL)
+            
+            self.neighborhood_selection_probability_parameter = Float(name="neighborhood_selection_probability", fancy_name="Neighbourhood selection probability", lower_bound=0.0, upper_bound=1.0)
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.neighborhood_selection_probability_parameter,
+                                                              widget_read_lambda=lambda: self.neighborhood_selection_probability_entry.get(),
+                                                              variable_store_lambda=lambda var: self.algorithm_parameters.specific_options.update({"neighborhood_selection_probability":var}),
+                                                              error_set_lambda=EntryInvalidator(self.neighborhood_selection_probability_entry),
+                                                              error_reset_lambda=EntryValidator(self.neighborhood_selection_probability_entry),
+                                                              variable_read_lambda=lambda: self.algorithm_parameters.specific_options["neighborhood_selection_probability"],
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.neighborhood_selection_probability_entry, str(var))) )
+            
+            
+            tk.Label( master=self, text="Max. number of replaced solutions").place( relx=0.02, rely=0.1 )
+            self.max_number_of_replaced_solutions_entry = tk.Entry(master=self, state=tk.NORMAL)
+            self.max_number_of_replaced_solutions_entry.insert(0, self.algorithm_parameters.specific_options["max_number_of_replaced_solutions"])
+            self.max_number_of_replaced_solutions_entry.place(relx=0.19, rely=0.1+0.005, relwidth=0.08)
+            self.max_number_of_replaced_solutions_entry.config(state=tk.NORMAL)
+            
+            self.max_number_of_replaced_solutions_parameter = Integer(name="max_number_of_replaced_solutions", fancy_name="Max. number of replaced solutions", lower_bound=1, upper_bound=100)
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.max_number_of_replaced_solutions_parameter,
+                                                              widget_read_lambda=lambda: self.max_number_of_replaced_solutions_entry.get(),
+                                                              variable_store_lambda=lambda var: self.algorithm_parameters.specific_options.update({"max_number_of_replaced_solutions":var}),
+                                                              error_set_lambda=EntryInvalidator(self.max_number_of_replaced_solutions_entry),
+                                                              error_reset_lambda=EntryValidator(self.max_number_of_replaced_solutions_entry),
+                                                              variable_read_lambda=lambda: self.algorithm_parameters.specific_options["max_number_of_replaced_solutions"],
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.max_number_of_replaced_solutions_entry, str(var))) )
+            
+            
+            tk.Label( master=self, text="Neighborhood size").place( relx=0.02, rely=0.15 )
+            self.neighbor_size_entry = tk.Entry(master=self, state=tk.NORMAL)
+            self.neighbor_size_entry.insert(0, self.algorithm_parameters.specific_options["neighborhood_size"])
+            self.neighbor_size_entry.place(relx=0.115, rely=0.15+0.005, relwidth=0.08)
+            self.neighbor_size_entry.config(state=tk.NORMAL)
+            
+            self.neighbor_size_parameter = Integer(name="neighbor_size", fancy_name="Neighbourhood size", lower_bound=1, upper_bound=100)
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.neighbor_size_parameter,
+                                                              widget_read_lambda=lambda: self.neighbor_size_entry.get(),
+                                                              variable_store_lambda=lambda var: self.algorithm_parameters.specific_options.update({"neighborhood_size":var}),
+                                                              error_set_lambda=EntryInvalidator(self.neighbor_size_entry),
+                                                              error_reset_lambda=EntryValidator(self.neighbor_size_entry),
+                                                              variable_read_lambda=lambda: self.algorithm_parameters.specific_options["neighborhood_size"],
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.neighbor_size_entry, str(var))) )
+            
+            
+            tk.Label( master=self, text="Weight files folder path").place( relx=0.02, rely=0.2 )
+            self.weight_files_path_entry = tk.Entry(master=self, state=tk.NORMAL)
+            self.weight_files_path_entry.insert(0, self.algorithm_parameters.specific_options["weight_files_path"])
+            self.weight_files_path_entry.place(relx=0.105, rely=0.2+0.005, relwidth=0.3)
+            self.weight_files_path_entry.config(state="readonly")
+            self.button_browse_weight_files = ttk.Button( master=self,  text="Browse", command=lambda: self._browse() )
+            self.button_browse_weight_files.place(relx=0.41, rely=0.2, relwidth=0.06)
+            
+            self.weight_files_path_parameter = FilePath(name="weight_files_path", fancy_name="Weight files path", is_folder=True)
+            
+            self.parameters_bindings.append( ParameterBinding(parameter=self.weight_files_path_parameter,
+                                                              widget_read_lambda=lambda: self.weight_files_path_entry.get(),
+                                                              variable_store_lambda=lambda var: self.algorithm_parameters.specific_options.update({"weight_files_path":var}),
+                                                              error_set_lambda=EntryInvalidator(self.weight_files_path_entry),
+                                                              error_reset_lambda=EntryValidator(self.weight_files_path_entry),
+                                                              variable_read_lambda=lambda: self.algorithm_parameters.specific_options["weight_files_path"],
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.weight_files_path_entry, str(var))) )
+    
     
     def update_algorithm_selection(self, new_selection):
         
@@ -1162,8 +1311,9 @@ class AlgorithmTab(ttk.Frame):
         self.problem_parameters = problem_parameters
         self.algorithm_parameters = algorithm_parameters
         
-        # algorithm_optionlist = [ option.value for option in AlgorithmParameters.SUPPORTED_ALGORITHMS ]
-        algorithm_optionlist = [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value ]
+        algorithm_optionlist = [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value,
+                                 AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value,
+                                 AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value ]
         
         tk.Label( self, text="Algorithm", font=('URW Gothic L','11','bold') ).place( relx=0.01, rely=0.048 )
         self.AlgorithmOption = tk.StringVar(self)
@@ -1179,10 +1329,13 @@ class AlgorithmTab(ttk.Frame):
         self.frames["Selection"] = AlgorithmTab.SelectionFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Crossover"] = AlgorithmTab.CrossoverFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Mutation"] = AlgorithmTab.MutationFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["Aggregative"] = AlgorithmTab.AggregativeFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["MOEAD"] = AlgorithmTab.MOEADParametersFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         
         self.items_list = {}
         self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value] = ["Population", "Offspring", "Selection", "Crossover", "Mutation"]
         self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value] = ["Population", "Offspring", "Selection", "Crossover", "Mutation"]
+        self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value] = ["Population", "Crossover", "Mutation", "MOEAD", "Aggregative"]
         
         self.parameters_listbox = tk.Listbox( master=self)
         self.parameters_listbox.config( font=('URW Gothic L','11','bold') )

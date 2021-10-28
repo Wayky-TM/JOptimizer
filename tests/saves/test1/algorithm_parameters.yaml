@@ -1,0 +1,51 @@
+binary:
+  crossover:
+    choice: SPX
+    parameters:
+      probability: '0.8'
+  mutation:
+    choice: bit_flip
+    parameters:
+      probability: '0.8'
+float:
+  crossover:
+    choice: null
+    parameters:
+      distribution_index: null
+      probability: null
+  mutation:
+    choice: null
+    parameters:
+      distribution_index: null
+      probability: null
+general_parameters:
+  offspring_size: null
+  population_size: null
+integer:
+  crossover:
+    choice: int_SBX
+    parameters:
+      distribution_index: '20'
+      probability: '0.8'
+  mutation:
+    choice: int_polynomial
+    parameters:
+      distribution_index: '20'
+      probability: '0.8'
+permutation:
+  crossover:
+    choice: PMX
+    parameters:
+      probability: '0.8'
+  mutation:
+    choice: permutation_swap
+    parameters:
+      probability: '0.8'
+selection:
+  choice: null
+  parameters:
+    max_population_size: ''
+    number_of_solutions_to_be_returned: ''
+specific:
+  options: {}
+  parameters: {}

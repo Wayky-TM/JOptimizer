@@ -119,7 +119,8 @@ class OptimizeTab(ttk.Frame):
         
         self.stats_tree = StatsTable(master=self.runtime_stats_frame)
         
-        self.stats_tree.place( relx=0.045, rely=0.05, relwidth=0.91, relheight=0.9 )
+        # self.stats_tree.place( relx=0.045, rely=0.05, relwidth=0.91, relheight=0.9 )
+        self.stats_tree.place( relx=0, rely=0.05, relwidth=1.0, relheight=0.95 )
         
         self.stats_tree.add_stat(name="Evaluations", update_lambda=self.controller.__evaluations_callback__)
         self.stats_tree.add_stat(name="Avg. Time/evaluation", update_lambda=self.controller.__avgTimeEvaluation_callback__)

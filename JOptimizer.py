@@ -203,24 +203,25 @@ class JOptimizer_App(tk.Tk):
     
         
     def SaveConfigCommand(self):
-        self.save_parameters()
         
-        path = filedialog.askdirectory(title = "Select a directory with configuration files", initialdir=os.getcwd() )
+        if self.check_parameter_correctness():  
+            self.save_parameters()
         
-        self.engine_parameters.save_state( dir_path=path )
-        self.problem_parameters.save_state( dir_path=path )
-        self.algorithm_parameters.save_state( dir_path=path )
+            path = filedialog.askdirectory(title = "Select a directory with configuration files", initialdir=os.getcwd() )
+            
+            self.engine_parameters.save_state( dir_path=path )
+            self.problem_parameters.save_state( dir_path=path )
+            self.algorithm_parameters.save_state( dir_path=path )
     
     def LoadConfigCommand(self):
+        
         path = filedialog.askdirectory(title = "Select a directory with configuration files", initialdir=os.getcwd() )
     
         self.engine_parameters.load_state( dir_path=path )
         self.problem_parameters.load_state( dir_path=path )
         self.algorithm_parameters.load_state( dir_path=path )
         
-        self.problem_tab.load_parameters()
-        self.algorithm_tab.load_parameters()
-        self.runtime_enviroment_tab.load_parameters()
+        self.load_parameters()
         
     def check_parameter_correctness(self):
         
@@ -266,6 +267,12 @@ class JOptimizer_App(tk.Tk):
         self.problem_tab.save_parameters()
         self.algorithm_tab.save_parameters()
         self.runtime_enviroment_tab.save_parameters()
+        
+    def load_parameters(self):
+        
+        self.problem_tab.load_parameters()
+        self.algorithm_tab.load_parameters()
+        self.runtime_enviroment_tab.load_parameters()
         
     def launch_optimization(self):
         

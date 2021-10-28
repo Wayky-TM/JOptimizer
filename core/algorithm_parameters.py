@@ -105,7 +105,7 @@ class AlgorithmParameters:
         MOEAD Specific
     """
     class MOEAD_AGGREGATIVE_FUNCTION(Enum):
-        # WEIGHTED_SUM = "weighted_sum"
+        WEIGHTED_SUM = "weighted_sum"
         TSCHEBYCHEFF = "tschebycheff"
             
     """
@@ -385,6 +385,9 @@ class AlgorithmParameters:
             
             if self.specific_options["aggregative"] == AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.TSCHEBYCHEFF.value:
                 aggregative_function = Aggregative.Tschebycheff( dimension=int(self.specific_parameters["aggregative"]["dimension"]) )
+                
+            elif self.specific_options["aggregative"] == AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.WEIGHTED_SUM.value:
+                aggregative_function = Aggregative.WeightedSum()
             
             algorithm = Multiobjective.MOEAD(problem=problem,
                                              population_size=population_size,
@@ -442,10 +445,10 @@ class AlgorithmParameters:
             output["float"]["mutation"]["choice"] = self.float_mutation_choice
             output["float"]["mutation"]["parameters"] = {}
             
-            for key, value in self.float_crossover_parameters:
+            for key, value in self.float_crossover_parameters.items():
                 output["float"]["crossover"]["parameters"][key] = value
                 
-            for key, value in self.float_mutation_parameters:
+            for key, value in self.float_mutation_parameters.items():
                 output["float"]["mutation"]["parameters"][key] = value
                 
             """ Integer """
@@ -458,10 +461,10 @@ class AlgorithmParameters:
             output["integer"]["mutation"]["choice"] = self.int_mutation_choice
             output["integer"]["mutation"]["parameters"] = {}
             
-            for key, value in self.int_crossover_parameters:
+            for key, value in self.int_crossover_parameters.items():
                 output["integer"]["crossover"]["parameters"][key] = value
                 
-            for key, value in self.int_mutation_parameters:
+            for key, value in self.int_mutation_parameters.items():
                 output["integer"]["mutation"]["parameters"][key] = value
                 
             """ Binary """
@@ -474,10 +477,10 @@ class AlgorithmParameters:
             output["binary"]["mutation"]["choice"] = self.binary_mutation_choice
             output["binary"]["mutation"]["parameters"] = {}
             
-            for key, value in self.binary_crossover_parameters:
+            for key, value in self.binary_crossover_parameters.items():
                 output["binary"]["crossover"]["parameters"][key] = value
                 
-            for key, value in self.binary_mutation_parameters:
+            for key, value in self.binary_mutation_parameters.items():
                 output["binary"]["mutation"]["parameters"][key] = value
                 
             """ Permutation """
@@ -490,10 +493,10 @@ class AlgorithmParameters:
             output["permutation"]["mutation"]["choice"] = self.permutation_mutation_choice
             output["permutation"]["mutation"]["parameters"] = {}
             
-            for key, value in self.permutation_crossover_parameters:
+            for key, value in self.permutation_crossover_parameters.items():
                 output["permutation"]["crossover"]["parameters"][key] = value
                 
-            for key, value in self.permutation_mutation_parameters:
+            for key, value in self.permutation_mutation_parameters.items():
                 output["permutation"]["mutation"]["parameters"][key] = value
                 
             """ Selection """
@@ -549,14 +552,14 @@ class AlgorithmParameters:
                 self.float_mutation_parameters[key] = value
                 
             """ Integer """
-            self.int_crossover_choice = yaml_content["int"]["crossover"]["choice"]
+            self.int_crossover_choice = yaml_content["integer"]["crossover"]["choice"]
             
-            for key, value in yaml_content["int"]["crossover"]["parameters"].items():
+            for key, value in yaml_content["integer"]["crossover"]["parameters"].items():
                 self.int_crossover_parameters[key] = value
                 
-            self.int_mutation_choice = yaml_content["int"]["mutation"]["choice"]
+            self.int_mutation_choice = yaml_content["integer"]["mutation"]["choice"]
             
-            for key, value in yaml_content["int"]["mutation"]["parameters"].items():
+            for key, value in yaml_content["integer"]["mutation"]["parameters"].items():
                 self.int_mutation_parameters[key] = value
                 
             """ Binary """
@@ -588,8 +591,8 @@ class AlgorithmParameters:
                 self.selection_parameters[key] = value
             
             """ Algorithm-specific """
-            output["specific"]["options"] = {}
-            output["specific"]["parameters"] = {}
+            # output["specific"]["options"] = {}
+            # output["specific"]["parameters"] = {}
             
             for key, value in yaml_content["specific"]["options"].items():
                 self.specific_options[key] = value

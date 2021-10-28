@@ -40,7 +40,7 @@ from util.string_utils import remove_whitespaces
 
 from interface.parameter import *
 from interface.console import Console
-from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator
+from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator, ClearInsertEntry
 
 
 
@@ -109,7 +109,9 @@ class ProblemTab(ttk.Frame):
                                                               widget_read_lambda=lambda: self.OperatorFilePath.get(),
                                                               variable_store_lambda=lambda var: self.problem_parameters.options.update({"evaluator_path":var}),
                                                               error_set_lambda=EntryInvalidator(self.OperatorFilePath),
-                                                              error_reset_lambda=EntryValidator(self.OperatorFilePath)) )
+                                                              error_reset_lambda=EntryValidator(self.OperatorFilePath),
+                                                              variable_read_lambda=lambda: self.problem_parameters.options["evaluator_path"],
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.OperatorFilePath, str(var)) ) )
             
             
             
@@ -123,7 +125,9 @@ class ProblemTab(ttk.Frame):
                                                               widget_read_lambda=lambda: self.evaluator_class_entry.get(),
                                                               variable_store_lambda=lambda var: self.problem_parameters.options.update({"evaluator_class":var}),
                                                               error_set_lambda=EntryInvalidator(self.evaluator_class_entry),
-                                                              error_reset_lambda=EntryValidator(self.evaluator_class_entry)) )
+                                                              error_reset_lambda=EntryValidator(self.evaluator_class_entry),
+                                                              variable_read_lambda=lambda: self.problem_parameters.options["evaluator_class"],
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.evaluator_class_entry, str(var)) ) )
             
         def __is_evaluator_instance(self, parameter: Parameter):
                 

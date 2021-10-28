@@ -35,7 +35,7 @@ from util.type_check import is_integer, is_float
 
 from interface.parameter import *
 from interface.console import Console
-from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator
+from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator, ClearInsertEntry
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
 
 
@@ -112,7 +112,7 @@ class RuntimeTab(ttk.Frame):
                                                               error_set_lambda=EntryInvalidator(self.eval_entry),
                                                               error_reset_lambda=EntryValidator(self.eval_entry),
                                                               variable_read_lambda=lambda: self.engine_parameters.termination_parameters["evaluations"],
-                                                              widget_update_lambda=lambda var: self.eval_entry.set(var)) )
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.eval_entry, str(var))) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.time_parameter,
                                                               widget_read_lambda=lambda: self.time_entry.get(),
@@ -120,13 +120,13 @@ class RuntimeTab(ttk.Frame):
                                                               error_set_lambda=EntryInvalidator(self.time_entry),
                                                               error_reset_lambda=EntryValidator(self.time_entry),
                                                               variable_read_lambda=lambda: self.engine_parameters.termination_parameters["time"],
-                                                              widget_update_lambda=lambda var: self.time_entry.set(var)) )
+                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.time_entry, str(var))) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.time_scale_parameter,
                                                               widget_read_lambda=lambda: self.TimescaleOption.get(),
                                                               variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time_scale":var}),
                                                               variable_read_lambda=lambda: self.engine_parameters.termination_parameters["time_scale"],
-                                                              widget_update_lambda=lambda var: self.timescale_option.set(var)) )
+                                                              widget_update_lambda=lambda var: self.TimescaleOption.set(var)) )
         
         
         def _save_time_boolean(self, var):

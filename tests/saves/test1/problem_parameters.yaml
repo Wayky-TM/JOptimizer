@@ -1,0 +1,21 @@
+constants: {}
+options:
+  evaluator_class: null
+  evaluator_path: null
+  template: Generic
+variables:
+  x:
+    lower_bound: 0.0
+    name: ''
+    type: float
+    upper_bound: 1.0
+  y:
+    lower_bound: 0.0
+    name: ''
+    type: float
+    upper_bound: 1.0
+  z:
+    lower_bound: 0.0
+    name: ''
+    type: float
+    upper_bound: 1.0
