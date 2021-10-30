@@ -93,6 +93,12 @@ class ProblemTab(ttk.Frame):
             self.OperatorFilePath.insert( 0, path )
             self.OperatorFilePath.config(state="readonly")
         
+        def _update_evaluator_path(self, var):
+            self.OperatorFilePath.configure( state=tk.NORMAL )
+            ClearInsertEntry(self.OperatorFilePath, str(var))
+            self.OperatorFilePath.configure( state=tk.DISABLED )
+            
+        
         def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
             super(ProblemTab.EvaluatorFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
             
@@ -111,7 +117,7 @@ class ProblemTab(ttk.Frame):
                                                               error_set_lambda=EntryInvalidator(self.OperatorFilePath),
                                                               error_reset_lambda=EntryValidator(self.OperatorFilePath),
                                                               variable_read_lambda=lambda: self.problem_parameters.options["evaluator_path"],
-                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.OperatorFilePath, str(var)) ) )
+                                                              widget_update_lambda=lambda var: self._update_evaluator_path(var) ) )
             
             
             

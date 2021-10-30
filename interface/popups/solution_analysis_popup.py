@@ -47,7 +47,13 @@ class SolutionsFrame( ParameterFrame ):
             self.solutions_tree.heading( variable.keyword, text=variable.keyword )
             self.solutions_tree.column( variable.keyword, stretch=tk.NO )
         
-        self.solutions_tree.place(relx=0.02, rely=0.17, relwidth=0.955, relheight=0.8)
+        self.solutions_tree.grid(row=0, column=0, columnspan=2,
+                                 padx=10, pady=10, sticky="nsew")
+        
+        scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.solutions_tree.yview)
+        scrollbar.grid(row=0, column=3, sticky="nse", pady="10")
+        
+        # self.solutions_tree.place(relx=0.02, rely=0.17, relwidth=0.955, relheight=0.8)
     
     def display(self):
         self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )

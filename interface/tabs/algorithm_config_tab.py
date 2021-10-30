@@ -37,7 +37,7 @@ from interface.parameter_binding import ParameterBinding, EntryInvalidator, Entr
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
 
 
-class AlgorithmTab(ttk.Frame):
+class AlgorithmTab(ParameterFrame):
  
     class AlgorithmFrame(ParameterLabelFrame):
         def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
@@ -61,7 +61,7 @@ class AlgorithmTab(ttk.Frame):
             self.population_size_entry.place(relx=0.095, rely=0.05+0.005, relwidth=0.08)
             self.population_size_entry.config(state=tk.NORMAL)
             
-            self.population_size_parameter = Integer(name="population_size", fancy_name="Population size", lower_bound=3, upper_bound=100000)
+            self.population_size_parameter = Integer(name="population_size", fancy_name="Population size", lower_bound=10, upper_bound=100000)
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.population_size_parameter,
                                                               widget_read_lambda=lambda: self.population_size_entry.get(),
@@ -158,6 +158,10 @@ class AlgorithmTab(ttk.Frame):
             self.selected_frame_key = new_value
             self.frames[self.selected_frame_key].display()
     
+        def __update_operator_option__(self, var):
+            self.SelectionOption.set(var)
+            self.update_operator( var )
+    
         def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
             super(AlgorithmTab.SelectionFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
             
@@ -181,10 +185,10 @@ class AlgorithmTab(ttk.Frame):
             self.SelectionOption.set(self.selection_options[0])
             self.selected_frame_key = self.selection_options[0]
             self.frames[self.selected_frame_key].display()
-            selection_option = tk.OptionMenu(self, self.SelectionOption, *self.selection_options, command=self.update_operator)
+            self.selection_option = tk.OptionMenu(self, self.SelectionOption, *self.selection_options, command=self.update_operator)
             # selection_option.config( font=('URW Gothic L','11') )
-            selection_option.config( state=tk.NORMAL )
-            selection_option.place( relx=0.11, rely=0.045, relwidth=0.15 )
+            self.selection_option.config( state=tk.NORMAL )
+            self.selection_option.place( relx=0.11, rely=0.045, relwidth=0.15 )
             
             self.selection_option_parameter = Parameter(name="selection_operator", fancy_name="Selection operator")
             
@@ -192,7 +196,7 @@ class AlgorithmTab(ttk.Frame):
                                                               widget_read_lambda=lambda: self.SelectionOption.get(),
                                                               variable_store_lambda=self.__store_selection_option,
                                                               variable_read_lambda=lambda: self.algorithm_parameters.selection_choice,
-                                                              widget_update_lambda=lambda var: self.SelectionOption.set(var)) )
+                                                              widget_update_lambda=lambda var: self.__update_operator_option__(var) ) )
             
         def __store_selection_option(self, value):
             self.algorithm_parameters.selection_choice = value
@@ -237,6 +241,20 @@ class AlgorithmTab(ttk.Frame):
             
             class SBXFrame(ParameterLabelFrame):
                 
+                def __update_probability__(self, var):
+                    self.probability_entry.configure( state=tk.NORMAL )
+                    ClearInsertEntry(self.probability_entry, str(var))
+                    
+                    if self.algorithm_parameters.float_crossover_choice != AlgorithmParameters.FLOAT_CROSSOVER.SBX.value:
+                        self.probability_entry.configure( state=tk.DISABLED )
+                
+                def __update_distribution_index__(self, var):
+                    self.distribution_index_entry.configure( state=tk.NORMAL )
+                    ClearInsertEntry(self.distribution_index_entry, str(var))
+                    
+                    if self.algorithm_parameters.float_crossover_choice != AlgorithmParameters.FLOAT_CROSSOVER.SBX.value:
+                        self.distribution_index_entry.configure( state=tk.DISABLED )
+                
                 def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
                     super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame.SBXFrame,self).__init__(master=master, *args, **kwargs)
                     
@@ -264,7 +282,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.probability_entry),
                                                                       error_reset_lambda=EntryValidator(self.probability_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_crossover_parameters["probability"],
-                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
+                                                                      widget_update_lambda=lambda var: self.__update_probability__(var) ) )
                     
                     self.parameters_bindings.append( ParameterBinding(parameter=self.distribution_index_parameter,
                                                                       widget_read_lambda=lambda: self.distribution_index_entry.get(),
@@ -272,7 +290,7 @@ class AlgorithmTab(ttk.Frame):
                                                                       error_set_lambda=EntryInvalidator(self.distribution_index_entry),
                                                                       error_reset_lambda=EntryValidator(self.distribution_index_entry),
                                                                       variable_read_lambda=lambda: self.algorithm_parameters.float_crossover_parameters["distribution_index"],
-                                                                      widget_update_lambda=lambda var: ClearInsertEntry(self.distribution_index_entry, str(var))) )
+                                                                      widget_update_lambda=lambda var: self.__update_distribution_index__(var) ) )
                 
                 def display(self):
                     self.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
@@ -349,7 +367,11 @@ class AlgorithmTab(ttk.Frame):
                     self.probability_entry.config(state=tk.NORMAL)
                     self.F_entry.config(state=tk.NORMAL)
                     self.K_entry.config(state=tk.NORMAL)
-                    
+               
+            def __update_crossover_option__(self,var):
+                self.CrossoverOption.set(var)
+                self.option_change(var)
+                
             
             def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
                 super(AlgorithmTab.CrossoverFrame.FloatCrossoverFrame,self).__init__(master=master, text="Float crossover", *args, **kwargs)
@@ -384,7 +406,7 @@ class AlgorithmTab(ttk.Frame):
                                                                   widget_read_lambda=lambda: self.CrossoverOption.get(),
                                                                   variable_store_lambda=self.__store_float_crossover_option,
                                                                   variable_read_lambda=lambda: self.algorithm_parameters.float_crossover_choice,
-                                                                  widget_update_lambda=lambda var: self.CrossoverOption.set(var)) )
+                                                                  widget_update_lambda=lambda var: self.__update_crossover_option__(var) ) )
                 
             def __store_float_crossover_option(self, value):
                 self.algorithm_parameters.float_crossover_choice = value
@@ -1305,6 +1327,13 @@ class AlgorithmTab(ttk.Frame):
             self.selected_frame_key = data
             self.frames[self.selected_frame_key].display()
  
+    def __algorithm_option_update__(self, var):
+        self.update_algorithm_selection(var)
+        self.AlgorithmOption.set(var)
+ 
+    def __algorithm_option_save__(self, var):
+        self.algorithm_parameters.choice = var
+ 
     def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
         super(AlgorithmTab, self).__init__(master=master, *args, **kwargs)
         
@@ -1349,6 +1378,14 @@ class AlgorithmTab(ttk.Frame):
         
         self.parameters_listbox.activate(0)
         self.parameters_listbox.selection_set(0)
+        
+        # self.algorithm_option_parameter = Parameter(name="Algorithm", fancy_name="algorithm")
+            
+        # self.parameters_bindings.append( ParameterBinding(parameter=self.algorithm_option_parameter,
+        #                                                     widget_read_lambda=lambda: self.AlgorithmOption.get(),
+        #                                                     variable_store_lambda=lambda var: self.__algorithm_option_save__(var),
+        #                                                     variable_read_lambda=lambda: self.algorithm_parameters.choice,
+        #                                                     widget_update_lambda=lambda var: self.__algorithm_option_update__(var) ) )
         
         self.console = Console(master=self, font=("Liberation Mono", 11))
         self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
@@ -1404,6 +1441,7 @@ class AlgorithmTab(ttk.Frame):
         return error_list
     
     def save_parameters(self):
+        # super(AlgorithmTab, self).save_parameters()
         
         self.algorithm_parameters.choice = self.AlgorithmOption.get()
         
@@ -1411,8 +1449,11 @@ class AlgorithmTab(ttk.Frame):
             self.frames[key].save_parameters()
             
     def load_parameters(self):
+        # super(AlgorithmTab, self).load_parameters()
         
-        self.algorithm_parameters.choice = self.AlgorithmOption.get()
+        self.AlgorithmOption.set( self.algorithm_parameters.choice )
+        self.update_algorithm_selection( self.algorithm_parameters.choice )
+        self.update_types()
         
         for key in self.items_list[self.AlgorithmOption.get()]:
             self.frames[key].load_parameters()

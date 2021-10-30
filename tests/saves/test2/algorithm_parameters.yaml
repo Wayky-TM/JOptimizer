@@ -2,37 +2,39 @@ binary:
   crossover:
     choice: SPX
     parameters:
+      distribution_index: ''
       probability: '0.8'
   mutation:
     choice: bit_flip
     parameters:
       probability: '0.8'
-choice: NSGAII
 float:
   crossover:
-    choice: SBX
+    choice: differential_evolution
     parameters:
-      distribution_index: '25'
-      probability: '0.85'
+      F: '12'
+      K: '2'
+      distribution_index: '22'
+      probability: '0.8'
   mutation:
     choice: polynomial
     parameters:
-      distribution_index: '25'
-      probability: '0.15'
+      distribution_index: '20'
+      probability: '0.1'
 general_parameters:
-  offspring_size: '300'
-  population_size: '300'
+  offspring_size: '100'
+  population_size: '100'
 integer:
   crossover:
     choice: int_SBX
     parameters:
-      distribution_index: '25'
-      probability: '0.85'
+      distribution_index: '20'
+      probability: '0.8'
   mutation:
     choice: int_polynomial
     parameters:
-      distribution_index: '25'
-      probability: '0.15'
+      distribution_index: '20'
+      probability: '0.8'
 permutation:
   crossover:
     choice: PMX
@@ -43,16 +45,17 @@ permutation:
     parameters:
       probability: '0.8'
 selection:
-  choice: roulette
+  choice: ranking_and_crowding
   parameters:
-    max_population_size: ''
+    max_population_size: '12'
     number_of_solutions_to_be_returned: ''
 specific:
   options:
-    max_number_of_replaced_solutions: ''
-    neighborhood_selection_probability: ''
-    neighborhood_size: ''
-    weight_files_path: ''
+    aggregative: weighted_sum
+    max_number_of_replaced_solutions: '2'
+    neighborhood_selection_probability: '0.2'
+    neighborhood_size: '2'
+    weight_files_path: "C:/Users/\xC1lvaro/Desktop/prueba_moead"
   parameters:
     aggregative:
       dimension: ''

@@ -430,6 +430,8 @@ class AlgorithmParameters:
             
             output = {}
             
+            output["choice"] = self.choice
+            
             output["general_parameters"] = {}
             
             for key, value in self.general_parameters.items():
@@ -539,6 +541,13 @@ class AlgorithmParameters:
             
             yaml_file = open( os.path.join(dir_path, file_name), 'r')
             yaml_content = yaml.safe_load(yaml_file)
+            
+            """ Algorithm choice """
+            self.choice = yaml_content["choice"]
+            
+            """ General parameters """
+            for key, value in yaml_content["general_parameters"].items():
+                self.general_parameters[key] = value
             
             """ Float """
             self.float_crossover_choice = yaml_content["float"]["crossover"]["choice"]

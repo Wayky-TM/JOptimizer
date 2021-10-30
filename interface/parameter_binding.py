@@ -90,7 +90,14 @@ class EntryValidator:
      
         
 def ClearInsertEntry( entry: tk.Entry, text: str ):
+    state = entry['state']
+    
+    if state == tk.DISABLED:
+        entry.configure( state=tk.NORMAL )
+    
     entry.delete(0,tk.END)
     entry.insert(0,text)
     
+    if state == tk.DISABLED:
+        entry.configure( state=tk.DISABLED )
     

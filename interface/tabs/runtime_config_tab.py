@@ -52,8 +52,26 @@ class RuntimeTab(ttk.Frame):
         def display(self):
             self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
             
-            
     class TerminationCriteriaFrame(RuntimeFrame):
+        
+        def __update_time__(self, var):
+            self.time_entry.configure( state=tk.NORMAL )
+            
+            ClearInsertEntry(self.time_entry, str(var))
+            
+            if EngineParameters.TERMINATION_CRITERIA.TIME.value not in self.engine_parameters.temination_criteria:
+                self.time_entry.configure( state=tk.DISABLED )
+            
+        def __update_timescale__(self, var):
+            self.TimescaleOption.set(var)
+            
+        def __update_evaluations__(self, var):
+            self.eval_entry.configure( state=tk.NORMAL )
+            ClearInsertEntry(self.eval_entry, str(var))
+            
+            if EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value not in self.engine_parameters.temination_criteria:
+                self.eval_entry.configure( state=tk.DISABLED )
+            
         
         def __init__(self, master, engine_parameters: EngineParameters, *args, **kwargs):
             super(RuntimeTab.TerminationCriteriaFrame, self).__init__(master=master, engine_parameters=engine_parameters, *args, **kwargs)
@@ -112,7 +130,7 @@ class RuntimeTab(ttk.Frame):
                                                               error_set_lambda=EntryInvalidator(self.eval_entry),
                                                               error_reset_lambda=EntryValidator(self.eval_entry),
                                                               variable_read_lambda=lambda: self.engine_parameters.termination_parameters["evaluations"],
-                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.eval_entry, str(var))) )
+                                                              widget_update_lambda=lambda var: self.__update_evaluations__(var)) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.time_parameter,
                                                               widget_read_lambda=lambda: self.time_entry.get(),
@@ -120,13 +138,13 @@ class RuntimeTab(ttk.Frame):
                                                               error_set_lambda=EntryInvalidator(self.time_entry),
                                                               error_reset_lambda=EntryValidator(self.time_entry),
                                                               variable_read_lambda=lambda: self.engine_parameters.termination_parameters["time"],
-                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.time_entry, str(var))) )
+                                                              widget_update_lambda=lambda var: self.__update_time__(var)) )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.time_scale_parameter,
                                                               widget_read_lambda=lambda: self.TimescaleOption.get(),
                                                               variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time_scale":var}),
                                                               variable_read_lambda=lambda: self.engine_parameters.termination_parameters["time_scale"],
-                                                              widget_update_lambda=lambda var: self.TimescaleOption.set(var)) )
+                                                              widget_update_lambda=lambda var: self.__update_timescale__(var)) )
         
         
         def _save_time_boolean(self, var):

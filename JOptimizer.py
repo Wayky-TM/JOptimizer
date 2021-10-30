@@ -217,11 +217,20 @@ class JOptimizer_App(tk.Tk):
         
         path = filedialog.askdirectory(title = "Select a directory with configuration files", initialdir=os.getcwd() )
     
-        self.engine_parameters.load_state( dir_path=path )
-        self.problem_parameters.load_state( dir_path=path )
-        self.algorithm_parameters.load_state( dir_path=path )
+        if path != "":
+            try:
+                self.engine_parameters.load_state( dir_path=path )
+                self.problem_parameters.load_state( dir_path=path )
+                self.algorithm_parameters.load_state( dir_path=path )
+                
+                self.load_parameters()
+                
+            except ValueError as error:
+                
+                tk.messagebox.showerror(title="Invalid folder path", message="Selected file does not exit or is of incorrect type")
+                print(error)
+            
         
-        self.load_parameters()
         
     def check_parameter_correctness(self):
         
