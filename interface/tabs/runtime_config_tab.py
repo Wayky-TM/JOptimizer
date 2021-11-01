@@ -37,7 +37,7 @@ from interface.parameter import *
 from interface.console import Console
 from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator, ClearInsertEntry
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
-
+from interface.style_definitions import AppStyle
 
 
 
@@ -302,11 +302,13 @@ class RuntimeTab(ttk.Frame):
         self.parameters_listbox.activate(0)
         self.parameters_listbox.selection_set(0)
         
-        self.console = Console(master=self, font=("Times New Roman", 10, 'bold'))
-        self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
-        # self.console.print_message("Mensaje\n")
-        # self.console.print_warning("Advertencia\n")
-        # self.console.print_error("Error\n")
+        """ Error console frame """
+        self.error_console_frame = tk.Frame( master=self, bg=AppStyle.frame_background_color )
+        self.error_console_frame.config(highlightbackground=AppStyle.frame_border_color, highlightthickness=1)
+        self.error_console_frame.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
+        tk.Label(master=self.error_console_frame, text="Error Console", font=('TkDefaultFont','10','bold'), bg=AppStyle.frame_background_color).place(relx=0.0035, rely=0.03)
+        self.console = Console(master=self.error_console_frame, font=("Times New Roman", 10, 'bold'))
+        self.console.place( relx=0.0035, rely=0.18, relwidth=0.993, relheight=0.795 )
         
     def check_errors(self):
         

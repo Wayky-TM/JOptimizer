@@ -41,7 +41,7 @@ from interface.tabs.algorithm_config_tab import AlgorithmTab
 from interface.tabs.runtime_config_tab import RuntimeTab
 from interface.tabs.optimize_tab import OptimizeTab
 from interface.threadSafe_callable import ThreadSafeCallable
-
+from interface.style_definitions import AppStyle
 
 class JOptimizer_App(tk.Tk):
     
@@ -132,8 +132,8 @@ class JOptimizer_App(tk.Tk):
     def __init__(self, *args, **kwargs):
         super( JOptimizer_App, self ).__init__(*args, **kwargs)
         
-        # self.screen_width = GetSystemMetrics(0)
-        # self.screen_height = GetSystemMetrics(1)
+        self.configure(bg=AppStyle.global_background_color, highlightbackground=AppStyle.global_border_color, highlightthickness=1)
+        
         self.screen_width = self.winfo_screenwidth()
         self.screen_height = self.winfo_screenheight()
         
@@ -181,9 +181,10 @@ class JOptimizer_App(tk.Tk):
         s = ttk.Style()
         s.configure('TNotebook.Tab', font=('TkDefaultFont','11','bold') )
         s.theme_use('vista')
-        s.configure("Treeview.Heading", font=('TkDefaultFont','10','bold'))
+        s.configure("Treeview.Heading", font=('TkDefaultFont','10','bold'), background="#e6f2ff")
         s.configure("Treeview", font=('TkDefaultFont','10'), rowheight=30)
-        # print( s.theme_use() )
+        s.configure( "TNotebook", background=AppStyle.global_background_color, highlightbackground=AppStyle.global_border_color, highlightthickness=1 )
+        s.configure( "TNotebook.Tab", background=AppStyle.global_background_color, highlightbackground=AppStyle.global_border_color, highlightthickness=1 )
         
         self.tabs = ttk.Notebook( self )
         

@@ -35,7 +35,7 @@ from interface.parameter import *
 from interface.console import Console
 from interface.parameter_binding import ParameterBinding, EntryInvalidator, EntryValidator, ClearInsertEntry
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
-
+from interface.style_definitions import AppStyle
 
 class AlgorithmTab(ParameterFrame):
  
@@ -1093,10 +1093,15 @@ class AlgorithmTab(ParameterFrame):
             self.binary_frame = AlgorithmTab.MutationFrame.BinaryMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
             self.permutation_frame = AlgorithmTab.MutationFrame.PermutationMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
             
-            self.float_frame.place( relx=0.025, rely=0.05, relwidth=0.4, relheight=0.3 )
-            self.int_frame.place( relx=0.025, rely=0.38, relwidth=0.4, relheight=0.3 )
-            self.binary_frame.place( relx=0.025, rely=0.71, relwidth=0.4, relheight=0.11 )
-            self.permutation_frame.place( relx=0.025, rely=0.85, relwidth=0.4, relheight=0.11 )
+            # self.float_frame.place( relx=0.025, rely=0.05, relwidth=0.4, relheight=0.3 )
+            # self.int_frame.place( relx=0.025, rely=0.38, relwidth=0.4, relheight=0.3 )
+            # self.binary_frame.place( relx=0.025, rely=0.71, relwidth=0.4, relheight=0.11 )
+            # self.permutation_frame.place( relx=0.025, rely=0.85, relwidth=0.4, relheight=0.11 )
+            
+            self.float_frame.grid( row=0, column=0, sticky=tk.S+tk.N+tk.E+tk.W )
+            self.int_frame.grid( row=0, column=1, sticky=tk.S+tk.N+tk.E+tk.W )
+            self.binary_frame.grid( row=1, column=0, sticky=tk.S+tk.N+tk.E+tk.W )
+            self.permutation_frame.grid( row=1, column=1, sticky=tk.S+tk.N+tk.E+tk.W )
             
             self.float_frame.disable()
             self.int_frame.disable()
@@ -1387,11 +1392,14 @@ class AlgorithmTab(ParameterFrame):
         #                                                     variable_read_lambda=lambda: self.algorithm_parameters.choice,
         #                                                     widget_update_lambda=lambda var: self.__algorithm_option_update__(var) ) )
         
-        self.console = Console(master=self, font=("Liberation Mono", 11))
-        self.console.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
-        # self.console.print_message("Mensaje\n")
-        # self.console.print_warning("Advertencia\n")
-        # self.console.print_error("Error\n")
+        
+        """ Error console frame """
+        self.error_console_frame = tk.Frame( master=self, bg=AppStyle.frame_background_color )
+        self.error_console_frame.config(highlightbackground=AppStyle.frame_border_color, highlightthickness=1)
+        self.error_console_frame.place( relx=0.18, rely=0.775, relwidth=0.81, relheight=0.2 )
+        tk.Label(master=self.error_console_frame, text="Error Console", font=('TkDefaultFont','10','bold'), bg=AppStyle.frame_background_color).place(relx=0.0035, rely=0.03)
+        self.console = Console(master=self.error_console_frame, font=("Times New Roman", 10, 'bold'))
+        self.console.place( relx=0.0035, rely=0.18, relwidth=0.993, relheight=0.795 )
         
     def update_types(self):
         
