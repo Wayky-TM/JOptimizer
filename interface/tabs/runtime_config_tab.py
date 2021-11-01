@@ -65,6 +65,12 @@ class RuntimeTab(ttk.Frame):
         def __update_timescale__(self, var):
             self.TimescaleOption.set(var)
             
+            if EngineParameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
+                self.timescale_option.configure( state=tk.NORMAL )
+                
+            else:
+                self.timescale_option.configure( state=tk.DISABLED )
+            
         def __update_evaluations__(self, var):
             self.eval_entry.configure( state=tk.NORMAL )
             ClearInsertEntry(self.eval_entry, str(var))
@@ -195,7 +201,6 @@ class RuntimeTab(ttk.Frame):
             self.threads_option.place(relx=0.08,rely=0.05-0.005, relwidth=0.06)
             self.threads_option.config(state=tk.NORMAL)
             
-            # self.threads_parameter = Integer( name="threads", fancy_name="Threads", lower_bound=2, upper_bound=2*multiprocessing.cpu_count() )
             self.threads_parameter = Parameter( name="threads", fancy_name="Threads" )
             
             self.parameters_bindings.append( ParameterBinding(parameter=self.threads_parameter,

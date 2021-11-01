@@ -8,33 +8,32 @@ binary:
     choice: bit_flip
     parameters:
       probability: '0.8'
+choice: MOEAD
 float:
   crossover:
-    choice: differential_evolution
+    choice: SBX
     parameters:
-      F: '12'
-      K: '2'
-      distribution_index: '22'
-      probability: '0.8'
+      distribution_index: '25'
+      probability: '0.85'
   mutation:
     choice: polynomial
     parameters:
-      distribution_index: '20'
-      probability: '0.1'
+      distribution_index: '25'
+      probability: '0.15'
 general_parameters:
-  offspring_size: '100'
-  population_size: '100'
+  offspring_size: '300'
+  population_size: '300'
 integer:
   crossover:
     choice: int_SBX
     parameters:
-      distribution_index: '20'
-      probability: '0.8'
+      distribution_index: '25'
+      probability: '0.85'
   mutation:
     choice: int_polynomial
     parameters:
-      distribution_index: '20'
-      probability: '0.8'
+      distribution_index: '25'
+      probability: '0.15'
 permutation:
   crossover:
     choice: PMX
@@ -45,16 +44,16 @@ permutation:
     parameters:
       probability: '0.8'
 selection:
-  choice: ranking_and_crowding
+  choice: roulette
   parameters:
-    max_population_size: '12'
+    max_population_size: ''
     number_of_solutions_to_be_returned: ''
 specific:
   options:
     aggregative: weighted_sum
-    max_number_of_replaced_solutions: '2'
-    neighborhood_selection_probability: '0.2'
-    neighborhood_size: '2'
+    max_number_of_replaced_solutions: '4'
+    neighborhood_selection_probability: '0.3'
+    neighborhood_size: '100'
     weight_files_path: "C:/Users/\xC1lvaro/Desktop/prueba_moead"
   parameters:
     aggregative:

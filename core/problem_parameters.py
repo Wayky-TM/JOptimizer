@@ -136,7 +136,6 @@ class ProblemParameters:
                     var_data["lower_bound"] = var.lower_bound
                     var_data["upper_bound"] = var.upper_bound
                     var_data["step"] = var.step
-                    # var_data["resolution"] = var.resolution
                     
                 elif var_data["type"] == "permutation":
                     var_data["elements"] = var.elements
@@ -191,12 +190,12 @@ class ProblemParameters:
                                                                      lower_bound=var_data["lower_bound"],
                                                                      upper_bound=var_data["upper_bound"]) )
                     
-                elif var_data["type"] == "integer":
-                    self.variables.append( Variables.DiscretizedVariable(keyword=key,
-                                                                         name=var_data["name"],
-                                                                         lower_bound=var_data["lower_bound"],
-                                                                         upper_bound=var_data["upper_bound"],
-                                                                         step=var_data["step"]) )
+                elif var_data["type"] == "discretized":
+                    self.variables.append( Variables.DiscretizedFloatVariable(keyword=key,
+                                                                                 name=var_data["name"],
+                                                                                 lower_bound=var_data["lower_bound"],
+                                                                                 upper_bound=var_data["upper_bound"],
+                                                                                 step=var_data["step"]) )
                 
                 elif var_data["type"] == "binary":
                     self.variables.append( Variables.BinaryVariable(keyword=key,

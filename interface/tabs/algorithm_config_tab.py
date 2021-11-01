@@ -1211,7 +1211,7 @@ class AlgorithmTab(ParameterFrame):
                                                                 widget_read_lambda=lambda: self.AggregativeOption.get(),
                                                                 variable_store_lambda=lambda var: self.algorithm_parameters.specific_options.update({"aggregative":var}),
                                                                 variable_read_lambda=lambda: self.algorithm_parameters.specific_options["aggregative"],
-                                                                widget_update_lambda=lambda var: AggregativeOption.set(str(var)) ) )
+                                                                widget_update_lambda=lambda var: self.AggregativeOption.set(str(var)) ) )
             
             
     class MOEADParametersFrame(AlgorithmFrame):

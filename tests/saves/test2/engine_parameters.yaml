@@ -17,9 +17,9 @@ save_runtime:
     on_pause: false
 termination:
   criteria: !!set
-    Evaluations: null
+    Time: null
   parameters:
-    datetime: 2021-10-29 10:04:25.436479
+    datetime: 2021-10-30 20:33:38.900443
     evaluations: '30000'
-    time: '60'
-    time_scale: Seconds
+    time: '444'
+    time_scale: Minutes

@@ -1,14 +1,13 @@
-constants: {}
+constants:
+  t:
+    name: ''
+    type: float
+    value: 0.75
 options:
   evaluator_class: EvaluatorPrueba
   evaluator_path: "C:/Users/\xC1lvaro/Documents/GitHub/JOptimizer/tests/evaluator_4var.py"
   template: Generic
 variables:
-  t:
-    lower_bound: 0.0
-    name: ''
-    type: float
-    upper_bound: 1.0
   x:
     lower_bound: 0.0
     name: ''
@@ -17,7 +16,8 @@ variables:
   y:
     lower_bound: 0.0
     name: ''
-    type: float
+    step: 0.0001
+    type: discretized
     upper_bound: 1.0
   z:
     lower_bound: 0.0
