@@ -132,7 +132,7 @@ class JOptimizer_App(tk.Tk):
     def __init__(self, *args, **kwargs):
         super( JOptimizer_App, self ).__init__(*args, **kwargs)
         
-        self.configure(bg=AppStyle.global_background_color, highlightbackground=AppStyle.global_border_color, highlightthickness=1)
+        # self.configure(bg=AppStyle.global_background_color, highlightbackground=AppStyle.global_border_color, highlightthickness=1)
         
         self.screen_width = self.winfo_screenwidth()
         self.screen_height = self.winfo_screenheight()
@@ -183,8 +183,8 @@ class JOptimizer_App(tk.Tk):
         s.theme_use('vista')
         s.configure("Treeview.Heading", font=('TkDefaultFont','10','bold'), background="#e6f2ff")
         s.configure("Treeview", font=('TkDefaultFont','10'), rowheight=30)
-        s.configure( "TNotebook", background=AppStyle.global_background_color, highlightbackground=AppStyle.global_border_color, highlightthickness=1 )
-        s.configure( "TNotebook.Tab", background=AppStyle.global_background_color, highlightbackground=AppStyle.global_border_color, highlightthickness=1 )
+        # s.configure( "TNotebook", background=AppStyle.global_background_color, highlightbackground=AppStyle.global_border_color, highlightthickness=1 )
+        # s.configure( "TNotebook.Tab", background=AppStyle.global_background_color, highlightbackground=AppStyle.global_border_color, highlightthickness=1 )
         
         self.tabs = ttk.Notebook( self )
         

@@ -112,8 +112,8 @@ class OptimizeTab(ttk.Frame):
     def __init__(self, master, controller, *args, **kwargs):
         super(OptimizeTab, self).__init__(master=master, *args, **kwargs)
         
-        self.background_color = "#99ccff"
-        self.border_color = "#004d99"
+        # AppStyle.frame_background_color = "#99ccff"
+        # AppStyle.frame_border_color = "#004d99"
         
         self.controller = controller
         self.runtime_status = OptimizeTab.RUNTIME_STATUS.INITIALIZED
@@ -123,7 +123,7 @@ class OptimizeTab(ttk.Frame):
         self.runtime_stats_frame.config(highlightbackground=AppStyle.frame_border_color, highlightthickness=1)
         self.runtime_stats_frame.place( relx=0.015, rely=0.024, relwidth=0.4, relheight=0.55 )
         
-        Label( master=self.runtime_stats_frame, text="Runtime Stats", font=('TkDefaultFont','10','bold'), bg=self.background_color ).place( relx=0.005, rely=0.005 )
+        Label( master=self.runtime_stats_frame, text="Runtime Stats", font=('TkDefaultFont','10','bold'), bg=AppStyle.frame_background_color ).place( relx=0.005, rely=0.005 )
         
         self.stats_tree = StatsTable(master=self.runtime_stats_frame)
         
@@ -137,22 +137,22 @@ class OptimizeTab(ttk.Frame):
         self.stats_tree.add_stat(name="ETA", update_lambda=self.controller.__ETA_callback__)
         
         # self.console_frame = tk.LabelFrame( master=self, text="Runtime console", font=('URW Gothic L','10','bold') )
-        self.console_frame = tk.Frame( master=self, bg=self.background_color )
-        self.console_frame.config(highlightbackground=self.border_color, highlightthickness=1)
+        self.console_frame = tk.Frame( master=self, bg=AppStyle.frame_background_color )
+        self.console_frame.config(highlightbackground=AppStyle.frame_border_color, highlightthickness=1)
         self.console_frame.place( relx=0.015, rely=0.598, relwidth=0.4, relheight=0.28 )
-        self.console_frame.config(highlightbackground=self.border_color, highlightthickness=1)
+        self.console_frame.config(highlightbackground=AppStyle.frame_border_color, highlightthickness=1)
         
         
-        Label( master=self.console_frame, text="Runtime Console", font=('TkDefaultFont','10','bold'), bg=self.background_color ).place( relx=0.005, rely=0.0125 )
+        Label( master=self.console_frame, text="Runtime Console", font=('TkDefaultFont','10','bold'), bg=AppStyle.frame_background_color ).place( relx=0.005, rely=0.0125 )
         
         self.console = TimedConsole(master=self.console_frame, font=("Liberation Mono", 11))
         self.console.place( relx=0.005, rely=0.132, relwidth=0.9875, relheight=0.85 )
         
         # self.progress_stats_frame = tk.LabelFrame( master=self, text="Progress statistics", font=('URW Gothic L','10','bold') )
-        self.progress_stats_frame = tk.Frame( master=self, bg=self.background_color )
-        self.progress_stats_frame.config(highlightbackground=self.border_color, highlightthickness=1)
+        self.progress_stats_frame = tk.Frame( master=self, bg=AppStyle.frame_background_color )
+        self.progress_stats_frame.config(highlightbackground=AppStyle.frame_border_color, highlightthickness=1)
         self.progress_stats_frame.place( relx=0.43, rely=0.024, relwidth=0.555, relheight=0.854 )
-        tk.Label( master=self.progress_stats_frame, text="Progress Statistics", bg=self.background_color, font=('TkDefaultFont L','11','bold') ).place(relx=0.005, rely=0.005)
+        tk.Label( master=self.progress_stats_frame, text="Progress Statistics", bg=AppStyle.frame_background_color, font=('TkDefaultFont L','11','bold') ).place(relx=0.005, rely=0.005)
         self.stats_frame = tk.Frame( master=self.progress_stats_frame, bg="white" )
         self.stats_frame.place( relx=0.005, rely=0.045, relwidth=0.99, relheight=0.95 )
         tk.Label( master=self.stats_frame, text="#To be implemented", font=('URW Gothic L','11','bold') ).place(relx=0.45, rely=0.45)

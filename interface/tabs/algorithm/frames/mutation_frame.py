@@ -341,27 +341,39 @@ class MutationFrame(AlgorithmFrame):
             self.problem_parameters = problem_parameters
             self.algorithm_parameters = algorithm_parameters
             
-            self.rowconfigure(1)
-            self.grid_columnconfigure(5, {'minsize': 150})
+            # self.rowconfigure(1)
+            # self.grid_columnconfigure(5, {'minsize': 150})
+            # self.grid_columnconfigure((3), weight=1, uniform="column")
+            # self.grid_rowconfigure((0,1), weight=1, uniform="row" )
             
             self.mutation_options = [option.value for option in AlgorithmParameters.PERMUTATION_MUTATION]
             
+            self.labelframe_params = tk.LabelFrame(master=self)
+            
             # tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.35 )
-            tk.Label( self, text="Operator" ).grid( row=0, column=0, sticky=tk.W, padx=2, pady=2 )
+            self.operator_frame = ttk.Frame(master=self)
+            tk.Label( self.operator_frame, text="Operator" ).grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
             self.MutationOption = tk.StringVar(self)
             self.MutationOption.set( self.mutation_options[0] )
-            self.mutation_option = tk.OptionMenu(self, self.MutationOption, *self.mutation_options)
+            self.mutation_option = tk.OptionMenu(self.operator_frame, self.MutationOption, *self.mutation_options)
             self.mutation_option.config( state=tk.NORMAL )
             # self.mutation_option.place( relx=0.15, rely=0.17, relwidth=0.3 )
-            self.mutation_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2 )
+            self.mutation_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
+            self.operator_frame.grid( row=0, column=0, sticky="NSEW", pady=10 )
             
+            self.probability_frame = ttk.Frame(master=self.labelframe_params)
             # tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.3 )
-            tk.Label( master=self, text="Probability" ).grid( row=0, column=3, padx=2, pady=2, sticky=tk.E )
-            self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
+            tk.Label( master=self.probability_frame, text="Probability" ).grid( row=0, column=0, padx=2, pady=2, sticky="WENS" )
+            self.probability_entry = tk.Entry(master=self.probability_frame, state=tk.NORMAL)
             # self.probability_entry.place(relx=0.65, rely=0.3, relwidth=0.08)
-            self.probability_entry.grid( row=0, column=4, padx=2, pady=2, columnspan=1, sticky=tk.E )
+            self.probability_entry.grid( row=0, column=1, padx=2, pady=2, sticky="NSEW" )
             self.probability_entry.insert(0, self.algorithm_parameters.permutation_mutation_parameters["probability"])
             self.probability_entry.config(state=tk.NORMAL)
+            self.probability_frame.grid( row=1, column=0, sticky="NSEW" )
+            
+            self.labelframe_params.grid( row=1, column=0, columnspan=3, rowspan=4, sticky="NSEW", padx=5, pady=5 )
+            self.columnconfigure((1,2,3),weight=1)
+            self.rowconfigure((1,2,3,4),weight=1)
             
             self.mutation_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
             self.probability_parameter = Float(name="probability", fancy_name="Probability (Permutation mutation)", lower_bound=0.0, upper_bound=1.0)
@@ -403,15 +415,18 @@ class MutationFrame(AlgorithmFrame):
         self.binary_frame = MutationFrame.BinaryMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
         self.permutation_frame = MutationFrame.PermutationMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
         
-        self.float_frame.place( relx=0.025, rely=0.05, relwidth=0.4, relheight=0.3 )
-        self.int_frame.place( relx=0.025, rely=0.38, relwidth=0.4, relheight=0.3 )
-        self.binary_frame.place( relx=0.025, rely=0.71, relwidth=0.4, relheight=0.11 )
-        self.permutation_frame.place( relx=0.025, rely=0.85, relwidth=0.4, relheight=0.11 )
+        # self.float_frame.place( relx=0.025, rely=0.05, relwidth=0.4, relheight=0.3 )
+        # self.int_frame.place( relx=0.025, rely=0.38, relwidth=0.4, relheight=0.3 )
+        # self.binary_frame.place( relx=0.025, rely=0.71, relwidth=0.4, relheight=0.11 )
+        # self.permutation_frame.place( relx=0.025, rely=0.85, relwidth=0.4, relheight=0.11 )
         
-        # self.float_frame.grid( row=0, column=0, sticky=tk.S+tk.N+tk.E+tk.W )
-        # self.int_frame.grid( row=0, column=1, sticky=tk.S+tk.N+tk.E+tk.W )
-        # self.binary_frame.grid( row=1, column=0, sticky=tk.S+tk.N+tk.E+tk.W )
-        # self.permutation_frame.grid( row=1, column=1, sticky=tk.S+tk.N+tk.E+tk.W )
+        self.grid_columnconfigure((0,1), weight=1, uniform="column")
+        self.grid_rowconfigure((0,1), weight=1, uniform="row" )
+        
+        self.float_frame.grid( row=0, column=0, sticky="SNWE", padx=30, pady=20 )
+        self.int_frame.grid( row=0, column=1, sticky="SNWE", padx=30, pady=20 )
+        self.binary_frame.grid( row=1, column=0, sticky="SNWE", padx=30, pady=20 )
+        self.permutation_frame.grid( row=1, column=1, sticky="SNWE", padx=30, pady=20 )
         
         self.float_frame.disable()
         self.int_frame.disable()
