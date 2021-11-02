@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Nov  1 20:00:54 2021
 
-@author: Álvaro
-"""
 
 class AppStyle:
     frame_background_color = "#99ccff"

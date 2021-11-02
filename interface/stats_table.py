@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Oct  9 18:35:45 2021
 
-@author: Wayky
-"""
 
 import imp
 import os

@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Nov  2 09:51:37 2021
 
-@author: Álvaro
-"""
 
 import sys
 sys.path.append(r"./../../../../../")
 
 from interface.tabs.algorithm.frames.algorithm_frame import *
-# from algorithm_frame import *
 
 
 class PopulationFrame(AlgorithmFrame):
