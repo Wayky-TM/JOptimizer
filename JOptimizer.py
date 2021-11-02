@@ -36,10 +36,10 @@ from core.engine_parameters import EngineParameters
 from core.engine import OptimizationEngine
 from util.type_check import is_integer, is_float
 
-from interface.tabs.problem_definition_tab import ProblemTab
-from interface.tabs.algorithm_config_tab import AlgorithmTab
-from interface.tabs.runtime_config_tab import RuntimeTab
-from interface.tabs.optimize_tab import OptimizeTab
+from interface.tabs.problem.problem_tab import ProblemTab
+from interface.tabs.algorithm.algorithm_tab import AlgorithmTab
+from interface.tabs.runtime_enviroment.runtime_tab import RuntimeTab
+from interface.tabs.optimize.optimize_tab import OptimizeTab
 from interface.threadSafe_callable import ThreadSafeCallable
 from interface.style_definitions import AppStyle
 

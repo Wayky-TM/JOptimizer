@@ -37,39 +37,42 @@ from interface.parameter_binding import ParameterBinding, EntryInvalidator, Entr
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
 from interface.style_definitions import AppStyle
 
+from interface.tabs.algorithm.frames.algorithm_frame import AlgorithmFrame
+from interface.tabs.algorithm.frames.population_frame import PopulationFrame
+
 class AlgorithmTab(ParameterFrame):
  
-    class AlgorithmFrame(ParameterLabelFrame):
-        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
-            super(AlgorithmTab.AlgorithmFrame, self).__init__(master=master, *args, **kwargs)
+    # class AlgorithmFrame(ParameterLabelFrame):
+    #     def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+    #         super(AlgorithmTab.AlgorithmFrame, self).__init__(master=master, *args, **kwargs)
             
-            self.problem_parameters = problem_parameters
-            self.algorithm_parameters = algorithm_parameters
+    #         self.problem_parameters = problem_parameters
+    #         self.algorithm_parameters = algorithm_parameters
                 
-        def display(self):
-            self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
+    #     def display(self):
+    #         self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
             
             
-    class PopulationFrame(AlgorithmFrame):
+    # class PopulationFrame(AlgorithmFrame):
         
-        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
-            super(AlgorithmTab.PopulationFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
+    #     def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+    #         super(AlgorithmTab.PopulationFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
             
-            tk.Label( master=self, text="Population size").place( relx=0.02, rely=0.05 )
-            self.population_size_entry = tk.Entry(master=self, state=tk.NORMAL)
-            self.population_size_entry.insert(0, self.algorithm_parameters.general_parameters["population_size"])
-            self.population_size_entry.place(relx=0.095, rely=0.05+0.005, relwidth=0.08)
-            self.population_size_entry.config(state=tk.NORMAL)
+    #         tk.Label( master=self, text="Population size").place( relx=0.02, rely=0.05 )
+    #         self.population_size_entry = tk.Entry(master=self, state=tk.NORMAL)
+    #         self.population_size_entry.insert(0, self.algorithm_parameters.general_parameters["population_size"])
+    #         self.population_size_entry.place(relx=0.095, rely=0.05+0.005, relwidth=0.08)
+    #         self.population_size_entry.config(state=tk.NORMAL)
             
-            self.population_size_parameter = Integer(name="population_size", fancy_name="Population size", lower_bound=10, upper_bound=100000)
+    #         self.population_size_parameter = Integer(name="population_size", fancy_name="Population size", lower_bound=10, upper_bound=100000)
             
-            self.parameters_bindings.append( ParameterBinding(parameter=self.population_size_parameter,
-                                                              widget_read_lambda=lambda: self.population_size_entry.get(),
-                                                              variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"population_size":var}),
-                                                              error_set_lambda=EntryInvalidator(self.population_size_entry),
-                                                              error_reset_lambda=EntryValidator(self.population_size_entry),
-                                                              variable_read_lambda=lambda: self.algorithm_parameters.general_parameters["population_size"],
-                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.population_size_entry, str(var))) )
+    #         self.parameters_bindings.append( ParameterBinding(parameter=self.population_size_parameter,
+    #                                                           widget_read_lambda=lambda: self.population_size_entry.get(),
+    #                                                           variable_store_lambda=lambda var: self.algorithm_parameters.general_parameters.update({"population_size":var}),
+    #                                                           error_set_lambda=EntryInvalidator(self.population_size_entry),
+    #                                                           error_reset_lambda=EntryValidator(self.population_size_entry),
+    #                                                           variable_read_lambda=lambda: self.algorithm_parameters.general_parameters["population_size"],
+    #                                                           widget_update_lambda=lambda var: ClearInsertEntry(self.population_size_entry, str(var))) )
             
             
     class OffspringFrame(AlgorithmFrame):
@@ -1358,7 +1361,7 @@ class AlgorithmTab(ParameterFrame):
         algorithm_option.place( relx=0.065, rely=0.045, relwidth=0.105 )
         
         self.frames = {}
-        self.frames["Population"] = AlgorithmTab.PopulationFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["Population"] = PopulationFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Offspring"] = AlgorithmTab.OffspringFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Selection"] = AlgorithmTab.SelectionFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Crossover"] = AlgorithmTab.CrossoverFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
