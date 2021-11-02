@@ -28,8 +28,6 @@ import multiprocessing
 # import numpy as np
 
 import core.variable as variable_types
-# from core.algorithm_parameters import AlgorithmParameters
-# from core.problem_parameters import ProblemParameters
 from core.engine_parameters import EngineParameters
 from util.type_check import is_integer, is_float
 
@@ -39,200 +37,15 @@ from interface.parameter_binding import ParameterBinding, EntryInvalidator, Entr
 from interface.parameter_frames import ParameterFrame, ParameterLabelFrame, NullParameterFrame
 from interface.style_definitions import AppStyle
 
+""" Frames """
+from interface.tabs.runtime_enviroment.frames.termination_criteria_frame import TerminationCriteriaFrame
+from interface.tabs.runtime_enviroment.frames.threads_frame import ThreadsFrame
+from interface.tabs.runtime_enviroment.frames.statistics_frame import StatisticsFrame
+from interface.tabs.runtime_enviroment.frames.state_saving_frame import StateSavingFrame
+from interface.tabs.runtime_enviroment.frames.plots_frame import PlotsFrame
 
 
 class RuntimeTab(ttk.Frame):
-    
-    class RuntimeFrame(ParameterLabelFrame):
-        def __init__(self, master, engine_parameters: EngineParameters, *args, **kwargs):
-            super(RuntimeTab.RuntimeFrame, self).__init__(master=master, *args, **kwargs)
-            
-            self.engine_parameters = engine_parameters
-                
-        def display(self):
-            self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
-            
-    class TerminationCriteriaFrame(RuntimeFrame):
-        
-        def __update_time__(self, var):
-            self.time_entry.configure( state=tk.NORMAL )
-            
-            ClearInsertEntry(self.time_entry, str(var))
-            
-            if EngineParameters.TERMINATION_CRITERIA.TIME.value not in self.engine_parameters.temination_criteria:
-                self.time_entry.configure( state=tk.DISABLED )
-            
-        def __update_timescale__(self, var):
-            self.TimescaleOption.set(var)
-            
-            if EngineParameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
-                self.timescale_option.configure( state=tk.NORMAL )
-                
-            else:
-                self.timescale_option.configure( state=tk.DISABLED )
-            
-        def __update_evaluations__(self, var):
-            self.eval_entry.configure( state=tk.NORMAL )
-            ClearInsertEntry(self.eval_entry, str(var))
-            
-            if EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value not in self.engine_parameters.temination_criteria:
-                self.eval_entry.configure( state=tk.DISABLED )
-            
-        
-        def __init__(self, master, engine_parameters: EngineParameters, *args, **kwargs):
-            super(RuntimeTab.TerminationCriteriaFrame, self).__init__(master=master, engine_parameters=engine_parameters, *args, **kwargs)
-            
-            tk.Label( master=self, text="Stop by:").place( relx=0.02, rely=0.05 )
-            
-            self.time_entry = tk.Entry(master=self, state=tk.NORMAL)
-            self.time_entry.insert(0, self.engine_parameters.termination_parameters["time"])
-            self.time_entry.place(relx=0.10, rely=0.11+0.005, relwidth=0.06)
-            self.time_entry.config(state=tk.DISABLED)
-            
-            self.timescale_optionlist = [ option.value for option in EngineParameters.TIME_SCALE ]
-            self.TimescaleOption = tk.StringVar(master=self)
-            self.TimescaleOption.set( self.timescale_optionlist[0] )
-            self.timescale_option = tk.OptionMenu(self, self.TimescaleOption, *self.timescale_optionlist)
-            self.timescale_option.place(relx=0.17,rely=0.11-0.005, relwidth=0.07)
-            self.timescale_option.config(state=tk.DISABLED)
-            
-            self.time_checkbox_var = tk.BooleanVar(master=self)
-            self.time_checkbox = ttk.Checkbutton(master=self, text="Time", variable=self.time_checkbox_var, command=self._time_checkbox_command_)
-            self.time_checkbox.config( state=tk.NORMAL )
-            self.time_checkbox.place( relx=0.05,rely=0.11 )
-            
-            self.eval_entry = tk.Entry(master=self, state=tk.NORMAL)
-            self.eval_entry.insert(0, self.engine_parameters.termination_parameters["evaluations"])
-            self.eval_entry.place(relx=0.12, rely=0.17+0.005, relwidth=0.04)
-            self.eval_entry.config(state=tk.DISABLED)
-            
-            self.eval_checkbox_var = tk.BooleanVar(master=self)
-            self.eval_checkbox = ttk.Checkbutton(master=self, text="Evaluations", variable=self.eval_checkbox_var, command=self._eval_checkbox_command_)
-            self.eval_checkbox.config( state=tk.NORMAL )
-            self.eval_checkbox.place( relx=0.05,rely=0.17 )
-            
-            self.by_time_parameter = Parameter( name="by_time" )
-            self.by_eval_parameter = Parameter( name="by_eval" )
-            self.time_parameter = Integer( name="time", fancy_name="Time", lower_bound=1, upper_bound=99999999 )
-            self.eval_parameter = Integer( name="evaluations", fancy_name="Evaluations", lower_bound=1, upper_bound=99999999 )
-            self.time_scale_parameter = Parameter( name="time_scale" )
-            
-            self.parameters_bindings.append( ParameterBinding(parameter=self.by_time_parameter,
-                                                              widget_read_lambda=lambda: self.time_checkbox_var.get(),
-                                                              variable_store_lambda=self._save_time_boolean,
-                                                              variable_read_lambda=lambda: EngineParameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria,
-                                                              widget_update_lambda=lambda var: self.time_checkbox_var.set(var)) )
-            
-            self.parameters_bindings.append( ParameterBinding(parameter=self.by_eval_parameter,
-                                                              widget_read_lambda=lambda: self.eval_checkbox_var.get(),
-                                                              variable_store_lambda=self._save_eval_boolean,
-                                                              variable_read_lambda=lambda: EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria,
-                                                              widget_update_lambda=lambda var: self.eval_checkbox_var.set(var)) )
-            
-            
-            self.parameters_bindings.append( ParameterBinding(parameter=self.eval_parameter,
-                                                              widget_read_lambda=lambda: self.eval_entry.get(),
-                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"evaluations":var}),
-                                                              error_set_lambda=EntryInvalidator(self.eval_entry),
-                                                              error_reset_lambda=EntryValidator(self.eval_entry),
-                                                              variable_read_lambda=lambda: self.engine_parameters.termination_parameters["evaluations"],
-                                                              widget_update_lambda=lambda var: self.__update_evaluations__(var)) )
-            
-            self.parameters_bindings.append( ParameterBinding(parameter=self.time_parameter,
-                                                              widget_read_lambda=lambda: self.time_entry.get(),
-                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time":var}),
-                                                              error_set_lambda=EntryInvalidator(self.time_entry),
-                                                              error_reset_lambda=EntryValidator(self.time_entry),
-                                                              variable_read_lambda=lambda: self.engine_parameters.termination_parameters["time"],
-                                                              widget_update_lambda=lambda var: self.__update_time__(var)) )
-            
-            self.parameters_bindings.append( ParameterBinding(parameter=self.time_scale_parameter,
-                                                              widget_read_lambda=lambda: self.TimescaleOption.get(),
-                                                              variable_store_lambda=lambda var:self.engine_parameters.termination_parameters.update({"time_scale":var}),
-                                                              variable_read_lambda=lambda: self.engine_parameters.termination_parameters["time_scale"],
-                                                              widget_update_lambda=lambda var: self.__update_timescale__(var)) )
-        
-        
-        def _save_time_boolean(self, var):
-            
-            if var:
-                self.engine_parameters.temination_criteria.add( EngineParameters.TERMINATION_CRITERIA.TIME.value )
-            else:
-                if EngineParameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
-                    self.engine_parameters.temination_criteria.remove( EngineParameters.TERMINATION_CRITERIA.TIME.value )
-                
-        def _save_eval_boolean(self, var):
-            
-            if var:
-                self.engine_parameters.temination_criteria.add( EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value )
-            else:
-                if EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria:
-                    self.engine_parameters.temination_criteria.remove( EngineParameters.TERMINATION_CRITERIA.EVALUATIONS.value )
-            
-        def _time_checkbox_command_(self):
-            
-            if self.time_checkbox_var.get():
-                self.timescale_option.configure( state=tk.NORMAL )
-                self.time_entry.configure( state=tk.NORMAL )
-            else:
-                self.timescale_option.configure( state=tk.DISABLED )
-                self.time_entry.configure( state=tk.DISABLED )
-                
-        def _eval_checkbox_command_(self):
-            
-            if self.eval_checkbox_var.get():
-                self.eval_entry.configure( state=tk.NORMAL )
-            else:
-                self.eval_entry.configure( state=tk.DISABLED )
-            
-                
-    class ThreadsFrame(RuntimeFrame):
-        
-        def __init__(self, master, engine_parameters: EngineParameters, *args, **kwargs):
-            super(RuntimeTab.ThreadsFrame, self).__init__(master=master, engine_parameters=engine_parameters, *args, **kwargs)
-            
-            self.threads_label = tk.Label(master=self, text="Threads")
-            self.threads_label.place( relx=0.02, rely=0.05 )
-            
-            self.threads_optionlist = [i for i in range(1,multiprocessing.cpu_count()+1)]
-            self.ThreadsOption = tk.IntVar(master=self)
-            self.ThreadsOption.set( self.threads_optionlist[0] )
-            self.threads_option = tk.OptionMenu(self, self.ThreadsOption, *self.threads_optionlist)
-            self.threads_option.place(relx=0.08,rely=0.05-0.005, relwidth=0.06)
-            self.threads_option.config(state=tk.NORMAL)
-            
-            self.threads_parameter = Parameter( name="threads", fancy_name="Threads" )
-            
-            self.parameters_bindings.append( ParameterBinding(parameter=self.threads_parameter,
-                                                              widget_read_lambda=lambda: self.ThreadsOption.get(),
-                                                              variable_store_lambda=lambda var: self.engine_parameters.mode_parameters.update( {"threads":var} ),
-                                                              variable_read_lambda=lambda: self.engine_parameters.termination_parameters["threads"],
-                                                              widget_update_lambda=lambda var: self.ThreadsOption.set(var)) )
-            
-            
-    class StateSavingFrame(RuntimeFrame):
-        
-        def __init__(self, master, engine_parameters: EngineParameters, *args, **kwargs):
-            super(RuntimeTab.StateSavingFrame, self).__init__(master=master, engine_parameters=engine_parameters, *args, **kwargs)
-            
-            tk.Label( master=self, text="#Runtime state saving").place( relx=0.5, rely=0.5 )
-            
-            
-    class StatisticsFrame(RuntimeFrame):
-        
-        def __init__(self, master, engine_parameters: EngineParameters, *args, **kwargs):
-            super(RuntimeTab.StatisticsFrame, self).__init__(master=master, engine_parameters=engine_parameters, *args, **kwargs)
-            
-            tk.Label( master=self, text="#Runtime Statistics").place( relx=0.5, rely=0.5 )
-            
-            
-    class PlotsFrame(RuntimeFrame):
-        
-        def __init__(self, master, engine_parameters: EngineParameters, *args, **kwargs):
-            super(RuntimeTab.PlotsFrame, self).__init__(master=master, engine_parameters=engine_parameters, *args, **kwargs)
-            
-            tk.Label( master=self, text="#Runtime plots").place( relx=0.5, rely=0.5 )
-    
     
     def __listbox_selection_handler__(self, event):
         
@@ -282,11 +95,11 @@ class RuntimeTab(ttk.Frame):
         self.selected_mode = EngineParameters.SUPPORTED_MODES.SINGLE_THREAD.value
         
         self.frames = {}
-        self.frames["Termination criteria"] = RuntimeTab.TerminationCriteriaFrame(master=self, engine_parameters=self.engine_parameters)
-        self.frames["Threads"] = RuntimeTab.ThreadsFrame(master=self, engine_parameters=self.engine_parameters)
-        self.frames["State saving"] = RuntimeTab.StateSavingFrame(master=self, engine_parameters=self.engine_parameters)
-        self.frames["Statistics"] = RuntimeTab.StatisticsFrame(master=self, engine_parameters=self.engine_parameters)
-        self.frames["Plots"] = RuntimeTab.PlotsFrame(master=self, engine_parameters=self.engine_parameters)
+        self.frames["Termination criteria"] = TerminationCriteriaFrame(master=self, engine_parameters=self.engine_parameters)
+        self.frames["Threads"] = ThreadsFrame(master=self, engine_parameters=self.engine_parameters)
+        self.frames["State saving"] = StateSavingFrame(master=self, engine_parameters=self.engine_parameters)
+        self.frames["Statistics"] = StatisticsFrame(master=self, engine_parameters=self.engine_parameters)
+        self.frames["Plots"] = PlotsFrame(master=self, engine_parameters=self.engine_parameters)
         
         
         self.parameters_listbox = tk.Listbox( master=self)

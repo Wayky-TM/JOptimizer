@@ -341,18 +341,25 @@ class MutationFrame(AlgorithmFrame):
             self.problem_parameters = problem_parameters
             self.algorithm_parameters = algorithm_parameters
             
+            self.rowconfigure(1)
+            self.grid_columnconfigure(5, {'minsize': 150})
+            
             self.mutation_options = [option.value for option in AlgorithmParameters.PERMUTATION_MUTATION]
             
-            tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.35 )
+            # tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.35 )
+            tk.Label( self, text="Operator" ).grid( row=0, column=0, sticky=tk.W, padx=2, pady=2 )
             self.MutationOption = tk.StringVar(self)
             self.MutationOption.set( self.mutation_options[0] )
             self.mutation_option = tk.OptionMenu(self, self.MutationOption, *self.mutation_options)
             self.mutation_option.config( state=tk.NORMAL )
-            self.mutation_option.place( relx=0.15, rely=0.17, relwidth=0.3 )
+            # self.mutation_option.place( relx=0.15, rely=0.17, relwidth=0.3 )
+            self.mutation_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2 )
             
-            tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.3 )
+            # tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.3 )
+            tk.Label( master=self, text="Probability" ).grid( row=0, column=3, padx=2, pady=2, sticky=tk.E )
             self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
-            self.probability_entry.place(relx=0.65, rely=0.3, relwidth=0.08)
+            # self.probability_entry.place(relx=0.65, rely=0.3, relwidth=0.08)
+            self.probability_entry.grid( row=0, column=4, padx=2, pady=2, columnspan=1, sticky=tk.E )
             self.probability_entry.insert(0, self.algorithm_parameters.permutation_mutation_parameters["probability"])
             self.probability_entry.config(state=tk.NORMAL)
             
