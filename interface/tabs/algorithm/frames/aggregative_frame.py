@@ -35,7 +35,10 @@ class AggregativeFrame(AlgorithmFrame):
                                                               widget_update_lambda=lambda var: ClearInsertEntry(self.dimension_entry, str(var)) ) )
             
         def display(self):
-            self.place( relx=0.05, rely=0.16, relwidth=0.9, relheight=0.79 )
+            self.grid( row=1, column=0, columnspan=3, rowspan=4, sticky="NSEW", padx=35, pady=35 )
+            
+        def hide(self):
+            self.grid_forget()
     
     def _option_update(self, new_key):
         self.frames[self.selected_frame_key].hide()
@@ -47,17 +50,22 @@ class AggregativeFrame(AlgorithmFrame):
     
         self.aggregative_option_list = [ option.value for option in AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION ]
     
-        tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.05 )
+        self.grid_columnconfigure((0), weight=1)
+        self.grid_rowconfigure((1,2,3,4),weight=1)
+    
+        self.aggregative_option_frame = ttk.Frame(self)
+        tk.Label( self.aggregative_option_frame, text="Operator" ).grid( row=0, column=0, sticky="NESW" )
         self.AggregativeOption = tk.StringVar(self)
         self.AggregativeOption.set( AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.WEIGHTED_SUM.value )
-        self.aggregative_option = tk.OptionMenu(self, self.AggregativeOption, *self.aggregative_option_list, command=self._option_update)
+        self.aggregative_option = tk.OptionMenu(self.aggregative_option_frame, self.AggregativeOption, *self.aggregative_option_list, command=self._option_update)
         self.aggregative_option.config( state=tk.NORMAL )
-        self.aggregative_option.place( relx=0.07, rely=0.045, relwidth=0.1 )
+        self.aggregative_option.grid( row=0, column=1, sticky="NESW" )
+        self.aggregative_option_frame.grid( row=0, column=0, sticky="NESW", pady=25, padx=25 )
         
         self.frames = {}
         self.frames[AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.TSCHEBYCHEFF.value] = AggregativeFrame.Tschebycheff(master=self,
-                                                                                                                                    problem_parameters=problem_parameters,
-                                                                                                                                    algorithm_parameters=algorithm_parameters)
+                                                                                                                        problem_parameters=problem_parameters,
+                                                                                                                        algorithm_parameters=algorithm_parameters)
         self.frames[AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.WEIGHTED_SUM.value] = NullParameterFrame(master=self)
         
         self.selected_frame_key = AlgorithmParameters.MOEAD_AGGREGATIVE_FUNCTION.WEIGHTED_SUM.value

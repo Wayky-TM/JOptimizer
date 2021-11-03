@@ -21,11 +21,15 @@ class MOEADParametersFrame(AlgorithmFrame):
     def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
         super(MOEADParametersFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
         
-        tk.Label( master=self, text="Neighbourhood selection probability").place( relx=0.02, rely=0.05 )
-        self.neighborhood_selection_probability_entry = tk.Entry(master=self, state=tk.NORMAL)
+        self.neighborhood_selection_probability_frame = tk.Frame(self)
+        tk.Label( master=self.neighborhood_selection_probability_frame, text="Neighbourhood selection probability").grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
+        self.neighborhood_selection_probability_entry = tk.Entry(master=self.neighborhood_selection_probability_frame, state=tk.NORMAL)
         self.neighborhood_selection_probability_entry.insert(0, self.algorithm_parameters.specific_options["neighborhood_selection_probability"])
-        self.neighborhood_selection_probability_entry.place(relx=0.19, rely=0.05+0.005, relwidth=0.08)
+        self.neighborhood_selection_probability_entry.grid( row=0, column=1, sticky="NSEW", padx=2, pady=2, columnspan=1 )
         self.neighborhood_selection_probability_entry.config(state=tk.NORMAL)
+        self.neighborhood_selection_probability_frame.grid( row=0, column=0, sticky="NSEW", pady=10, padx=2 )
+        
+        self.neighborhood_selection_probability_frame.grid( row=0, column=0, sticky="NSW", pady=10, padx=2 )
         
         self.neighborhood_selection_probability_parameter = Float(name="neighborhood_selection_probability", fancy_name="Neighbourhood selection probability", lower_bound=0.0, upper_bound=1.0)
         
@@ -38,11 +42,13 @@ class MOEADParametersFrame(AlgorithmFrame):
                                                           widget_update_lambda=lambda var: ClearInsertEntry(self.neighborhood_selection_probability_entry, str(var))) )
         
         
-        tk.Label( master=self, text="Max. number of replaced solutions").place( relx=0.02, rely=0.1 )
-        self.max_number_of_replaced_solutions_entry = tk.Entry(master=self, state=tk.NORMAL)
+        self.max_number_of_replaced_solutions_frame = tk.Frame(self)
+        tk.Label( master=self.max_number_of_replaced_solutions_frame, text="Max. number of replaced solutions").grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
+        self.max_number_of_replaced_solutions_entry = tk.Entry(master=self.max_number_of_replaced_solutions_frame, state=tk.NORMAL)
         self.max_number_of_replaced_solutions_entry.insert(0, self.algorithm_parameters.specific_options["max_number_of_replaced_solutions"])
-        self.max_number_of_replaced_solutions_entry.place(relx=0.19, rely=0.1+0.005, relwidth=0.08)
+        self.max_number_of_replaced_solutions_entry.grid( row=0, column=1, sticky="NSEW", padx=2, pady=2, columnspan=1 )
         self.max_number_of_replaced_solutions_entry.config(state=tk.NORMAL)
+        self.max_number_of_replaced_solutions_frame.grid( row=1, column=0, sticky="NSW", pady=10, padx=2 )
         
         self.max_number_of_replaced_solutions_parameter = Integer(name="max_number_of_replaced_solutions", fancy_name="Max. number of replaced solutions", lower_bound=1, upper_bound=100)
         
@@ -55,11 +61,13 @@ class MOEADParametersFrame(AlgorithmFrame):
                                                           widget_update_lambda=lambda var: ClearInsertEntry(self.max_number_of_replaced_solutions_entry, str(var))) )
         
         
-        tk.Label( master=self, text="Neighborhood size").place( relx=0.02, rely=0.15 )
-        self.neighbor_size_entry = tk.Entry(master=self, state=tk.NORMAL)
+        self.neighbor_size_frame = tk.Frame(self)
+        tk.Label( master=self.neighbor_size_frame, text="Neighborhood size").grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
+        self.neighbor_size_entry = tk.Entry(master=self.neighbor_size_frame, state=tk.NORMAL)
         self.neighbor_size_entry.insert(0, self.algorithm_parameters.specific_options["neighborhood_size"])
-        self.neighbor_size_entry.place(relx=0.115, rely=0.15+0.005, relwidth=0.08)
+        self.neighbor_size_entry.grid( row=0, column=1, sticky="NSEW", padx=2, pady=2, columnspan=1 )
         self.neighbor_size_entry.config(state=tk.NORMAL)
+        self.neighbor_size_frame.grid( row=2, column=0, sticky="NSW", pady=10, padx=2 )
         
         self.neighbor_size_parameter = Integer(name="neighbor_size", fancy_name="Neighbourhood size", lower_bound=1, upper_bound=100)
         
@@ -72,13 +80,15 @@ class MOEADParametersFrame(AlgorithmFrame):
                                                           widget_update_lambda=lambda var: ClearInsertEntry(self.neighbor_size_entry, str(var))) )
         
         
-        tk.Label( master=self, text="Weight files folder path").place( relx=0.02, rely=0.2 )
-        self.weight_files_path_entry = tk.Entry(master=self, state=tk.NORMAL)
+        self.weight_files_path_frame = tk.Frame(self)
+        tk.Label( master=self.weight_files_path_frame, text="Weight files folder path").grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
+        self.weight_files_path_entry = tk.Entry(master=self.weight_files_path_frame, state=tk.NORMAL)
         self.weight_files_path_entry.insert(0, self.algorithm_parameters.specific_options["weight_files_path"])
-        self.weight_files_path_entry.place(relx=0.105, rely=0.2+0.005, relwidth=0.3)
+        self.weight_files_path_entry.grid( row=0, column=1, sticky="NSEW", padx=2, pady=2, columnspan=6 )
         self.weight_files_path_entry.config(state="readonly")
-        self.button_browse_weight_files = ttk.Button( master=self,  text="Browse", command=lambda: self._browse() )
-        self.button_browse_weight_files.place(relx=0.41, rely=0.2, relwidth=0.06)
+        self.button_browse_weight_files = ttk.Button( master=self.weight_files_path_frame,  text="Browse", command=lambda: self._browse() )
+        self.button_browse_weight_files.grid( row=0, column=7, sticky="EW", padx=2, pady=2, columnspan=1 )
+        self.weight_files_path_frame.grid( row=3, column=0, sticky="NSW", pady=10, padx=2 )
         
         self.weight_files_path_parameter = FilePath(name="weight_files_path", fancy_name="Weight files path", is_folder=True)
         

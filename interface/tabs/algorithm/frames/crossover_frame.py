@@ -254,28 +254,37 @@ class IntCrossoverFrame(ParameterLabelFrame):
         
         self.crossover_options = [AlgorithmParameters.INT_CROSSOVER.INT_SBX.value]
         
-        tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.05 )
+        self.grid_columnconfigure((0), weight=1)
+        self.grid_rowconfigure((1,2,3,4),weight=1)
+        
+        self.operator_frame = ttk.Frame(self)
+        tk.Label( self.operator_frame, text="Operator" ).grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
         self.CrossoverOption = tk.StringVar(self)
         self.CrossoverOption.set( AlgorithmParameters.INT_CROSSOVER.INT_SBX.value )
-        self.crossover_option = tk.OptionMenu(self, self.CrossoverOption, *self.crossover_options)
+        self.crossover_option = tk.OptionMenu(self.operator_frame, self.CrossoverOption, *self.crossover_options)
         self.crossover_option.config( state=tk.DISABLED )
-        self.crossover_option.place( relx=0.15, rely=0.0425, relwidth=0.3 )
+        self.crossover_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
+        self.operator_frame.grid( row=0, column=0, sticky="NSEW", pady=10, padx=2 )
         
         self.labelframe_params = tk.LabelFrame(master=self)
         
-        tk.Label( master=self.labelframe_params, text="Probability" ).place( relx=0.01, rely=0.05 )
-        self.probability_entry = tk.Entry(master=self.labelframe_params, state=tk.NORMAL)
-        self.probability_entry.place(relx=0.155, rely=0.05+0.005, relwidth=0.08)
+        self.probability_frame = ttk.Frame(self.labelframe_params)
+        tk.Label( master=self.probability_frame, text="Probability" ).grid( row=0, column=0, padx=2, pady=2, sticky="WENS" )
+        self.probability_entry = tk.Entry(master=self.probability_frame, state=tk.NORMAL)
+        self.probability_entry.grid( row=0, column=1, padx=2, pady=2, sticky="NSEW" )
         self.probability_entry.insert(0, self.algorithm_parameters.int_crossover_parameters["probability"])
         self.probability_entry.config(state=tk.NORMAL)
+        self.probability_frame.grid( row=0, column=0, sticky="NSEW", padx=3, pady=6 )
         
-        self.distribution_index_label = tk.Label( self.labelframe_params, text="Distribution index" ).place( relx=0.01, rely=0.448 )
-        self.distribution_index_entry = tk.Entry(master=self.labelframe_params, state=tk.NORMAL)
-        self.distribution_index_entry.place(relx=0.23, rely=0.45+0.005, relwidth=0.08)
+        self.distribution_index_frame = ttk.Frame(self.labelframe_params)
+        self.distribution_index_label = tk.Label( self.distribution_index_frame, text="Distribution index" ).grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
+        self.distribution_index_entry = tk.Entry(master=self.distribution_index_frame, state=tk.NORMAL)
+        self.distribution_index_entry.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
         self.distribution_index_entry.insert(0, self.algorithm_parameters.int_crossover_parameters["distribution_index"])
         self.distribution_index_entry.config(state=tk.NORMAL)
+        self.distribution_index_frame.grid( row=1, column=0, sticky="NSEW", padx=3, pady=6 )
         
-        self.labelframe_params.place( relx=0.02, rely=0.28, relwidth=0.96, relheight=0.67 )
+        self.labelframe_params.grid( row=1, column=0, columnspan=3, rowspan=4, sticky="NSEW", padx=5, pady=5 )
         
         self.crossover_option_parameter = Parameter( name="int_crossover_option", fancy_name="Integer crossover option" )
         self.probability_parameter = Float(name="probability", fancy_name="Probability (int crossover)", lower_bound=0.0, upper_bound=1.0)
@@ -330,18 +339,29 @@ class BinaryCrossoverFrame(ParameterLabelFrame):
         
         self.crossover_options = [AlgorithmParameters.BINARY_CROSSOVER.SPX.value]
         
-        tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.3 )
-        self.CrossoverOption = tk.StringVar(self)
-        self.CrossoverOption.set( self.crossover_options[0] )
-        self.crossover_option = tk.OptionMenu(self, self.CrossoverOption, *self.crossover_options)
-        self.crossover_option.config( state=tk.DISABLED )
-        self.crossover_option.place( relx=0.15, rely=0.0425, relwidth=0.3 )
+        self.grid_columnconfigure((0), weight=1)
+        self.grid_rowconfigure((1,2,3,4),weight=1)
         
-        tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.3 )
-        self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
-        self.probability_entry.place(relx=0.65, rely=0.3, relwidth=0.08)
+        self.operator_frame = ttk.Frame(self)
+        tk.Label( self.operator_frame, text="Operator" ).grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
+        self.CrossoverOption = tk.StringVar(self)
+        self.CrossoverOption.set( AlgorithmParameters.BINARY_CROSSOVER.SPX.value )
+        self.crossover_option = tk.OptionMenu(self.operator_frame, self.CrossoverOption, *self.crossover_options)
+        self.crossover_option.config( state=tk.DISABLED )
+        self.crossover_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
+        self.operator_frame.grid( row=0, column=0, sticky="NSEW", pady=10, padx=2 )
+        
+        self.labelframe_params = tk.LabelFrame(master=self)
+        
+        self.probability_frame = ttk.Frame(self.labelframe_params)
+        tk.Label( master=self.probability_frame, text="Probability" ).grid( row=0, column=0, padx=2, pady=2, sticky="WENS" )
+        self.probability_entry = tk.Entry(master=self.probability_frame, state=tk.NORMAL)
+        self.probability_entry.grid( row=0, column=1, padx=2, pady=2, sticky="NSEW" )
         self.probability_entry.insert(0, self.algorithm_parameters.binary_crossover_parameters["probability"])
         self.probability_entry.config(state=tk.NORMAL)
+        self.probability_frame.grid( row=0, column=0, sticky="NSEW", padx=3, pady=6 )
+        
+        self.labelframe_params.grid( row=1, column=0, columnspan=3, rowspan=4, sticky="NSEW", padx=5, pady=5 )
         
         
         self.crossover_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
@@ -387,18 +407,29 @@ class PermutationCrossoverFrame(ParameterLabelFrame):
         
         self.crossover_options = [AlgorithmParameters.PERMUTATION_CROSSOVER.CXC.value, AlgorithmParameters.PERMUTATION_CROSSOVER.PMX.value]
         
-        tk.Label( self, text="Operator" ).place( relx=0.02, rely=0.35 )
+        self.grid_columnconfigure((0), weight=1)
+        self.grid_rowconfigure((1,2,3,4),weight=1)
+        
+        self.operator_frame = ttk.Frame(self)
+        tk.Label( self.operator_frame, text="Operator" ).grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
         self.CrossoverOption = tk.StringVar(self)
         self.CrossoverOption.set( AlgorithmParameters.PERMUTATION_CROSSOVER.PMX.value )
-        self.crossover_option = tk.OptionMenu(self, self.CrossoverOption, *self.crossover_options)
-        self.crossover_option.config( state=tk.NORMAL )
-        self.crossover_option.place( relx=0.15, rely=0.17, relwidth=0.3 )
+        self.crossover_option = tk.OptionMenu(self.operator_frame, self.CrossoverOption, *self.crossover_options)
+        self.crossover_option.config( state=tk.DISABLED )
+        self.crossover_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
+        self.operator_frame.grid( row=0, column=0, sticky="NSEW", pady=10, padx=2 )
         
-        tk.Label( master=self, text="Probability" ).place( relx=0.5, rely=0.3 )
-        self.probability_entry = tk.Entry(master=self, state=tk.NORMAL)
-        self.probability_entry.place(relx=0.65, rely=0.3, relwidth=0.08)
+        self.labelframe_params = tk.LabelFrame(master=self)
+        
+        self.probability_frame = ttk.Frame(self.labelframe_params)
+        tk.Label( master=self.probability_frame, text="Probability" ).grid( row=0, column=0, padx=2, pady=2, sticky="WENS" )
+        self.probability_entry = tk.Entry(master=self.probability_frame, state=tk.NORMAL)
+        self.probability_entry.grid( row=0, column=1, padx=2, pady=2, sticky="NSEW" )
         self.probability_entry.insert(0, self.algorithm_parameters.permutation_crossover_parameters["probability"])
         self.probability_entry.config(state=tk.NORMAL)
+        self.probability_frame.grid( row=0, column=0, sticky="NSEW", padx=3, pady=6 )
+        
+        self.labelframe_params.grid( row=1, column=0, columnspan=3, rowspan=4, sticky="NSEW", padx=5, pady=5 )
         
         self.crossover_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
         self.probability_parameter = Float(name="probability", fancy_name="Probability (permutation crossover)", lower_bound=0.0, upper_bound=1.0)
