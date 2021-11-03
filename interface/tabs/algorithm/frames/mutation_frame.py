@@ -325,153 +325,151 @@ class IntMutationFrame(ParameterLabelFrame):
         self.distribution_index_entry.config(state=tk.NORMAL)
 
 
+
+class BinaryMutationFrame(ParameterLabelFrame):
+    
+    def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+        super(BinaryMutationFrame,self).__init__(master=master, text="Binary mutation", *args, **kwargs)
+        
+        self.problem_parameters = problem_parameters
+        self.algorithm_parameters = algorithm_parameters
+        
+        self.mutation_options = [AlgorithmParameters.BINARY_MUTATION.BIT_FLIP.value]
+        
+        self.grid_columnconfigure((0), weight=1)
+        self.grid_rowconfigure((1,2,3,4),weight=1)
+        
+        self.labelframe_params = tk.LabelFrame(master=self)
+        
+        self.operator_frame = ttk.Frame(master=self)
+        tk.Label( self.operator_frame, text="Operator" ).grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
+        self.MutationOption = tk.StringVar(self)
+        self.MutationOption.set( self.mutation_options[0] )
+        self.mutation_option = tk.OptionMenu(self.operator_frame, self.MutationOption, *self.mutation_options)
+        self.mutation_option.config( state=tk.DISABLED )
+        self.mutation_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
+        self.operator_frame.grid( row=0, column=0, sticky="NSEW", pady=10, padx=2 )
+        
+        self.probability_frame = ttk.Frame(master=self.labelframe_params)
+        tk.Label( master=self.probability_frame, text="Probability" ).grid( row=0, column=0, padx=2, pady=2, sticky="WENS" )
+        self.probability_entry = tk.Entry(master=self.probability_frame, state=tk.NORMAL)
+        self.probability_entry.grid( row=0, column=1, padx=2, pady=2, sticky="NSEW" )
+        self.probability_entry.insert(0, self.algorithm_parameters.binary_mutation_parameters["probability"])
+        self.probability_entry.config(state=tk.NORMAL)
+        self.probability_frame.grid( row=1, column=0, sticky="NSEW", padx=3, pady=6 )
+        
+        self.labelframe_params.grid( row=1, column=0, columnspan=3, rowspan=4, sticky="NSEW", padx=5, pady=5 )
+        
+        self.mutation_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
+        self.probability_parameter = Float(name="probability", fancy_name="Probability (Binary mutation)", lower_bound=0.0, upper_bound=1.0)
+    
+        self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
+                                                          widget_read_lambda=lambda: self.probability_entry.get(),
+                                                          variable_store_lambda=lambda var: self.algorithm_parameters.binary_mutation_parameters.update({"probability":var}),
+                                                          error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                          error_reset_lambda=EntryValidator(self.probability_entry),
+                                                          variable_read_lambda=lambda: self.algorithm_parameters.binary_mutation_parameters["probability"],
+                                                          widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
+    
+            
+        self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
+                                                          widget_read_lambda=lambda: self.MutationOption.get(),
+                                                          variable_store_lambda=self.__store_binary_mutation_option,
+                                                          variable_read_lambda=lambda: self.algorithm_parameters.binary_mutation_choice,
+                                                          widget_update_lambda=lambda var: self.MutationOption.set(var)) )
+        
+    
+    def __store_binary_mutation_option(self, value):
+        self.algorithm_parameters.binary_mutation_choice = value
+        
+    def disable(self):
+        self.configure(text="Binary mutation (Disabled)")
+        self.mutation_option.config(state=tk.DISABLED)
+        self.probability_entry.config(state=tk.DISABLED)
+        
+    def enable(self):
+        self.configure(text="Binary mutation")
+        self.mutation_option.config(state=tk.NORMAL)
+        self.probability_entry.config(state=tk.NORMAL)
+
+        
+class PermutationMutationFrame(ParameterLabelFrame):
+    
+    def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
+        super(PermutationMutationFrame,self).__init__(master=master, text="Permutation mutation", *args, **kwargs)
+        
+        self.problem_parameters = problem_parameters
+        self.algorithm_parameters = algorithm_parameters
+        
+        self.grid_columnconfigure((0), weight=1)
+        self.grid_rowconfigure((1,2,3,4),weight=1)
+        
+        self.mutation_options = [option.value for option in AlgorithmParameters.PERMUTATION_MUTATION]
+        
+        self.labelframe_params = tk.LabelFrame(master=self)
+        
+        self.operator_frame = ttk.Frame(master=self)
+        tk.Label( self.operator_frame, text="Operator" ).grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
+        self.MutationOption = tk.StringVar(self)
+        self.MutationOption.set( self.mutation_options[0] )
+        self.mutation_option = tk.OptionMenu(self.operator_frame, self.MutationOption, *self.mutation_options)
+        self.mutation_option.config( state=tk.NORMAL )
+        self.mutation_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
+        self.operator_frame.grid( row=0, column=0, sticky="NSEW", pady=10, padx=2 )
+        
+        self.probability_frame = ttk.Frame(master=self.labelframe_params)
+        tk.Label( master=self.probability_frame, text="Probability" ).grid( row=0, column=0, padx=2, pady=2, sticky="WENS" )
+        self.probability_entry = tk.Entry(master=self.probability_frame, state=tk.NORMAL)
+        self.probability_entry.grid( row=0, column=1, padx=2, pady=2, sticky="NSEW" )
+        self.probability_entry.insert(0, self.algorithm_parameters.permutation_mutation_parameters["probability"])
+        self.probability_entry.config(state=tk.NORMAL)
+        self.probability_frame.grid( row=1, column=0, sticky="NSEW", padx=3, pady=6 )
+        
+        self.labelframe_params.grid( row=1, column=0, columnspan=3, rowspan=4, sticky="NSEW", padx=5, pady=5 )
+        
+        self.mutation_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
+        self.probability_parameter = Float(name="probability", fancy_name="Probability (Permutation mutation)", lower_bound=0.0, upper_bound=1.0)
+    
+        self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
+                                                          widget_read_lambda=lambda: self.probability_entry.get(),
+                                                          variable_store_lambda=lambda var: self.algorithm_parameters.permutation_mutation_parameters.update({"probability":var}),
+                                                          error_set_lambda=EntryInvalidator(self.probability_entry),
+                                                          error_reset_lambda=EntryValidator(self.probability_entry),
+                                                          variable_read_lambda=lambda: self.algorithm_parameters.permutation_mutation_parameters["probability"],
+                                                          widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
+        
+            
+        self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
+                                                          widget_read_lambda=lambda: self.MutationOption.get(),
+                                                          variable_store_lambda=self.__store_permutation_mutation_option,
+                                                          variable_read_lambda=lambda: self.algorithm_parameters.permutation_mutation_choice,
+                                                          widget_update_lambda=lambda var: self.MutationOption.set(var)) )
+        
+    def __store_permutation_mutation_option(self, value):
+        self.algorithm_parameters.permutation_mutation_choice = value
+        
+    def disable(self):
+        self.configure(text="Permutation mutation (Disabled)")
+        self.mutation_option.config(state=tk.DISABLED)
+        self.probability_entry.config(state=tk.DISABLED)
+        
+    def enable(self):
+        self.configure(text="Permutation mutation")
+        self.mutation_option.config(state=tk.NORMAL)
+        self.probability_entry.config(state=tk.NORMAL)
+
+
+
+
 class MutationFrame(AlgorithmFrame):
         
-    
-            
-    class BinaryMutationFrame(ParameterLabelFrame):
-        
-        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
-            super(MutationFrame.BinaryMutationFrame,self).__init__(master=master, text="Binary mutation", *args, **kwargs)
-            
-            self.problem_parameters = problem_parameters
-            self.algorithm_parameters = algorithm_parameters
-            
-            self.mutation_options = [AlgorithmParameters.BINARY_MUTATION.BIT_FLIP.value]
-            
-            self.grid_columnconfigure((0), weight=1)
-            self.grid_rowconfigure((1,2,3,4),weight=1)
-            
-            self.labelframe_params = tk.LabelFrame(master=self)
-            
-            self.operator_frame = ttk.Frame(master=self)
-            tk.Label( self.operator_frame, text="Operator" ).grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
-            self.MutationOption = tk.StringVar(self)
-            self.MutationOption.set( self.mutation_options[0] )
-            self.mutation_option = tk.OptionMenu(self.operator_frame, self.MutationOption, *self.mutation_options)
-            self.mutation_option.config( state=tk.DISABLED )
-            self.mutation_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
-            self.operator_frame.grid( row=0, column=0, sticky="NSEW", pady=10, padx=2 )
-            
-            self.probability_frame = ttk.Frame(master=self.labelframe_params)
-            tk.Label( master=self.probability_frame, text="Probability" ).grid( row=0, column=0, padx=2, pady=2, sticky="WENS" )
-            self.probability_entry = tk.Entry(master=self.probability_frame, state=tk.NORMAL)
-            self.probability_entry.grid( row=0, column=1, padx=2, pady=2, sticky="NSEW" )
-            self.probability_entry.insert(0, self.algorithm_parameters.binary_mutation_parameters["probability"])
-            self.probability_entry.config(state=tk.NORMAL)
-            self.probability_frame.grid( row=1, column=0, sticky="NSEW", padx=3, pady=6 )
-            
-            self.labelframe_params.grid( row=1, column=0, columnspan=3, rowspan=4, sticky="NSEW", padx=5, pady=5 )
-            
-            self.mutation_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
-            self.probability_parameter = Float(name="probability", fancy_name="Probability (Binary mutation)", lower_bound=0.0, upper_bound=1.0)
-        
-            self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
-                                                              widget_read_lambda=lambda: self.probability_entry.get(),
-                                                              variable_store_lambda=lambda var: self.algorithm_parameters.binary_mutation_parameters.update({"probability":var}),
-                                                              error_set_lambda=EntryInvalidator(self.probability_entry),
-                                                              error_reset_lambda=EntryValidator(self.probability_entry),
-                                                              variable_read_lambda=lambda: self.algorithm_parameters.binary_mutation_parameters["probability"],
-                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
-        
-                
-            self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
-                                                              widget_read_lambda=lambda: self.MutationOption.get(),
-                                                              variable_store_lambda=self.__store_binary_mutation_option,
-                                                              variable_read_lambda=lambda: self.algorithm_parameters.binary_mutation_choice,
-                                                              widget_update_lambda=lambda var: self.MutationOption.set(var)) )
-            
-        
-        def __store_binary_mutation_option(self, value):
-            self.algorithm_parameters.binary_mutation_choice = value
-            
-        def disable(self):
-            self.configure(text="Binary mutation (Disabled)")
-            self.mutation_option.config(state=tk.DISABLED)
-            self.probability_entry.config(state=tk.DISABLED)
-            
-        def enable(self):
-            self.configure(text="Binary mutation")
-            self.mutation_option.config(state=tk.NORMAL)
-            self.probability_entry.config(state=tk.NORMAL)
-    
-            
-    class PermutationMutationFrame(ParameterLabelFrame):
-        
-        def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
-            super(MutationFrame.PermutationMutationFrame,self).__init__(master=master, text="Permutation mutation", *args, **kwargs)
-            
-            self.problem_parameters = problem_parameters
-            self.algorithm_parameters = algorithm_parameters
-            
-            # self.rowconfigure(1)
-            # self.grid_columnconfigure(5, {'minsize': 150})
-            self.grid_columnconfigure((0), weight=1)
-            self.grid_rowconfigure((1,2,3,4),weight=1)
-            # self.grid_rowconfigure((0,1), weight=1, uniform="row" )
-            
-            self.mutation_options = [option.value for option in AlgorithmParameters.PERMUTATION_MUTATION]
-            
-            self.labelframe_params = tk.LabelFrame(master=self)
-            
-            self.operator_frame = ttk.Frame(master=self)
-            tk.Label( self.operator_frame, text="Operator" ).grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
-            self.MutationOption = tk.StringVar(self)
-            self.MutationOption.set( self.mutation_options[0] )
-            self.mutation_option = tk.OptionMenu(self.operator_frame, self.MutationOption, *self.mutation_options)
-            self.mutation_option.config( state=tk.NORMAL )
-            self.mutation_option.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
-            self.operator_frame.grid( row=0, column=0, sticky="NSEW", pady=10, padx=2 )
-            
-            self.probability_frame = ttk.Frame(master=self.labelframe_params)
-            tk.Label( master=self.probability_frame, text="Probability" ).grid( row=0, column=0, padx=2, pady=2, sticky="WENS" )
-            self.probability_entry = tk.Entry(master=self.probability_frame, state=tk.NORMAL)
-            self.probability_entry.grid( row=0, column=1, padx=2, pady=2, sticky="NSEW" )
-            self.probability_entry.insert(0, self.algorithm_parameters.permutation_mutation_parameters["probability"])
-            self.probability_entry.config(state=tk.NORMAL)
-            self.probability_frame.grid( row=1, column=0, sticky="NSEW", padx=3, pady=6 )
-            
-            self.labelframe_params.grid( row=1, column=0, columnspan=3, rowspan=4, sticky="NSEW", padx=5, pady=5 )
-            
-            self.mutation_option_parameter = Parameter( name="binary_crossover_option", fancy_name="Binary crossover option" )
-            self.probability_parameter = Float(name="probability", fancy_name="Probability (Permutation mutation)", lower_bound=0.0, upper_bound=1.0)
-        
-            self.parameters_bindings.append( ParameterBinding(parameter=self.probability_parameter,
-                                                              widget_read_lambda=lambda: self.probability_entry.get(),
-                                                              variable_store_lambda=lambda var: self.algorithm_parameters.permutation_mutation_parameters.update({"probability":var}),
-                                                              error_set_lambda=EntryInvalidator(self.probability_entry),
-                                                              error_reset_lambda=EntryValidator(self.probability_entry),
-                                                              variable_read_lambda=lambda: self.algorithm_parameters.permutation_mutation_parameters["probability"],
-                                                              widget_update_lambda=lambda var: ClearInsertEntry(self.probability_entry, str(var)) ) )
-            
-                
-            self.parameters_bindings.append( ParameterBinding(parameter=self.mutation_option_parameter,
-                                                              widget_read_lambda=lambda: self.MutationOption.get(),
-                                                              variable_store_lambda=self.__store_permutation_mutation_option,
-                                                              variable_read_lambda=lambda: self.algorithm_parameters.permutation_mutation_choice,
-                                                              widget_update_lambda=lambda var: self.MutationOption.set(var)) )
-            
-        def __store_permutation_mutation_option(self, value):
-            self.algorithm_parameters.permutation_mutation_choice = value
-            
-        def disable(self):
-            self.configure(text="Permutation mutation (Disabled)")
-            self.mutation_option.config(state=tk.DISABLED)
-            self.probability_entry.config(state=tk.DISABLED)
-            
-        def enable(self):
-            self.configure(text="Permutation mutation")
-            self.mutation_option.config(state=tk.NORMAL)
-            self.probability_entry.config(state=tk.NORMAL)
-            
-    
     def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
         super(MutationFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
         
         self.float_frame = FloatMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
         self.int_frame = IntMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
-        self.binary_frame = MutationFrame.BinaryMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
-        self.permutation_frame = MutationFrame.PermutationMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
+        self.binary_frame = BinaryMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
+        self.permutation_frame = PermutationMutationFrame( master=self, problem_parameters=self.problem_parameters, algorithm_parameters=self.algorithm_parameters )
         
         # self.float_frame.place( relx=0.025, rely=0.05, relwidth=0.4, relheight=0.3 )
         # self.int_frame.place( relx=0.025, rely=0.38, relwidth=0.4, relheight=0.3 )

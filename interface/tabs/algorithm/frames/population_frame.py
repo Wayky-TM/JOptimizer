@@ -12,11 +12,13 @@ class PopulationFrame(AlgorithmFrame):
     def __init__(self, master, problem_parameters: ProblemParameters, algorithm_parameters: AlgorithmParameters, *args, **kwargs):
         super(PopulationFrame, self).__init__(master=master, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters, *args, **kwargs)
         
-        tk.Label( master=self, text="Population size").place( relx=0.02, rely=0.05 )
-        self.population_size_entry = tk.Entry(master=self, state=tk.NORMAL)
+        self.population_frame = ttk.Frame(self)
+        tk.Label( master=self.population_frame, text="Population size").grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
+        self.population_size_entry = tk.Entry(master=self.population_frame, state=tk.NORMAL)
         self.population_size_entry.insert(0, self.algorithm_parameters.general_parameters["population_size"])
-        self.population_size_entry.place(relx=0.095, rely=0.05+0.005, relwidth=0.08)
+        self.population_size_entry.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
         self.population_size_entry.config(state=tk.NORMAL)
+        self.population_frame.grid( row=0, column=0, sticky="NSEW", pady=25, padx=25 )
         
         self.population_size_parameter = Integer(name="population_size", fancy_name="Population size", lower_bound=10, upper_bound=100000)
         
