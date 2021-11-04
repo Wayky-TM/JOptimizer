@@ -11,6 +11,7 @@ sys.path.append(r"./..")
 import copy
 import random
 import math
+import numpy as np
 
 from enum import Enum
 from abc import *
@@ -125,3 +126,122 @@ class PermutationVariable:
         
     def rand(self):
         return random.shuffle( copy.deepcopy( self.elements ) )
+    
+    
+    
+class VECTOR_TYPE(Enum):
+    PYTHON="Python"
+    NUMPY="Numpy"
+    
+class MATRIX_TYPE(Enum):
+    PYTHON="Python"
+    NUMPY="Numpy"
+
+    
+class FloatVectorVariable( FloatVariable ):
+    
+    def __init__( self,
+                  keyword: str,
+                  length: int,
+                  lower_bound: float,
+                  upper_bound: float,
+                  name: str = "",
+                  vector_type: str = VECTOR_TYPE.PYTHON.value):
+        
+        super(FloatVectorVariable, self).__init__( keyword=keyword, lower_bound=lower_bound, upper_bound=upper_bound, name=name )
+        
+        if length < 2:
+             raise ValueError( "Vector of invalid length: %d" % (length) )
+        
+        self.vector_type = vector_type
+        self.length = length
+        
+    def rand(self):
+        v = [random.uniform(self.lower_bound, self.upper_bound) for i in range(self.length)]
+        
+        if self.vector_type = VECTOR_TYPE.NUMPY.value:
+            return np.array( v )
+        
+        return v
+    
+    def within_bounds( self, vector ):
+        return all( [(value >= self.lower_bound) and (value <= self.upper_bound) for value in vector] )
+    
+    
+    
+class IntegerVectorVariable( IntegerVariable ):
+    
+    def __init__( self,
+                  keyword: str,
+                  length: int,
+                  lower_bound: int,
+                  upper_bound: int,
+                  name: str = "",
+                  vector_type: str = VECTOR_TYPE.PYTHON.value):
+        
+        super(IntegerVectorVariable, self).__init__( keyword=keyword, lower_bound=lower_bound, upper_bound=upper_bound, name=name )
+        
+        if length < 2:
+             raise ValueError( "Vector of invalid length: %d" % (length) )
+        
+        self.vector_type = vector_type
+        self.length = length
+        
+    def rand(self):
+        v = [random.randint(self.lower_bound, self.upper_bound) for i in range(self.length)]
+        
+        if self.vector_type = VECTOR_TYPE.NUMPY.value:
+            return np.array( v )
+        
+        return v
+    
+    def within_bounds( self, vector ):
+        return all( [(value >= self.lower_bound) and (value <= self.upper_bound) for value in vector] )
+    
+    
+class DiscretizedVectorVariable( DiscretizedFloatVariable ):
+    
+    def __init__( self,
+                  keyword: str,
+                  length: int,
+                  lower_bound: float,
+                  upper_bound: float,
+                  step: float,
+                  name: str = "",
+                  vector_type: str = VECTOR_TYPE.PYTHON.value):
+        
+        super(DiscretizedVectorVariable, self).__init__( keyword=keyword, lower_bound=lower_bound, upper_bound=upper_bound, step=step, name=name )
+        
+        if length < 2:
+             raise ValueError( "Vector of invalid length: %d" % (length) )
+        
+        self.vector_type = vector_type
+        self.length = length
+        
+    def rand(self):
+        v = [ (float( random.randint(0, self.resolution-1) )*self.step + self.lower_bound) for i in range(self.length)]
+        
+        if self.vector_type = VECTOR_TYPE.NUMPY.value:
+            return np.array( v )
+        
+        return v
+    
+    def randInt(self):
+        v = [ random.randint(0, self.resolution-1) for i in range(self.length) ]
+        
+        if self.vector_type = VECTOR_TYPE.NUMPY.value:
+            return np.array( v )
+        
+        return v
+    
+    def within_bounds( self, vector ):
+        return all( [(value >= self.lower_bound) and (value <= self.upper_bound) for value in vector] )    
+
+
+    def rand(self):
+        return float( random.randint(0, self.resolution-1) )*self.step + self.lower_bound
+    
+    def randint(self):
+        return random.randint(0, self.resolution-1)
+    
+    

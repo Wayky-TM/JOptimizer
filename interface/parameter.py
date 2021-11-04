@@ -122,7 +122,7 @@ class Integer(Parameter):
     
     def get_value( self ):
         return int(self.value)
-        
+
         
 class FilePath(Parameter):
     
@@ -158,5 +158,3 @@ class FilePath(Parameter):
     def get_value( self ):
         return self.value
     
-
-
