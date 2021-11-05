@@ -26,6 +26,8 @@ import core.variable as Variables
 import core.constant as Constants
 import core.composite_problem as cproblem
 
+from core.evaluators.Python import PythonFunctionEvaluator
+
 import util.type_check as TC
 
 
@@ -80,7 +82,11 @@ class ProblemParameters:
             evaluator = evaluator_class()
             
         elif self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.PYTHON.value:
-            pass
+            
+            evaluator = PythonFunctionEvaluator( number_of_variables=int(self.options["variables"]),
+                                                 number_of_objectives=int(self.options["objectives"]),
+                                                 script_path=self.options["python_script_path"],
+                                                 function_name=self.options["function_name"] )
         
         composite_problem = cproblem.CompositeProblem( evaluator=evaluator,
                                                        float_vars=float_vars,
