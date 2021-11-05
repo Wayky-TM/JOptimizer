@@ -226,7 +226,7 @@ class DiscretizedVectorVariable( DiscretizedFloatVariable ):
         
         return v
     
-    def randInt(self):
+    def randint(self):
         v = [ random.randint(0, self.resolution-1) for i in range(self.length) ]
         
         if self.vector_type = VECTOR_TYPE.NUMPY.value:
@@ -237,11 +237,5 @@ class DiscretizedVectorVariable( DiscretizedFloatVariable ):
     def within_bounds( self, vector ):
         return all( [(value >= self.lower_bound) and (value <= self.upper_bound) for value in vector] )    
 
-
-    def rand(self):
-        return float( random.randint(0, self.resolution-1) )*self.step + self.lower_bound
-    
-    def randint(self):
-        return random.randint(0, self.resolution-1)
     
     

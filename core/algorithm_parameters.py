@@ -198,10 +198,13 @@ class AlgorithmParameters:
                           termination_criterion: TerminationCriterion,
                           evaluator: Evaluator = SequentialEvaluator()):
         
+        crossover_operators = []
+        mutation_operators = []
+        
         """
             Float
         """
-        if problem.include_float:
+        if problem.include_float or problem.include_floatVector:
             
             """ Crossover """
             if self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION.value:
@@ -209,7 +212,7 @@ class AlgorithmParameters:
                 
             elif self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.SBX.value:
                 float_crossover = Crossover.SBXCrossover( probability=float(self.float_crossover_parameters["probability"]), distribution_index=float(self.float_crossover_parameters["distribution_index"]))
-                
+            
             
             """ Mutation """
             if self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL.value:
@@ -224,47 +227,35 @@ class AlgorithmParameters:
             elif self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.NON_UNIFORM.value:
                 float_mutation = Mutation.NonUniformMutation(probability=float(self.float_mutation_parameters["probability"]), perturbation=float(self.float_mutation_parameters["perturbation"]), max_iterations=int(self.float_mutation_parameters["max_iterations"]) )
             
-        else:
-            float_crossover = NullCrossoverOperator()
-            float_mutation = NullMutationOperator()
+            
+            if problem.include_float:
+                crossover_operators.append( float_crossover )
+                mutation_operators.append( float_mutation )
+            
+        # else:
+        #     float_crossover = NullCrossoverOperator()
+        #     float_mutation = NullMutationOperator()
             
             
             
         """
             Int/discr
         """
-        if problem.include_int or problem.include_discretized:
+        if problem.include_int or problem.include_discretized or problem.include_integerVector or problem.include_discretizedVector:
             
             """ Crossover """
             if self.int_crossover_choice == AlgorithmParameters.INT_CROSSOVER.INT_SBX.value:
-                temp_int_crossover = Crossover.IntegerSBXCrossover( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
+                int_crossover = Crossover.IntegerSBXCrossover( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
+            
             
             """ Mutation """
             if self.int_mutation_choice == AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL.value:
-                temp_int_mutation = Mutation.IntegerPolynomialMutation( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
-            
-            if problem.include_int:
-                int_crossover = temp_int_crossover
-                int_mutation = temp_int_mutation
-            else:
-                int_crossover = NullCrossoverOperator()
-                int_mutation = NullMutationOperator()    
-                
-            if problem.include_discretized:
-                discr_crossover = temp_int_crossover
-                discr_mutation = temp_int_mutation
-            else:
-                discr_crossover = NullCrossoverOperator()
-                discr_mutation = NullMutationOperator()    
-        
-        else:
-            int_crossover = NullCrossoverOperator()
-            int_mutation = NullMutationOperator()
-            
-            discr_crossover = int_crossover
-            discr_mutation = int_mutation
+                int_mutation = Mutation.IntegerPolynomialMutation( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
             
             
+            crossover_operators.extend( [int_crossover]*sum([problem.include_int, problem.include_discretized]) )
+            mutation_operators.extend( [int_mutation]*sum([problem.include_int, problem.include_discretized]) )
+       
             
         """
             Binary
@@ -279,13 +270,16 @@ class AlgorithmParameters:
             if self.binary_mutation_choice == AlgorithmParameters.BINARY_MUTATION.BIT_FLIP.value:
                 binary_mutation = Mutation.BitFlipMutation( probability=float(self.binary_mutation_parameters["probability"]) )
             
+            crossover_operators.append( binary_crossover )
+            mutation_operators.append( binary_mutation )
+            
         else:
             binary_crossover = NullCrossoverOperator()
             binary_mutation = NullMutationOperator()
             
             
-        crossover_operators = [float_crossover, int_crossover, discr_crossover, binary_crossover ]
-        mutation_operators = [float_mutation, int_mutation, discr_mutation, binary_mutation ]
+        # crossover_operators = [float_crossover, int_crossover, discr_crossover, binary_crossover ]
+        # mutation_operators = [float_mutation, int_mutation, discr_mutation, binary_mutation ]
         
         
         
@@ -311,6 +305,25 @@ class AlgorithmParameters:
             crossover_operators.extend( [permutation_crossover]*len(problem.permutation_vars) )
             mutation_operators.extend( [permutation_mutation]*len(problem.permutation_vars) )
             
+        
+        
+        """
+            Float vectors
+        """
+        if problem.include_floatVector:
+            crossover_operators.extend( [float_crossover]*len(problem.floatVector_vars) )
+            mutation_operators.extend( [float_mutation]*len(problem.floatVector_vars) )
+            
+            
+        """
+            Integer/Discretized vectors
+        """
+        if problem.include_integerVector or problem.include_discretizedVector:
+            crossover_operators.extend( [int_crossover]*(len(problem.IntegerVector_vars)+len(problem.DiscretizedVector_vars)) )
+            mutation_operators.extend( [int_mutation]*(len(problem.IntegerVector_vars)+len(problem.DiscretizedVector_vars)) )
+        
+        
+        
         
         composite_crossover = Crossover.CompositeCrossover( crossover_operators )
         composite_mutation = Mutation.CompositeMutation( mutation_operators )

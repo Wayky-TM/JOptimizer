@@ -15,7 +15,8 @@ import jmetal.core.solution as jsol
 import jmetal.operator.crossover as Crossover
 import jmetal.operator.mutation as Mutation
 
-from core.variable import FloatVariable, IntegerVariable, DiscretizedFloatVariable, BinaryVariable, PermutationVariable
+from core.variable import *
+                          
 from core.constant import FloatConstant, IntegerConstant
 from core.evaluator import Evaluator
 from core.null import NullSolution
@@ -36,12 +37,15 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                  discretized_vars : List[DiscretizedFloatVariable] = [],
                  binary_vars : List[BinaryVariable] = [],
                  permutation_vars : List[PermutationVariable] = [],
+                 floatVector_vars : List[FloatVectorVariable] = [],
+                 integerVector_vars : List[IntegerVectorVariable] = [],
+                 discretizedVector_vars : List[DiscretizedVectorVariable] = [],
                  constants : List = []):
         
         if len(float_vars)+len(int_vars)+len(discretized_vars) < 1:
             raise ValueError( "%s.__init__(): at least one variable needed" % (type(self).__name__) )
             
-        self.number_of_variables = len(float_vars) + len(int_vars) + len(discretized_vars) + len(binary_vars) + len(permutation_vars)
+        self.number_of_variables = len(float_vars) + len(int_vars) + len(discretized_vars) + len(binary_vars) + len(permutation_vars) + len(floatVector_vars) + len(integerVector_vars) + len(discretizedVector_vars)
         self.evaluator = copy.deepcopy( evaluator )
         self.number_of_objectives = evaluator.number_of_objectives
         
@@ -53,12 +57,18 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         self.include_discretized = len(discretized_vars)>0
         self.include_binary = len(binary_vars)>0
         self.include_permutation = len(permutation_vars)>0
+        self.include_floatVector = len(floatVector_vars)>0
+        self.include_integerVector = len(integerVector_vars)>0
+        self.include_discretizedVector = len(discretizedVector_vars)>0
         
         self.float_vars = copy.deepcopy( float_vars )
         self.int_vars = copy.deepcopy( int_vars )
         self.discretized_vars = copy.deepcopy( discretized_vars )
         self.binary_vars = copy.deepcopy( binary_vars )
         self.permutation_vars = copy.deepcopy( permutation_vars )
+        self.floatVector_vars = copy.deepcopy( floatVector_vars )
+        self.integerVector_vars = copy.deepcopy( integerVector_vars )
+        self.discretizedVector_vars = copy.deepcopy( discretizedVector_vars )
         
         self.constants = copy.deepcopy(constants)
         self.null_solution = NullSolution( number_of_objectives=self.number_of_objectives )
@@ -79,35 +89,60 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         
 
     def create_solution(self) -> jsol.CompositeSolution:
-        solutions = [self.null_solution]*4
+        # solutions = [self.null_solution]*4
+        solutions = []
         
         if self.include_float:
             temp_solution = jsol.FloatSolution(lower_bound=self.float_lower_bounds, upper_bound=self.float_upper_bounds, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
             temp_solution.variables = [ x.rand() for x in self.float_vars ]
-            solutions[0] = temp_solution
+            # solutions[0] = temp_solution
+            solutions.append(temp_solution)
             
         if self.include_int:
             temp_solution = jsol.IntegerSolution(lower_bound=self.int_lower_bounds, upper_bound=self.int_upper_bounds, number_of_objectives=self.number_of_objectives )
             temp_solution.variables = [ x.rand() for x in self.int_vars ]
-            solutions[1] = temp_solution
+            # solutions[1] = temp_solution
+            solutions.append(temp_solution)
             
         if self.include_discretized:
             temp_solution = jsol.IntegerSolution(lower_bound=self.discretized_lower_bounds, upper_bound=self.discretized_upper_bounds, number_of_objectives=self.number_of_objectives )
             temp_solution.variables = [ x.randint() for x in self.discretized_vars ]
-            solutions[2] = temp_solution
+            # solutions[2] = temp_solution
+            solutions.append(temp_solution)
             
         if self.include_binary:
             temp_solution = jsol.BinarySolution(number_of_variables=len(self.binary_vars), number_of_objectives=self.number_of_objectives)
             temp_solution.variables = [ x.rand()==1 for x in self.binary_vars ]
-            solutions[3] = temp_solution
+            # solutions[3] = temp_solution
+            solutions.append(temp_solution)
             
         if self.include_permutation:
             
             for x in self.permutation_vars:
                 temp_solution = jsol.PermutationSolution(number_of_variables=len(x.elements), number_of_objectives=self.number_of_objectives)
                 temp_solution.variables = x.rand()
-                solution.append(temp_solution)
-                
+                solutions.append(temp_solution)
+        
+        if self.include_floatVector:
+            
+            for x in self.floatVector_vars:
+                temp_solution = jsol.FloatSolution(lower_bound=[ x.lower_bound ]*x.length, upper_bound=[ x.upper_bound ]*x.length, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
+                temp_solution.variables = x.rand()
+                solutions.append(temp_solution)
+        
+        if self.include_integerVector:
+            
+            for x in self.integerVector_vars:
+                temp_solution = jsol.IntegerSolution(lower_bound=[ x.lower_bound ]*x.length, upper_bound=[ x.upper_bound ]*x.length, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
+                temp_solution.variables = x.rand()
+                solutions.append(temp_solution)
+        
+        if self.include_discretizedVector:
+            
+            for x in self.discretizedVector_vars:
+                temp_solution = jsol.IntegerSolution(lower_bound=[0]*x.length, upper_bound=[ x.resolution ]*x.length, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
+                temp_solution.variables = x.randint()
+                solutions.append(temp_solution)
         
         return jsol.CompositeSolution( solutions=solutions )
     
