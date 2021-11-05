@@ -157,7 +157,7 @@ class AlgorithmParameters:
         
         self.int_mutation_choice = AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL.value
         self.int_mutation_parameters = defaultdict(lambda: "")
-        self.int_mutation_parameters["probability"] = "0.8"
+        self.int_mutation_parameters["probability"] = "0.1"
         self.int_mutation_parameters["distribution_index"] = "20"
         
         
@@ -168,7 +168,7 @@ class AlgorithmParameters:
         
         self.binary_mutation_choice = AlgorithmParameters.BINARY_MUTATION.BIT_FLIP.value
         self.binary_mutation_parameters = defaultdict(lambda: "")
-        self.binary_mutation_parameters["probability"] = "0.8"
+        self.binary_mutation_parameters["probability"] = "0.1"
         
         
         """ Permutation """
@@ -178,7 +178,7 @@ class AlgorithmParameters:
         
         self.permutation_mutation_choice = AlgorithmParameters.PERMUTATION_MUTATION.PERMUTATION_SWAP.value
         self.permutation_mutation_parameters = defaultdict(lambda: "")
-        self.permutation_mutation_parameters["probability"] = "0.8"
+        self.permutation_mutation_parameters["probability"] = "0.1"
         
         
         """ Selection """
@@ -273,9 +273,9 @@ class AlgorithmParameters:
             crossover_operators.append( binary_crossover )
             mutation_operators.append( binary_mutation )
             
-        else:
-            binary_crossover = NullCrossoverOperator()
-            binary_mutation = NullMutationOperator()
+        # else:
+        #     binary_crossover = NullCrossoverOperator()
+        #     binary_mutation = NullMutationOperator()
             
             
         # crossover_operators = [float_crossover, int_crossover, discr_crossover, binary_crossover ]

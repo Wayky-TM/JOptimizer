@@ -91,58 +91,83 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
     def create_solution(self) -> jsol.CompositeSolution:
         # solutions = [self.null_solution]*4
         solutions = []
+        solution_index = 0
         
         if self.include_float:
             temp_solution = jsol.FloatSolution(lower_bound=self.float_lower_bounds, upper_bound=self.float_upper_bounds, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
             temp_solution.variables = [ x.rand() for x in self.float_vars ]
             # solutions[0] = temp_solution
             solutions.append(temp_solution)
+            self.float_index = solution_index
+            solution_index += 1
             
         if self.include_int:
             temp_solution = jsol.IntegerSolution(lower_bound=self.int_lower_bounds, upper_bound=self.int_upper_bounds, number_of_objectives=self.number_of_objectives )
             temp_solution.variables = [ x.rand() for x in self.int_vars ]
             # solutions[1] = temp_solution
             solutions.append(temp_solution)
+            self.int_index = solution_index
+            solution_index += 1
             
         if self.include_discretized:
             temp_solution = jsol.IntegerSolution(lower_bound=self.discretized_lower_bounds, upper_bound=self.discretized_upper_bounds, number_of_objectives=self.number_of_objectives )
             temp_solution.variables = [ x.randint() for x in self.discretized_vars ]
             # solutions[2] = temp_solution
             solutions.append(temp_solution)
+            self.discretized_index = solution_index
+            solution_index += 1
             
         if self.include_binary:
             temp_solution = jsol.BinarySolution(number_of_variables=len(self.binary_vars), number_of_objectives=self.number_of_objectives)
             temp_solution.variables = [ x.rand()==1 for x in self.binary_vars ]
             # solutions[3] = temp_solution
             solutions.append(temp_solution)
+            self.binary_index = solution_index
+            solution_index += 1
             
         if self.include_permutation:
+            
+            self.permutation_index = solution_index
+            solution_index += 1
             
             for x in self.permutation_vars:
                 temp_solution = jsol.PermutationSolution(number_of_variables=len(x.elements), number_of_objectives=self.number_of_objectives)
                 temp_solution.variables = x.rand()
                 solutions.append(temp_solution)
+                solution_index += 1
         
         if self.include_floatVector:
+            
+            self.floatVector_index = solution_index
+            solution_index += 1
             
             for x in self.floatVector_vars:
                 temp_solution = jsol.FloatSolution(lower_bound=[ x.lower_bound ]*x.length, upper_bound=[ x.upper_bound ]*x.length, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
                 temp_solution.variables = x.rand()
                 solutions.append(temp_solution)
+                solution_index += 1
         
         if self.include_integerVector:
+            
+            self.integerVector_index = solution_index
+            solution_index += 1
             
             for x in self.integerVector_vars:
                 temp_solution = jsol.IntegerSolution(lower_bound=[ x.lower_bound ]*x.length, upper_bound=[ x.upper_bound ]*x.length, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
                 temp_solution.variables = x.rand()
                 solutions.append(temp_solution)
+                solution_index += 1
         
         if self.include_discretizedVector:
+            
+            self.discretizedVector_index = solution_index
+            solution_index += 1
             
             for x in self.discretizedVector_vars:
                 temp_solution = jsol.IntegerSolution(lower_bound=[0]*x.length, upper_bound=[ x.resolution ]*x.length, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
                 temp_solution.variables = x.randint()
                 solutions.append(temp_solution)
+                solution_index += 1
         
         return jsol.CompositeSolution( solutions=solutions )
     
@@ -150,7 +175,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
     
     def evaluate( self, solution: jsol.CompositeSolution):
         
-        arguments = {}
+        kwargs = {}
+        args = []
         
         if self.include_float:
             float_args = { self.float_vars[i].keyword:solution.variables[0].variables[i] for i in range(len(self.float_vars)) }
@@ -181,7 +207,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             const_args = { x.keyword:x.value for x in self.constants }
             arguments.update( const_args )
         
-        solution.objectives = self.evaluator.evaluate( **arguments )
+        solution.objectives = self.evaluator.evaluate( **kwargs, *args )
         
         self.evaluations += 1
         

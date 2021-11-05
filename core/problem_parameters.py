@@ -34,6 +34,7 @@ class ProblemParameters:
     
     class PROBLEM_TEMPLATES(Enum):
         GENERIC="Generic"
+        PYTHON="Python"
         CST="CST"
         MATLAB="Matlab"
     
@@ -77,6 +78,9 @@ class ProblemParameters:
             evaluator_class = getattr(evaluator_module, self.options["evaluator_class"])
             
             evaluator = evaluator_class()
+            
+        elif self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.PYTHON.value:
+            pass
         
         composite_problem = cproblem.CompositeProblem( evaluator=evaluator,
                                                        float_vars=float_vars,
