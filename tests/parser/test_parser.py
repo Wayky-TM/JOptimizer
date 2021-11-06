@@ -38,75 +38,81 @@ def token_is_unpacked_arg( string : str ):
     return None
 
 
-normal_vars = { 'x' : 1,
-                 'y' : 2,
-                 'z' : 3,
-                 't' : 4 }
+def main():
 
-vector_vars = { 'w' : [0, 1, 2, 3],
-                'u' : [ 0, 1, 2, 3, 4, 5 ]}
-
-matrix_vars = { 'M' : [[1, 0], [0, 1]] }
-
-
-simple_symbols = set()
-keyword_symbols = {}
-unpack_symbols = set()
-
-
-while(True):    
-    arg_string = input()
+    normal_vars = { 'x' : 1,
+                      'y' : 2,
+                      'z' : 3,
+                      't' : 4 }
     
-    arg_string = su.remove_whitespaces( arg_string )
-    arg_tokens = arg_string.split(',')
+    vector_vars = { 'w' : [0, 1, 2, 3],
+                    'u' : [ 0, 1, 2, 3, 4, 5 ]}
     
-    keywargs_ended = False
+    matrix_vars = { 'M' : [[1, 0], [0, 1]] }
     
-    for token in arg_tokens:
+    
+    simple_symbols = set()
+    keyword_symbols = {}
+    unpack_symbols = set()
+    
+    
+    while(True):    
+        arg_string = input()
         
-        ret = token_is_kwarg(token)
+        arg_string = su.remove_whitespaces( arg_string )
+        arg_tokens = arg_string.split(',')
         
+        keywargs_ended = False
         
-        if ret != None:
+        for token in arg_tokens:
             
-            if keywargs_ended:
-                print( "keyword args (%=%) must be declared before any other type" % (ret[0], ret[1]) )
-                break
+            ret = token_is_kwarg(token)
             
-            elif (ret[1] not in normal_vars) and (ret[1] not in vector_vars) and (ret[1] not in matrix_vars):
-                print( "Variable '%s' not defined" % ret[1] )
-                break
-                
-            else:
-                keyword_symbols[ret[0]] = ret[1]
-                
-                
-        else:
             
-            keywargs_ended = True
-            ret = token_is_unpacked_arg(token)
-            
-            if ret!=None:
+            if ret != None:
                 
-                if ret not in vector_vars:
-                    print( "Variable '%s' is not defined or of an unpackable type" % ret )
+                if keywargs_ended:
+                    print( "keyword args (%=%) must be declared before any other type" % (ret[0], ret[1]) )
+                    break
+                
+                elif (ret[1] not in normal_vars) and (ret[1] not in vector_vars) and (ret[1] not in matrix_vars):
+                    print( "Variable '%s' not defined" % ret[1] )
                     break
                     
                 else:
-                    unpack_symbols.add( ret )
+                    keyword_symbols[ret[0]] = ret[1]
+                    
                     
             else:
                 
-                if token_is_arg(token) and (token in normal_vars or token in vector_vars or token in matrix_vars):
-                    simple_symbols.add(token)
+                keywargs_ended = True
+                ret = token_is_unpacked_arg(token)
+                
+                if ret!=None:
                     
+                    if ret not in vector_vars:
+                        print( "Variable '%s' is not defined or of an unpackable type" % ret )
+                        break
+                        
+                    else:
+                        unpack_symbols.add( ret )
+                        
                 else:
-                    print( "Variable '%s' is not defined or is syntactically incorrect" % token )
-                    break
+                    
+                    if token_is_arg(token) and (token in normal_vars or token in vector_vars or token in matrix_vars):
+                        simple_symbols.add(token)
+                        
+                    else:
+                        print( "Variable '%s' is not defined or is syntactically incorrect" % token )
+                        break
+                        
+                    
                     
                 
-                
-            
-    
-    print(arg_tokens)
+        
+        print(arg_tokens)
+        
+
+if __name__ == "__main__":
+   main()
     
