@@ -159,7 +159,7 @@ class FloatVectorVariable( FloatVariable ):
     def rand(self):
         v = [random.uniform(self.lower_bound, self.upper_bound) for i in range(self.length)]
         
-        if self.vector_type = VECTOR_TYPE.NUMPY.value:
+        if self.vector_type == VECTOR_TYPE.NUMPY.value:
             return np.array( v )
         
         return v
@@ -190,7 +190,7 @@ class IntegerVectorVariable( IntegerVariable ):
     def rand(self):
         v = [random.randint(self.lower_bound, self.upper_bound) for i in range(self.length)]
         
-        if self.vector_type = VECTOR_TYPE.NUMPY.value:
+        if self.vector_type == VECTOR_TYPE.NUMPY.value:
             return np.array( v )
         
         return v
@@ -221,7 +221,7 @@ class DiscretizedVectorVariable( DiscretizedFloatVariable ):
     def rand(self):
         v = [ (float( random.randint(0, self.resolution-1) )*self.step + self.lower_bound) for i in range(self.length)]
         
-        if self.vector_type = VECTOR_TYPE.NUMPY.value:
+        if self.vector_type == VECTOR_TYPE.NUMPY.value:
             return np.array( v )
         
         return v
@@ -229,7 +229,7 @@ class DiscretizedVectorVariable( DiscretizedFloatVariable ):
     def randint(self):
         v = [ random.randint(0, self.resolution-1) for i in range(self.length) ]
         
-        if self.vector_type = VECTOR_TYPE.NUMPY.value:
+        if self.vector_type == VECTOR_TYPE.NUMPY.value:
             return np.array( v )
         
         return v

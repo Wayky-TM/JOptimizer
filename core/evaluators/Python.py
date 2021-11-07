@@ -19,9 +19,9 @@ class PythonFunctionEvaluator(Evaluator):
         function_module = imp.load_source(name=Path(script_path).stem, pathname=script_path)
         self.python_function = getattr(function_module, function_name)
     
-    def evaluate( **kwargs, *args ):
+    def evaluate( *args, **kwargs ):
         
-        objectives = self.python_function( **kwargs, *args )
+        objectives = self.python_function( *args, **kwargs )
         
         if len(objectives) != self.number_of_objectives:
             raise ValueError("Function '%s' returned an inappropiate number of values: expected %d, received %d" % (function_name, self.number_of_objectives, len(objectives)))

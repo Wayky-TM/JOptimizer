@@ -175,6 +175,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
     
     def evaluate( self, solution: jsol.CompositeSolution):
         
+        arguments = {}
         kwargs = {}
         args = []
         
@@ -207,7 +208,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             const_args = { x.keyword:x.value for x in self.constants }
             arguments.update( const_args )
         
-        solution.objectives = self.evaluator.evaluate( **kwargs, *args )
+        solution.objectives = self.evaluator.evaluate( *args, **kwargs )
         
         self.evaluations += 1
         

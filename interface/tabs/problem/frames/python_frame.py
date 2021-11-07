@@ -33,6 +33,15 @@ class PythonFrame(ProblemFrame):
                 self.ScriptFilePath.delete( 0, tk.END )
                 self.ScriptFilePath.insert( 0, path )
                 self.ScriptFilePath.config(state="readonly")
+                
+                menu = self.function_option["menu"]
+                menu.delete(0, "end")
+                
+                for string in self.function_list:
+                    menu.add_command(label=string, 
+                                     command=lambda value=string: self.FunctionOption.set(value))
+                    
+                self.FunctionOption.set( self.function_list[0] )
             
             except Exception as error:    
                 tk.messagebox.showerror(title="Invalid script path", message="%s" % (error))
@@ -46,22 +55,27 @@ class PythonFrame(ProblemFrame):
         self.functions = getmembers(function_module, isfunction)
         self.function_list = [ function[0] for function in self.functions]
         
-        # try:
-        self.ScriptFilePath.configure( state=tk.NORMAL )
-        ClearInsertEntry(self.ScriptFilePath, str(var))
-        self.ScriptFilePath.configure( state=tk.DISABLED )
+        if len(self.function_list)>0:
         
-        if self.problem_parameters.options["function_name"] not in self.function_list:
-           self.problem_parameters.options["function_name"] = self.function_list[0]
-           
-        menu = self.function_option["menu"]
-        menu.delete(0, "end")
-        
-        for string in self.function_list:
-            menu.add_command(label=string, 
-                             command=lambda value=string: self.FunctionOption.set(value))
-        
-        self.FunctionOption.set(self.problem_parameters.options["function_name"])
+            # try:
+            self.ScriptFilePath.configure( state=tk.NORMAL )
+            ClearInsertEntry(self.ScriptFilePath, str(var))
+            self.ScriptFilePath.configure( state=tk.DISABLED )
+            
+            if self.problem_parameters.options["function_name"] not in self.function_list:
+               self.problem_parameters.options["function_name"] = self.function_list[0]
+               
+            menu = self.function_option["menu"]
+            menu.delete(0, "end")
+            
+            for string in self.function_list:
+                menu.add_command(label=string, 
+                                 command=lambda value=string: self.FunctionOption.set(value))
+            
+            self.FunctionOption.set(self.problem_parameters.options["function_name"])
+            
+        else:
+            self.master.console_print_error("Loaded file doesn't include any function definition")
         
         # except:
         #     pass
@@ -89,20 +103,20 @@ class PythonFrame(ProblemFrame):
         self.FunctionOption.set(self.function_options[0])
         self.function_option = tk.OptionMenu(self, self.FunctionOption, *self.function_options )
         
-        self.function_option.config( state=tk.DISABLED )
-        self.function_option.place( relx=0.11, rely=0.045, relwidth=0.15 )
+        self.function_option.config( state=tk.NORMAL )
+        self.function_option.place( relx=0.09, rely=0.15-0.005, relwidth=0.15 )
         
-        self.function_option_parameter = Parameter(name="function_operator", fancy_name="Function operator")
+        # self.function_option_parameter = Parameter(name="function_operator", fancy_name="Function operator")
         
-        self.script_path_parameter = FilePath( fancy_name="Evaluator script path", extension=".py" )
+        self.script_path_parameter = FilePath( fancy_name="Function script path", extension=".py" )
         
         self.parameters_bindings.append( ParameterBinding(parameter=self.script_path_parameter,
-                                                          widget_read_lambda=lambda: self.ScriptFilePath.get(),
-                                                          variable_store_lambda=lambda var: self.problem_parameters.options.update({"python_script_path":var}),
-                                                          error_set_lambda=EntryInvalidator(self.ScriptFilePath),
-                                                          error_reset_lambda=EntryValidator(self.ScriptFilePath),
-                                                          variable_read_lambda=lambda: self.problem_parameters.options["python_script_path"],
-                                                          widget_update_lambda=lambda var: self._update_script_path(var) ) )
+                                                          widget_read_lambda=lambda: None,
+                                                          variable_store_lambda=lambda var: self._save_function_parameters(var),
+                                                          # error_set_lambda=EntryInvalidator(self.ScriptFilePath),
+                                                          # error_reset_lambda=EntryValidator(self.ScriptFilePath),
+                                                          variable_read_lambda=lambda: None,
+                                                          widget_update_lambda=lambda var: self._update_function_parameters(var) ) )
         
         
         # self.parameters_bindings.append( ParameterBinding(parameter=self.function_option_parameter,
