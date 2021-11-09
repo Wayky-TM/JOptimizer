@@ -162,11 +162,13 @@ class FloatVectorVariable( FloatVariable ):
                   name: str = "",
                   vector_type: str = VECTOR_TYPE.PYTHON.value):
         
-        super(FloatVectorVariable, self).__init__( keyword=keyword, lower_bound=lower_bound, upper_bound=upper_bound, name=name )
+        super(FloatVectorVariable, self).__init__( keyword=keyword, lower_bound=lower_bound[0], upper_bound=upper_bound[0], name=name )
         
         if length < 2:
              raise ValueError( "Vector of invalid length: %d" % (length) )
         
+        self.lower_bound=lower_bound
+        self.upper_bound=upper_bound
         self.vector_type = vector_type
         self.length = length
         
@@ -193,11 +195,13 @@ class IntegerVectorVariable( IntegerVariable ):
                   name: str = "",
                   vector_type: str = VECTOR_TYPE.PYTHON.value):
         
-        super(IntegerVectorVariable, self).__init__( keyword=keyword, lower_bound=lower_bound, upper_bound=upper_bound, name=name )
+        super(IntegerVectorVariable, self).__init__( keyword=keyword, lower_bound=lower_bound[0], upper_bound=upper_bound[0], name=name )
         
         if length < 2:
              raise ValueError( "Vector of invalid length: %d" % (length) )
         
+        self.lower_bound=lower_bound
+        self.upper_bound=upper_bound
         self.vector_type = vector_type
         self.length = length
         
@@ -218,22 +222,28 @@ class DiscretizedVectorVariable( DiscretizedFloatVariable ):
     def __init__( self,
                   keyword: str,
                   length: int,
-                  lower_bound: float,
-                  upper_bound: float,
+                  lower_bound: List[float],
+                  upper_bound: List[float],
                   step: float,
                   name: str = "",
                   vector_type: str = VECTOR_TYPE.PYTHON.value):
         
-        super(DiscretizedVectorVariable, self).__init__( keyword=keyword, lower_bound=lower_bound, upper_bound=upper_bound, step=step, name=name )
+        super(DiscretizedVectorVariable, self).__init__( keyword=keyword, lower_bound=lower_bound[0], upper_bound=upper_bound[0], step=step, name=name )
         
         if length < 2:
              raise ValueError( "Vector of invalid length: %d" % (length) )
         
+        if len(lower_bound) != length or len(upper_bound) != length:
+            raise ValueError( "Invalid bounds" )
+        
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
         self.vector_type = vector_type
         self.length = length
+        self.resolution = [ int( math.floor((UB - LB)/step) ) for LB, UB in zip(self.lower_bound, self.upper_bound) ]
         
     def rand(self):
-        v = [ (float( random.randint(0, self.resolution-1) )*self.step + self.lower_bound) for i in range(self.length)]
+        v = [ (float( random.randint(0, self.resolution[i]) )*self.step + self.lower_bound) for i in range(self.length)]
         
         if self.vector_type == VECTOR_TYPE.NUMPY.value:
             return np.array( v )

@@ -14,70 +14,25 @@ import jmetal.core.problem as jprob
 import jmetal.core.solution as jsol
 import jmetal.operator.crossover as Crossover
 import jmetal.operator.mutation as Mutation
+import core.JMetalpy.composite_solution as CS
 
 from core.variable import *
+from core.constant import *
                   
 from core.problem_parameters import ProblemParameters
 from core.constant import FloatConstant, IntegerConstant
 from core.evaluator import Evaluator
 from core.null import NullSolution
 
-
-class ARGS_TYPES(Enum):
-    VARIABLE=0
-    CONSTANT=1
+# class ARGS_TYPES(Enum):
+#     VARIABLE=0
+#     CONSTANT=1
     
 class ARGS_MODES(Enum):
     NORMAL=0
     KEYWORD=1
     UNPACKED=2
 
-
-# class ArgumentsTransformer:
-    
-#     """
-#         arg_index_list is a list of tuples with the form:
-#             Constants: (ARGS_TYPES.CONSTANT, ARGS_MODES, keyword, [keyword])
-#             Variables: (ARGS_TYPES.VARIABLE, ARGS_MODES, index, [vector_index], [keyword])
-#     """
-#     def __init__(self, arg_index_list, problem_parameters: ProblemParameters):
-#         self.arg_index_list = arg_index_list
-#         self.problem_parameters = problem_parameters
-#         self.constants_values = {}
-        
-#         for index in arg_index_list:
-            
-#             if index[0] == ARGS_TYPES.CONSTANT:
-#                 self.constants_values[index[1]] = [ constant for constant in problem_parameters.constants if constant.keyword==index[1] ][0].value
-                
-    
-#     def __call__( solution: jsol.CompositeSolution ):
-#         args = []
-#         kwargs = {}
-        
-#         for index in self.arg_index_list:
-            
-#             if index[0]==ARGS_TYPES.CONSTANT:
-#                 value = self.constants_values[index[2]]
-            
-#             else:
-                
-#                 if len(index) == 4: # Scalar
-#                     value = solution[index[2]].variables[index[3]]
-                    
-#                 else: # Vector/Permutation/String
-#                     value = solution[index[2]]
-            
-#             if index[1] == ARGS_MODES.NORMAL:
-#                 args.append( value )
-                
-#             elif index[1] == ARGS_MODES.UNPACKED:
-#                 args.extend( value )
-                
-#             elif index[1] == ARGS_MODES.KEYWORD:
-#                 kwargs[index[-1]] = value
-        
-#         return args, kwargs
 
 
 class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
@@ -90,7 +45,9 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             raise ValueError( "%s.__init__(): at least one variable needed" % (type(self).__name__) )
             
         self.problem_parameters = problem_parameters
-            
+        self.evaluator = evaluator
+        self.number_of_objectives = evaluator.number_of_objectives
+        
         # self.float_vars = [ var for self.problem_parameters.variables if type(var)==FloatVariable ]
         # self.integer_vars = [ var for self.problem_parameters.variables if type(var)==IntegerVariable ]
         # self.discretized_vars = [ var for self.problem_parameters.variables if type(var)==DiscretizedFloatVariable ]
@@ -100,23 +57,32 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         # self.integerVector_vars = [ var for self.problem_parameters.variables if type(var)==IntegerVectorVariable ]
         # self.discretizedVector_vars = [ var for self.problem_parameters.variables if type(var)==DiscretizedVectorVariable ]
         
+        # self.include_float = len(float_vars)>0
+        # self.include_int = len(int_vars)>0
+        # self.include_discretized = len(discretized_vars)>0
+        # self.include_binary = len(binary_vars)>0
+        # self.include_permutation = len(permutation_vars)>0
+        # self.include_floatVector = len(floatVector_vars)>0
+        # self.include_integerVector = len(integerVector_vars)>0
+        # self.include_discretizedVector = len(discretizedVector_vars)>0
+        
         self.variables = { var.keyword:var for var self.problem_parameters.variables }
         self.constants = { const.keyword:const for const self.problem_parameters.constants }
         
-        self.float_solution_counter = 0
         self.float_index = 0
-        
-        self.integer_solution_counter = 0
         self.integer_index = 0
-        
-        self.discretized_solution_counter = 0
-        self.discretized_index = 0
-        
         self.binary_index = 0
-        
         self.permutation_solution_counter = 0
         
+        self.float_lower_bounds = []
+        self.float_upper_bounds = []
+        
+        self.integer_lower_bounds = []
+        self.integer_upper_bounds = []
+        
         var_args = self._compile_call_argument()
+        
+        self.included_variables_dict = {}
         self.argument_list = []
         
         for argument in var_args:
@@ -126,8 +92,63 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 
                 var = self.variables[argument[0]]
                 
-                if 
+                if not var in self.included_variables_dict:
                 
+                    if type(var) == FloatVectorVariable:
+                        index = (self.float_index,self.float_index+var.length)
+                        self.float_index += var.length
+                        self.float_lower_bounds.extend(var.lower_bound)
+                        self.float_upper_bounds.extend(var.upper_bound)
+                        
+                    elif type(var) == FloatVariable:
+                        index = (self.float_index,self.float_index+1)
+                        self.float_index += 1
+                        self.float_lower_bounds.append(var.lower_bound)
+                        self.float_upper_bounds.append(var.upper_bound)
+                        
+                    elif type(var) == IntegerVectorVariable:
+                        index = (self.integer_index, self.integer_index+var.length)
+                        self.integer_index += var.length
+                        self.integer_lower_bounds.extend(var.lower_bound)
+                        self.integer_upper_bounds.extend(var.upper_bound)
+                        
+                    elif type(var) == DiscretizedVectorVariable:
+                        index = (self.integer_index, self.integer_index+var.length)
+                        self.integer_index += var.length
+                        self.integer_lower_bounds.extend( [0]*var.length )
+                        self.integer_upper_bounds.extend( var.resolution )
+                        
+                    elif type(var) == IntegerVariable:
+                        index = (self.integer_index,self.integer_index+1)
+                        self.integer_index += 1
+                        self.integer_lower_bounds.append(var.lower_bound)
+                        self.integer_upper_bounds.append(var.upper_bound)
+                        
+                    elif type(var) == DiscretizedVariable:
+                        index = (self.integer_index,self.integer_index+1)
+                        self.integer_index += 1
+                        self.integer_lower_bounds.append(0)
+                        self.integer_upper_bounds.append(var.resolution)
+                        
+                    elif type(var) == BinaryVariable:
+                        index = (self.binary_index,self.binary_index+1)
+                        self.binary_index += 1
+                        
+                    elif type(var) == PermutationVariable:
+                        index = self.permutation_solution_counter
+                        self.permutation_solution_counter += 1
+                    
+                    self.included_variables_dict[var] = index
+                    
+                else:
+                    index = self.included_variables_dict[var]
+                    
+                if argument[1] == ARGS_MODES.KEYWORD:
+                    self.argument_list.append( (var, index, argument[1], argument[2]) )
+                
+                else:
+                    self.argument_list.append( (var, index, argument[1]) )
+                    
             
             elif argument[0] in self.constants:
                 """ Format: (Var, Mode [, keyword]) """
@@ -142,132 +163,49 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 raise Exception("CompositeProblem.__init__(): wrong argument '%'" % (argument[0]))
         
         
-        """ Variable categorization """
-        # for v in self.problem_parameters.variables:
-        #     self.symbols[v.keyword] = v
-            
-        #     if isinstance(v, Variables.FloatVariable):
-        #         self.float_vars += 1
-                
-        #     elif isinstance(v, Variables.IntegerVariable):
-        #         self.int_vars += 1
-                
-        #     elif isinstance(v, Variables.DiscretizedFloatVariable):
-        #         self.disc_vars += 1
-                
-        #     elif isinstance(v, Variables.BinaryVariable):
-        #         self.binary_vars += 1
-                
-        #     elif isinstance(v, Variables.PermutationVariable):
-        #         self.permutation_vars += 1
-                
-        #     elif isinstance(v, Variables.FloatVectorVariable):
-        #         self.floatVector_vars += v.length
-                
-        #     elif isinstance(v, Variables.IntegerVectorVariable):
-        #         self.integerVector_vars += v.length
-                
-        #     elif isinstance(v, Variables.DiscretizedFloatVariable):
-        #         self.float_vars += v.length
-                
-        # for c in self.problem_parameters.constants:
-        #     self.symbols[c.keyword] = c
-            
-        # Shape: (n_float, n_int, n_disc, n_binary, n_permutation)
-        self.solution_shape = (self.float_vars, self.int_vars, self.disc_vars, self.binary_vars, self.permutation_vars )
+        self.solution_shape = ( self.float_index, self.integer_index, self.binary_index, self.permutation_index )
         
-        # self.number_of_variables = len(float_vars) + len(int_vars) + len(discretized_vars) + len(binary_vars) + len(permutation_vars) + len(floatVector_vars) + len(integerVector_vars) + len(discretizedVector_vars)
-        # self.evaluator = copy.deepcopy( evaluator )
-        self.evaluator = evaluator
-        self.number_of_objectives = evaluator.number_of_objectives
         
         if (len(self.problem_parameters.variables) + len(self.problem_parameters.constants)) != evaluator.number_of_variables:
             raise ValueError( "%s.__init__(): provided variables and constants do not match the required by the evaluator" % (type(self).__name__) )
-            
-        # self.include_float = len(float_vars)>0
-        # self.include_int = len(int_vars)>0
-        # self.include_discretized = len(discretized_vars)>0
-        # self.include_binary = len(binary_vars)>0
-        # self.include_permutation = len(permutation_vars)>0
-        # self.include_floatVector = len(floatVector_vars)>0
-        # self.include_integerVector = len(integerVector_vars)>0
-        # self.include_discretizedVector = len(discretizedVector_vars)>0
         
-        
-        
-        # self.constants = copy.deepcopy(constants)
-        self.null_solution = NullSolution( number_of_objectives=self.number_of_objectives )
-        
-        if self.include_float:
-            self.float_lower_bounds = [ x.lower_bound for x in float_vars ]
-            self.float_upper_bounds = [ x.upper_bound for x in float_vars ]
-            
-        if self.include_int:
-            self.int_lower_bounds = [ x.lower_bound for x in int_vars ]
-            self.int_upper_bounds = [ x.upper_bound for x in int_vars ]
-            
-        if self.include_discretized:
-            self.discretized_lower_bounds = [0]*len(discretized_vars)
-            self.discretized_upper_bounds = [ x.resolution for x in discretized_vars ]
             
         self.evaluations = 0
-    
-    # def __init__(self,
-    #              evaluator: Evaluator,
-    #              float_vars : List[FloatVariable] = [],
-    #              int_vars : List[IntegerVariable] = [],
-    #              discretized_vars : List[DiscretizedFloatVariable] = [],
-    #              binary_vars : List[BinaryVariable] = [],
-    #              permutation_vars : List[PermutationVariable] = [],
-    #              floatVector_vars : List[FloatVectorVariable] = [],
-    #              integerVector_vars : List[IntegerVectorVariable] = [],
-    #              discretizedVector_vars : List[DiscretizedVectorVariable] = [],
-    #              constants : List = []):
         
-    #     if len(float_vars)+len(int_vars)+len(discretized_vars) < 1:
-    #         raise ValueError( "%s.__init__(): at least one variable needed" % (type(self).__name__) )
-            
-    #     self.number_of_variables = len(float_vars) + len(int_vars) + len(discretized_vars) + len(binary_vars) + len(permutation_vars) + len(floatVector_vars) + len(integerVector_vars) + len(discretizedVector_vars)
-    #     self.evaluator = copy.deepcopy( evaluator )
-    #     self.number_of_objectives = evaluator.number_of_objectives
+        # self.null_solution = NullSolution( number_of_objectives=self.number_of_objectives )
+
+    def _generate_args( self, solution: CS.CompositeSolution ):
         
-    #     if (self.number_of_variables + len(constants)) != evaluator.number_of_variables:
-    #         raise ValueError( "%s.__init__(): provided variables and constants do not match the required by the evaluator" % (type(self).__name__) )
-            
-    #     self.include_float = len(float_vars)>0
-    #     self.include_int = len(int_vars)>0
-    #     self.include_discretized = len(discretized_vars)>0
-    #     self.include_binary = len(binary_vars)>0
-    #     self.include_permutation = len(permutation_vars)>0
-    #     self.include_floatVector = len(floatVector_vars)>0
-    #     self.include_integerVector = len(integerVector_vars)>0
-    #     self.include_discretizedVector = len(discretizedVector_vars)>0
+        args = []
+        kwargs = {}
         
-    #     self.float_vars = copy.deepcopy( float_vars )
-    #     self.int_vars = copy.deepcopy( int_vars )
-    #     self.discretized_vars = copy.deepcopy( discretized_vars )
-    #     self.binary_vars = copy.deepcopy( binary_vars )
-    #     self.permutation_vars = copy.deepcopy( permutation_vars )
-    #     self.floatVector_vars = copy.deepcopy( floatVector_vars )
-    #     self.integerVector_vars = copy.deepcopy( integerVector_vars )
-    #     self.discretizedVector_vars = copy.deepcopy( discretizedVector_vars )
-        
-    #     self.constants = copy.deepcopy(constants)
-        self.null_solution = NullSolution( number_of_objectives=self.number_of_objectives )
-        
-    #     if self.include_float:
-    #         self.float_lower_bounds = [ x.lower_bound for x in float_vars ]
-    #         self.float_upper_bounds = [ x.upper_bound for x in float_vars ]
+        for arg in self.argument_list:
             
-    #     if self.include_int:
-    #         self.int_lower_bounds = [ x.lower_bound for x in int_vars ]
-    #         self.int_upper_bounds = [ x.upper_bound for x in int_vars ]
+            if isinstance(arg[0], Constant):
+                
+                if arg[1] == ARGS_MODES.NORMAL:
+                    args.append( arg[0].value )
+                
+                elif arg[1] == ARGS_MODES.KEYWORD:
+                    kwargs[arg[-1]] = arg[0].value
+                    
+                elif arg[1] == ARGS_MODES.UNPACKED:
+                    args.extend( arg[0].value )
+                    
+                else:
+                    raise ValueError("_generate_args(): invalid arg type: %s" % (arg[1]))
+                    
+            elif isinstance(arg[0], Variables):
+                
+                
+                
+                    
             
-    #     if self.include_discretized:
-    #         self.discretized_lower_bounds = [0]*len(discretized_vars)
-    #         self.discretized_upper_bounds = [ x.resolution for x in discretized_vars ]
-            
-    #     self.evaluations = 0
+            else:
+                
+                
+                
+        return args, kwargs
 
     def _compile_call_argument(self):
         
