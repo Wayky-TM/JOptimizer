@@ -25,10 +25,13 @@ from collections import defaultdict
 import core.variable as Variables
 import core.constant as Constants
 import core.composite_problem as cproblem
+import jmetal.core.solution as jsol
 
 from core.evaluators.Python import PythonFunctionEvaluator
 
 import util.type_check as TC
+import util.arg_parsing as AP
+
 
 
 
@@ -48,30 +51,30 @@ class ProblemParameters:
     
     def CompileProblem(self):
         
-        float_vars = []
-        int_vars = []
-        disc_vars = []
-        binary_vars = []
-        permutation_vars = []
+        # float_vars = []
+        # int_vars = []
+        # disc_vars = []
+        # binary_vars = []
+        # permutation_vars = []
         
         
-        """ Variable categorization """
-        for v in self.variables:
+        # """ Variable categorization """
+        # for v in self.variables:
             
-            if isinstance(v, Variables.FloatVariable):
-                float_vars.append( v )
+        #     if isinstance(v, Variables.FloatVariable):
+        #         float_vars.append( v )
                 
-            elif isinstance(v, Variables.IntegerVariable):
-                int_vars.append( v )
+        #     elif isinstance(v, Variables.IntegerVariable):
+        #         int_vars.append( v )
                 
-            elif isinstance(v, Variables.DiscretizedFloatVariable):
-                disc_vars.append( v )
+        #     elif isinstance(v, Variables.DiscretizedFloatVariable):
+        #         disc_vars.append( v )
                 
-            elif isinstance(v, Variables.BinaryVariable):
-                binary_vars.append( v )
+        #     elif isinstance(v, Variables.BinaryVariable):
+        #         binary_vars.append( v )
                 
-            elif isinstance(v, Variables.PermutationVariable):
-                permutation_vars.append( v )
+        #     elif isinstance(v, Variables.PermutationVariable):
+        #         permutation_vars.append( v )
         
         """ Problem type selection """
         if self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.GENERIC.value:
@@ -89,12 +92,15 @@ class ProblemParameters:
                                                  function_name=self.options["function_name"] )
         
         composite_problem = cproblem.CompositeProblem( evaluator=evaluator,
-                                                       float_vars=float_vars,
-                                                       int_vars=int_vars,
-                                                       discretized_vars=disc_vars,
-                                                       binary_vars=binary_vars,
-                                                       permutation_vars=permutation_vars,
-                                                       constants=self.constants)
+                                                       problem_parameters=self)
+        
+        # composite_problem = cproblem.CompositeProblem( evaluator=evaluator,
+        #                                                float_vars=float_vars,
+        #                                                int_vars=int_vars,
+        #                                                discretized_vars=disc_vars,
+        #                                                binary_vars=binary_vars,
+        #                                                permutation_vars=permutation_vars,
+        #                                                constants=self.constants)
         
         return composite_problem
         

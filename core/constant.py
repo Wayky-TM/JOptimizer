@@ -15,7 +15,15 @@ from abc import *
 from typing import List
 
 
-class FloatConstant:
+class Constant:
+    
+    def __init__( self,
+        keyword: str,
+        value,
+        name: str = ""):
+        pass
+
+class FloatConstant(Constant):
     
     def __init__( self,
                   keyword: str,
@@ -27,7 +35,7 @@ class FloatConstant:
         self.value= value
 
 
-class IntegerConstant:
+class IntegerConstant(Constant):
     
     def __init__( self,
                   keyword: str,
@@ -40,7 +48,7 @@ class IntegerConstant:
     
 
     
-class BinaryConstant:
+class BinaryConstant(Constant):
     
     def __init__( self,
                   keyword: str,
@@ -52,7 +60,7 @@ class BinaryConstant:
         self.value = value
     
 
-class PermutationConstant:
+class PermutationConstant(Constant):
     
     def __init__( self,
                   keyword: str,
@@ -64,7 +72,7 @@ class PermutationConstant:
         self.value = copy.deepcopy(value)
         
         
-class StringConstant:
+class StringConstant(Constant):
     
     def __init__( self,
                   keyword: str,

@@ -23,7 +23,21 @@ from typing import List
         -Inheritance
 """
 
-class FloatVariable:
+
+class Variable:
+    
+    def __init__( self, keyword: str, name: str = ""):    
+        pass
+        
+    @abstractmethod
+    def rand(self):
+        pass
+    
+    @abstractmethod
+    def within_bounds( self, value: float ):
+        pass
+
+class FloatVariable(Variable):
     
     def __init__( self,
                   keyword: str,
@@ -46,7 +60,7 @@ class FloatVariable:
         return (value >= self.lower_bound) and (value <= self.upper_bound)
 
 
-class IntegerVariable:
+class IntegerVariable(Variable):
     
     def __init__( self,
                   keyword: str,
@@ -70,7 +84,7 @@ class IntegerVariable:
     
     
 
-class DiscretizedFloatVariable:
+class DiscretizedFloatVariable(Variable):
     
     def __init__( self,
                   keyword: str,
@@ -110,7 +124,7 @@ class BinaryVariable(IntegerVariable):
         super( BinaryVariable, self ).__init__( keyword=keyword, lower_bound=0, upper_bound=1, name=name )
     
     
-class PermutationVariable:
+class PermutationVariable(Variable):
     
     def __init__( self,
                   keyword: str,

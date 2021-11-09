@@ -15,6 +15,7 @@ from pathlib import Path
 
 from interface.tabs.problem.frames.problem_frame import *
 
+from util.arg_parsing import *
 
 class PythonFrame(ProblemFrame):
         
@@ -28,20 +29,25 @@ class PythonFrame(ProblemFrame):
                 self.functions = getmembers(function_module, isfunction)
                 self.function_list = [ function[0] for function in self.functions]
                 
-            
-                self.ScriptFilePath.config(state=tk.NORMAL)
-                self.ScriptFilePath.delete( 0, tk.END )
-                self.ScriptFilePath.insert( 0, path )
-                self.ScriptFilePath.config(state="readonly")
-                
-                menu = self.function_option["menu"]
-                menu.delete(0, "end")
-                
-                for string in self.function_list:
-                    menu.add_command(label=string, 
-                                     command=lambda value=string: self.FunctionOption.set(value))
+                if len(self.function_list)>0:
+                    self.ScriptFilePath.config(state=tk.NORMAL)
+                    self.ScriptFilePath.delete( 0, tk.END )
+                    self.ScriptFilePath.insert( 0, path )
+                    self.ScriptFilePath.config(state="readonly")
                     
-                self.FunctionOption.set( self.function_list[0] )
+                    menu = self.function_option["menu"]
+                    menu.delete(0, "end")
+                    
+                    for string in self.function_list:
+                        menu.add_command(label=string, 
+                                         command=lambda value=string: self.FunctionOption.set(value))
+                        
+                    self.FunctionOption.set( self.function_list[0] )
+                    
+                else:
+                    menu = self.function_option["menu"]
+                    menu.delete(0, "end")
+                    self.FunctionOption.set( "none" )
             
             except Exception as error:    
                 tk.messagebox.showerror(title="Invalid script path", message="%s" % (error))
@@ -118,31 +124,115 @@ class PythonFrame(ProblemFrame):
                                                           variable_read_lambda=lambda: None,
                                                           widget_update_lambda=lambda var: self._update_function_parameters(var) ) )
         
+        tk.Label( master=self, text="Number of objectives").place( relx=0.02, rely=0.25 )
+        self.ObjectivesEntry = ttk.Entry(master=self, state=tk.NORMAL)
+        self.ObjectivesEntry.insert(0, self.problem_parameters.options["objectives"])
+        self.ObjectivesEntry.place( relx=0.14, rely=0.25-0.005, relwidth=0.1 )
         
-        # self.parameters_bindings.append( ParameterBinding(parameter=self.function_option_parameter,
-        #                                                   widget_read_lambda=lambda: self.FunctionOption.get(),
-        #                                                   variable_store_lambda=self.__store_selection_option,
-        #                                                   variable_read_lambda=lambda: self.algorithm_parameters.selection_choice,
-        #                                                   widget_update_lambda=lambda var: self.__update_operator_option__(var) ) )
+        self.objectives_parameter = Integer(name="number_of_objectives", fancy_name="Number of objectives", lower_bound=1, upper_bound=1000)
+            
+        self.parameters_bindings.append( ParameterBinding(parameter=self.objectives_parameter,
+                                                          widget_read_lambda=lambda: self.ObjectivesEntry.get(),
+                                                          variable_store_lambda=lambda var: self.problem_parameters.options.update({"objectives":var}),
+                                                          error_set_lambda=EntryInvalidator(self.ObjectivesEntry),
+                                                          error_reset_lambda=EntryValidator(self.ObjectivesEntry),
+                                                          variable_read_lambda=lambda: self.problem_parameters.options["objectives"],
+                                                          widget_update_lambda=lambda var: ClearInsertEntry(self.ObjectivesEntry, str(var)) ) )        
        
     
+        tk.Label( master=self, text="Call argument format").place( relx=0.02, rely=0.35 )
+        self.ArgsEntry = ttk.Entry(master=self, state=tk.NORMAL)
+        self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
+        self.ArgsEntry.place( relx=0.14, rely=0.35-0.005, relwidth=0.3 )
+    
         
-    def __is_evaluator_instance(self, parameter: Parameter):
-            
+    def check_args(self):
+        
+        arg_string = su.remove_whitespaces( self.ArgsEntry.get() )
+        arg_tokens = arg_string.split(',')
+        
+        keywargs_started = False
+        already_warned = False
         error_list = []
         
-        if len(self.evaluator_path_parameter.error_check()) == 0:
-            evaluator_module = imp.load_source(name=Path(self.OperatorFilePath.get()).stem, pathname=self.OperatorFilePath.get())
+        for token in arg_tokens:
             
-            # if self.evaluator_class_entry.get() in inspect.getmembers(evaluator_module):
-            if hasattr(evaluator_module, self.evaluator_class_entry.get()):
-                evaluator_class = getattr(evaluator_module, self.evaluator_class_entry.get())
+            ret = token_is_kwarg(token)
+            
+            
+            if ret != None:
                 
-                if not issubclass(evaluator_class, Evaluator):
-                    error_list.append("Parameter '%s' is not a subclass of Evaluator" % (self.evaluator_class_parameter.fancy_name))
+                keywargs_started = True
                 
+                if (ret[1] not in normal_vars) and (ret[1] not in vector_vars) and (ret[1] not in matrix_vars):
+                    # print( "Variable '%s' not defined" % ret[1] )
+                    error_list.append( "Variable '%s' not defined" % ret[1] )
+                    # break
+                    
+                else:
+                    keyword_symbols[ret[0]] = ret[1]
+                    
+                    
             else:
-                error_list.append("Parameter '%s' is not a class in specified file" % (self.evaluator_class_parameter.fancy_name))
-        
+    
+                ret = token_is_unpacked_arg(token)
+                
+                if keywargs_started and not already_warned:
+                    error_list.append( "args must preceed kwargs: %s" % token )
+                    already_warned = True
+                    # break
+                
+                elif ret!=None:
+                    
+                    if ret not in vector_vars:
+                        # print( "Variable '%s' is not defined or of an unpackable type" % ret )
+                        error_list.append( "Variable '%s' is not defined or of an unpackable type" % ret )
+                        # break
+                        
+                    else:
+                        unpack_symbols.add( ret )
+                        
+                else:
+                    
+                    if token_is_arg(token) and (token in normal_vars or token in vector_vars or token in matrix_vars):
+                        simple_symbols.add(token)
+                        
+                    else:
+                        # print( "Variable '%s' is not defined or is syntactically incorrect" % token )
+                        error_list.append( "Variable '%s' is not defined or is syntactically incorrect" % token )
+                        # break
+
         return error_list
+    
+    def check_errors(self):
+        error_list = super(PythonFrame,self).check_errors()
+        error_list.extend(self.check_args())
+        return error_list
+            
+    def save_parameters(self):
+        super(PythonFrame,self).save_parameters()
+        self.problem_parameters.options["call_args"] = self.ArgsEntry.get()
+            
+    def load_parameters(self):
+        super(PythonFrame,self).load_parameters()
+        self.ArgsEntry.set(self.problem_parameters.options["call_args"])
+    
+    # def __is_evaluator_instance(self, parameter: Parameter):
+            
+    #     error_list = []
+        
+    #     if len(self.evaluator_path_parameter.error_check()) == 0:
+    #         evaluator_module = imp.load_source(name=Path(self.OperatorFilePath.get()).stem, pathname=self.OperatorFilePath.get())
+            
+    #         # if self.evaluator_class_entry.get() in inspect.getmembers(evaluator_module):
+    #         if hasattr(evaluator_module, self.evaluator_class_entry.get()):
+    #             evaluator_class = getattr(evaluator_module, self.evaluator_class_entry.get())
+                
+    #             if not issubclass(evaluator_class, Evaluator):
+    #                 error_list.append("Parameter '%s' is not a subclass of Evaluator" % (self.evaluator_class_parameter.fancy_name))
+                
+    #         else:
+    #             error_list.append("Parameter '%s' is not a class in specified file" % (self.evaluator_class_parameter.fancy_name))
+        
+    #     return error_list
 
