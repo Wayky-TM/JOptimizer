@@ -36,7 +36,7 @@ import jmetal.util.neighborhood as Neighborhood
 from jmetal.util.evaluator import Evaluator, SequentialEvaluator
 
 import core.variable as var_types
-from core.composite_problem import CompositeProblem
+from core.JMetalpy.composite_problem import CompositeProblem
 from jmetal.util.termination_criterion import TerminationCriterion
 # from core.null import NullCrossoverOperator, NullMutationOperator
 

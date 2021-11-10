@@ -14,6 +14,7 @@ import imp
 from pathlib import Path
 
 from interface.tabs.problem.frames.problem_frame import *
+from core.variable import *
 
 from util.arg_parsing import *
 
@@ -117,11 +118,11 @@ class PythonFrame(ProblemFrame):
         self.script_path_parameter = FilePath( fancy_name="Function script path", extension=".py" )
         
         self.parameters_bindings.append( ParameterBinding(parameter=self.script_path_parameter,
-                                                          widget_read_lambda=lambda: None,
+                                                          widget_read_lambda=lambda: self.ScriptFilePath.get(),
                                                           variable_store_lambda=lambda var: self._save_function_parameters(var),
                                                           # error_set_lambda=EntryInvalidator(self.ScriptFilePath),
                                                           # error_reset_lambda=EntryValidator(self.ScriptFilePath),
-                                                          variable_read_lambda=lambda: None,
+                                                          variable_read_lambda=lambda: self.problem_parameters.options["python_script_path"],
                                                           widget_update_lambda=lambda var: self._update_function_parameters(var) ) )
         
         tk.Label( master=self, text="Number of objectives").place( relx=0.02, rely=0.25 )
@@ -154,6 +155,8 @@ class PythonFrame(ProblemFrame):
         keywargs_started = False
         already_warned = False
         error_list = []
+        
+        vector_vars = { var.keyword:var for var in self.problem_parameters if isinstance(var,VectorVariable) }
         
         for token in arg_tokens:
             
@@ -194,7 +197,7 @@ class PythonFrame(ProblemFrame):
                         
                 else:
                     
-                    if token_is_arg(token) and (token in normal_vars or token in vector_vars or token in matrix_vars):
+                    if token_is_arg(token) and (token in normal_vars or token in vector_vars):
                         simple_symbols.add(token)
                         
                     else:

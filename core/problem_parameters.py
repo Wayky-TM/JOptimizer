@@ -24,7 +24,7 @@ from collections import defaultdict
 
 import core.variable as Variables
 import core.constant as Constants
-import core.composite_problem as cproblem
+import core.JMetalpy.composite_problem as cproblem
 import jmetal.core.solution as jsol
 
 from core.evaluators.Python import PythonFunctionEvaluator
