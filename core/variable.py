@@ -75,7 +75,7 @@ class IntegerVariable(Variable):
                   lower_bound: int,
                   upper_bound: int):
                
-        super(FloatVariable,self).__init__(keyword=keyword)
+        super(IntegerVariable,self).__init__(keyword=keyword)
         
         if lower_bound >= upper_bound:
             raise ValueError( "%s.__init__(): parameter 'lower_bound' must be less than 'upper_bound'" % (type(self).__name__) )
@@ -100,7 +100,7 @@ class DiscretizedFloatVariable(FloatVariable):
                   upper_bound: float,
                   step: float):
         
-        super(FloatVariable,self).__init__(keyword=keyword, lower_bound=lower_bound, upper_bound=upper_bound)
+        super(DiscretizedFloatVariable,self).__init__(keyword=keyword, lower_bound=lower_bound, upper_bound=upper_bound)
         
         if 2.0*step > upper_bound-lower_bound:
             raise ValueError( "%s.__init__(): parameter 'step' must be smaller than half of the variable interval" % (type(self).__name__) )

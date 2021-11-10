@@ -47,38 +47,70 @@ class ProblemParameters:
         self.options = defaultdict(lambda: "")
         self.variables = []
         self.constants = []
+        self.defined_symbols = {}
         self.constraints = []
+    
+    
+    def add_variable( self, var: Variables.Variable ):
+        
+        if var.keyword in self.defined_symbols:
+            raise ValueError("%s.add_variable(): symbol %s already defined" % (type(self).__name__, var.keyword))
+            
+        else:
+            self.variables.append( var )
+            self.defined_symbols[var.keyword] = var
+    
+    
+    def add_constant( self, const: Constants.Constant ):
+        
+        if const.keyword in self.defined_symbols:
+            raise ValueError("%s.add_variable(): symbol %s already defined" % (type(self).__name__, const.keyword))
+            
+        else:
+            self.constants.append( const )
+            self.defined_symbols[const.keyword] = const
+    
+
+    def remove_symbol( self, symbol: str ):
+        
+        if symbol not in self.defined_symbols:
+            raise ValueError("%s.remove_symbol(): symbol %s not defined" % (type(self).__name__, symbol))
+            
+        else:
+            element = self.defined_symbols.pop(symbol)
+            
+            if isinstance(var, Variables.Variable):
+                self.variables.remove(element)
+            else:
+                self.constants.remove(element)
+
+    
+    def clear_all_variables(self):
+        
+        for var in self.variables:
+            self.defined_symbols.pop( var.keyword )
+            
+        self.variables = []
+        
+        
+        
+    def clear_all_variables(self):
+        
+        for const in self.constants:
+            self.defined_symbols.pop( const.keyword )
+            
+        self.constants = []
+
+
+
+    def is_symbol_defined( self, symbol: str ):
+        return symbol in self.defined_symbols
+    
     
     def CompileProblem(self):
         
-        # float_vars = []
-        # int_vars = []
-        # disc_vars = []
-        # binary_vars = []
-        # permutation_vars = []
-        
-        
-        # """ Variable categorization """
-        # for v in self.variables:
-            
-        #     if isinstance(v, Variables.FloatVariable):
-        #         float_vars.append( v )
-                
-        #     elif isinstance(v, Variables.IntegerVariable):
-        #         int_vars.append( v )
-                
-        #     elif isinstance(v, Variables.DiscretizedFloatVariable):
-        #         disc_vars.append( v )
-                
-        #     elif isinstance(v, Variables.BinaryVariable):
-        #         binary_vars.append( v )
-                
-        #     elif isinstance(v, Variables.PermutationVariable):
-        #         permutation_vars.append( v )
-        
         """ Problem type selection """
         if self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.GENERIC.value:
-            # module_evaluator = locate('{package}.{ev_class}'.format(package=self.options["evaluator_path"], ev_class=self.options["evaluator_classname"]))
             evaluator_module = imp.load_source(name=Path(self.options["evaluator_path"]).stem, pathname=self.options["evaluator_path"])
             evaluator_class = getattr(evaluator_module, self.options["evaluator_class"])
             
@@ -94,14 +126,6 @@ class ProblemParameters:
         composite_problem = cproblem.CompositeProblem( evaluator=evaluator,
                                                        problem_parameters=self)
         
-        # composite_problem = cproblem.CompositeProblem( evaluator=evaluator,
-        #                                                float_vars=float_vars,
-        #                                                int_vars=int_vars,
-        #                                                discretized_vars=disc_vars,
-        #                                                binary_vars=binary_vars,
-        #                                                permutation_vars=permutation_vars,
-        #                                                constants=self.constants)
-        
         return composite_problem
         
     
@@ -109,13 +133,17 @@ class ProblemParameters:
                    dir_path: str,
                    file_name: str = "problem_parameters.yaml"):
         
+        # Unfinished method
+        raise Exception("save_state(): TODO")
+        
         if TC.is_dir( dir_path ):
             
             var_dict = { Variables.FloatVariable : "float",
                          Variables.IntegerVariable : "integer",
                          Variables.DiscretizedFloatVariable : "discretized",
                          Variables.BinaryVariable : "binary",
-                         Variables.PermutationVariable : "permutation"}
+                         Variables.PermutationVariable : "permutation",
+                         }
             
             const_dict = { Constants.FloatConstant : "float",
                            Constants.IntegerConstant : "integer",
@@ -180,6 +208,8 @@ class ProblemParameters:
                    dir_path: str,
                    file_name: str = "problem_parameters.yaml"):
     
+        # Unfinished method
+        raise Exception("load_state(): TODO")
         
         if TC.is_file( os.path.join(dir_path, file_name) ):
             
