@@ -156,7 +156,8 @@ class PythonFrame(ProblemFrame):
         already_warned = False
         error_list = []
         
-        vector_vars = { var.keyword:var for var in self.problem_parameters if isinstance(var,VectorVariable) }
+        vector_vars = { var.keyword:var for var in self.problem_parameters.variables if isinstance(var,VectorVariable) }
+        scalar_vars = { var.keyword:var for var in self.problem_parameters.variables if not isinstance(var,VectorVariable) }
         
         for token in arg_tokens:
             
@@ -168,9 +169,7 @@ class PythonFrame(ProblemFrame):
                 keywargs_started = True
                 
                 if (ret[1] not in normal_vars) and (ret[1] not in vector_vars) and (ret[1] not in matrix_vars):
-                    # print( "Variable '%s' not defined" % ret[1] )
                     error_list.append( "Variable '%s' not defined" % ret[1] )
-                    # break
                     
                 else:
                     keyword_symbols[ret[0]] = ret[1]
@@ -183,27 +182,22 @@ class PythonFrame(ProblemFrame):
                 if keywargs_started and not already_warned:
                     error_list.append( "args must preceed kwargs: %s" % token )
                     already_warned = True
-                    # break
                 
                 elif ret!=None:
                     
                     if ret not in vector_vars:
-                        # print( "Variable '%s' is not defined or of an unpackable type" % ret )
-                        error_list.append( "Variable '%s' is not defined or of an unpackable type" % ret )
-                        # break
+                        error_list.append( "Variable '%s' is not defined or not of an unpackable type" % ret )
                         
                     else:
                         unpack_symbols.add( ret )
                         
                 else:
                     
-                    if token_is_arg(token) and (token in normal_vars or token in vector_vars):
+                    if token_is_arg(token) and (token in scalar_vars or token in vector_vars):
                         simple_symbols.add(token)
                         
                     else:
-                        # print( "Variable '%s' is not defined or is syntactically incorrect" % token )
                         error_list.append( "Variable '%s' is not defined or is syntactically incorrect" % token )
-                        # break
 
         return error_list
     

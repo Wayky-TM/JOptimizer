@@ -18,33 +18,31 @@ from typing import List
 class Constant:
     
     def __init__( self,
-        keyword: str,
-        value,
-        name: str = ""):
-        pass
+                  keyword: str,
+                  value):
+        
+        self.keyword = keyword
+        self.value = copy.deepcopy(value)
+
+
 
 class FloatConstant(Constant):
     
     def __init__( self,
                   keyword: str,
-                  value: float,
-                  name: str = ""):
+                  value: float):
         
-        self.name = name
-        self.keyword = keyword
-        self.value= value
+        super(FloatConstant,self).__init__( keyword=keyword, value=value )
+
 
 
 class IntegerConstant(Constant):
     
     def __init__( self,
                   keyword: str,
-                  value: int,
-                  name: str = ""):
+                  value: int):
         
-        self.name = name
-        self.keyword = keyword
-        self.value = value
+        super(IntegerConstant,self).__init__( keyword=keyword, value=value )
     
 
     
@@ -52,36 +50,44 @@ class BinaryConstant(Constant):
     
     def __init__( self,
                   keyword: str,
-                  value: bool,
-                  name: str = ""):
+                  value: int):
         
-        self.name = name
-        self.keyword = keyword
-        self.value = value
+        super(BinaryConstant,self).__init__( keyword=keyword, value=value )
+        
+        if value < 0 or value > 1:
+            raise ValueError("%.__init__(): incorrect binary value: %s" % (type(self).__name__, value))
+        
+
     
+class BooleanConstant(Constant):
+    
+    def __init__( self,
+                  keyword: str,
+                  value: bool):
+        
+        super(BooleanConstant,self).__init__( keyword=keyword, value=value )
+        
+
 
 class PermutationConstant(Constant):
     
     def __init__( self,
                   keyword: str,
-                  value: List[int],
-                  name: str = ""):
+                  value: List[int]):
         
-        self.name = name
-        self.keyword = keyword
-        self.value = copy.deepcopy(value)
+        super(PermutationConstant,self).__init__( keyword=keyword, value=value )
+        
+        if len(value) < 2:
+            raise ValueError("%.__init__(): element list insufficient length: %s" % (type(self).__name__, len(value)))
         
         
 class StringConstant(Constant):
     
     def __init__( self,
                   keyword: str,
-                  value: str,
-                  name: str = ""):
+                  value: str):
         
-        self.name = name
-        self.keyword = keyword
-        self.value = value
+        super(StringConstant,self).__init__( keyword=keyword, value=value )
         
         
     
