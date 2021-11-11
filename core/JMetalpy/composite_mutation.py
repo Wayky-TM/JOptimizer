@@ -6,10 +6,10 @@ from typing import List
 
 from jmetal.core.operator import Mutation
 from jmetal.operator.mutation import NullMutation
-from jmetal.core.solution import Solution, FloatSolution, BinarySolution, PermutationSolution, IntegerSolution, \
-    CompositeSolution
+# from jmetal.core.solution import Solution, FloatSolution, BinarySolution, PermutationSolution, IntegerSolution
 from jmetal.util.ckecking import Check
 
+from core.JMetalpy.composite_solution import *
 
 class CompositeMutation(Mutation[Solution]):
     
@@ -35,24 +35,24 @@ class CompositeMutation(Mutation[Solution]):
         binary_solutions = []
         permutation_solutions = []
         
-        for solution in solution.float_solutions:
-            float_solutions.append( self.float_mutation.execute(solution) )
+        for sol in solution.float_solutions:
+            float_solutions.append( self.float_mutation.execute(sol) )
             
-        for solution in solution.integer_solutions:
-            integer_solutions.append( self.integer_mutation.execute(solution) )
+        for sol in solution.integer_solutions:
+            integer_solutions.append( self.integer_mutation.execute(sol) )
             
-        for solution in solution.binary_solutions:
-            binary_solutions.append( self.binary_mutation.execute(solution) )
+        for sol in solution.binary_solutions:
+            binary_solutions.append( self.binary_mutation.execute(sol) )
             
-        for solution in solution.permutation_solutions:
-            permutation_solutions.append( self.permutation_mutation.execute(solution) )
+        for sol in solution.permutation_solutions:
+            permutation_solutions.append( self.permutation_mutation.execute(sol) )
         
         return CompositeSolution( float_solutions=float_solutions,
-                                  integer_solutions=integer_solutions,
-                                  binary_solutions=binary_solutions,
-                                  permutation_solutions=permutation_solutions,
-                                  number_of_objectives=solution.number_of_objectives,
-                                  number_of_constraints=solution.number_of_constraints)
+                                    integer_solutions=integer_solutions,
+                                    binary_solutions=binary_solutions,
+                                    permutation_solutions=permutation_solutions,
+                                    number_of_objectives=solution.number_of_objectives,
+                                    number_of_constraints=solution.number_of_constraints)
 
     def get_name(self) -> str:
         return "Composite mutation operator"

@@ -6,9 +6,10 @@ from typing import List
 
 from jmetal.core.operator import Crossover
 from jmetal.operator.crossover import NullCrossover
-from jmetal.core.solution import Solution, FloatSolution, BinarySolution, PermutationSolution, IntegerSolution, \
-    CompositeSolution
+# from jmetal.core.solution import Solution, FloatSolution, BinarySolution, PermutationSolution, IntegerSolution
 from jmetal.util.ckecking import Check
+
+from core.JMetalpy.composite_solution import *
 
 
 
@@ -68,18 +69,18 @@ class CompositeCrossover(Crossover[CompositeSolution, CompositeSolution]):
             permutation_solutions_offspring2.append( children[1] )
 
         offspring1 = CompositeSolution( float_solutions=float_solutions_offspring1,
-                                      integer_solutions=integer_solutions_offspring1,
-                                      binary_solutions=binary_solutions_offspring1,
-                                      permutation_solutions=permutation_solutions_offspring1,
-                                      number_of_objectives=solutions[0].number_of_objectives,
-                                      number_of_constraints=solutions[0].number_of_constraints)
+                                        integer_solutions=integer_solutions_offspring1,
+                                        binary_solutions=binary_solutions_offspring1,
+                                        permutation_solutions=permutation_solutions_offspring1,
+                                        number_of_objectives=solutions[0].number_of_objectives,
+                                        number_of_constraints=solutions[0].number_of_constraints)
         
         offspring2 = CompositeSolution( float_solutions=float_solutions_offspring2,
-                                      integer_solutions=integer_solutions_offspring2,
-                                      binary_solutions=binary_solutions_offspring2,
-                                      permutation_solutions=permutation_solutions_offspring2,
-                                      number_of_objectives=solutions[0].number_of_objectives,
-                                      number_of_constraints=solutions[0].number_of_constraints)
+                                        integer_solutions=integer_solutions_offspring2,
+                                        binary_solutions=binary_solutions_offspring2,
+                                        permutation_solutions=permutation_solutions_offspring2,
+                                        number_of_objectives=solutions[0].number_of_objectives,
+                                        number_of_constraints=solutions[0].number_of_constraints)
 
         return [ offspring1, offspring2 ]
 

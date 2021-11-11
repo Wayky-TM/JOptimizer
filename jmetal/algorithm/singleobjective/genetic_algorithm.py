@@ -84,7 +84,7 @@ class GeneticAlgorithm(EvolutionaryAlgorithm[S, R]):
                 parents.append(mating_population[i + j])
 
             offspring = self.crossover_operator.execute(parents)
-
+            
             for solution in offspring:
                 self.mutation_operator.execute(solution)
                 offspring_population.append(solution)

@@ -1,12 +1,13 @@
 
 import sys
 sys.path.append(r"./..")
+# sys.path.append(r"./../../")
 
 import copy
 import random
 import math
 
-from enum import Enum
+from enum import Enum, unique
 from abc import *
 from typing import List
 
@@ -28,6 +29,7 @@ import util.string_utils as su
 import util.arg_parsing as AP
 from util.type_check import is_integer, to_integer
 
+@unique
 class ARGS_MODES(Enum):
     NORMAL=0
     KEYWORD=1
@@ -66,6 +68,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         
         var_args = self._compile_call_arguments()
         
+        # print(var_args)
+        
         self.included_variables_dict = {}
         self.argument_list = []
         
@@ -76,7 +80,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 
                 var = self.variables[argument[0]]
                 
-                if not var in self.included_variables_dict:
+                if var not in self.included_variables_dict:
                 
                     if type(var) == FloatVectorVariable:
                         index = (self.float_count,self.float_count+var.length)
@@ -128,7 +132,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 else:
                     index = self.included_variables_dict[var]
                     
-                if argument[1] == ARGS_MODES.KEYWORD:
+                if argument[1] is ARGS_MODES.KEYWORD:
                     self.argument_list.append( (var, index, argument[1], argument[2]) )
                 
                 else:
@@ -137,7 +141,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             
             elif argument[0] in self.constants:
                 """ Format: (Var, Mode [, keyword]) """
-                if argument[1] == ARGS_MODES.KEYWORD:
+                if argument[1] is ARGS_MODES.KEYWORD:
                     self.argument_list.append( (self.variables[argument[0]], argument[1], argument[2]) )
                     
                 else:
@@ -172,13 +176,13 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             
             if isinstance(arg[0], Constant):
                 
-                if arg[1] == ARGS_MODES.NORMAL:
+                if arg[2] is ARGS_MODES.NORMAL:
                     args.append( arg[0].value )
                 
-                elif arg[1] == ARGS_MODES.KEYWORD:
+                elif arg[2] is ARGS_MODES.KEYWORD:
                     kwargs[arg[-1]] = arg[0].value
                     
-                elif arg[1] == ARGS_MODES.UNPACKED:
+                elif arg[2] is ARGS_MODES.UNPACKED:
                     args.extend( arg[0].value )
                     
                 else:
@@ -202,23 +206,24 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                     value = solution.binary_solutions[0].variables[arg[1][0]]
                 
                 elif type(arg[0]) == PermutationVariable:
-                    value = solution.permutation_solutions[arg[1][0]].variables
+                    value = solution.permutation_solutions[arg[1]].variables
                     
                     
-                if arg[1] == ARGS_MODES.NORMAL:
+                if arg[2] is ARGS_MODES.NORMAL:
                     args.append( value )
                 
-                elif arg[1] == ARGS_MODES.KEYWORD:
+                elif arg[2] is ARGS_MODES.KEYWORD:
                     kwargs[arg[-1]] = value
                     
-                elif arg[1] == ARGS_MODES.UNPACKED:
+                elif arg[2] is ARGS_MODES.UNPACKED:
                     args.extend( value )
                     
                 else:
-                    raise ValueError("_generate_args(): invalid arg type: %s" % (arg[1]))
+                    # raise ValueError("_generate_args(): invalid arg type: %s" % (arg[1]))
+                    raise ValueError("%s._generate_args(): invalid arg type" % (type(self).__name__))
                 
             else:
-                raise ValueError("_generate_args(): invalid symbol type: %s" % (type(arg[0])))
+                raise ValueError("%s._generate_args(): invalid symbol type: %s" % (type(self).__name__, type(arg[0])))
                 
                 
                 
@@ -282,7 +287,9 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             
             kwargs["permutation_solutions"] = permutation_solutions
         
-        return CS.CompositeSolution( number_of_objectives=to_integer(self.problem_parameters.options["objectives"]), number_of_constraints=to_integer(self.problem_parameters.options["constraints"]), **kwargs )
+        return CS.CompositeSolution( number_of_objectives=to_integer(self.problem_parameters.options["objectives"]),
+                                     number_of_constraints=to_integer(self.problem_parameters.options["constraints"]),
+                                     **kwargs )
     
     
     

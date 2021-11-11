@@ -4,8 +4,7 @@ import copy
 import random
 from typing import List
 
-from jmetal.core.solution import Solution, FloatSolution, BinarySolution, PermutationSolution, IntegerSolution, \
-    CompositeSolution
+from jmetal.core.solution import Solution, FloatSolution, BinarySolution, PermutationSolution, IntegerSolution
 from jmetal.util.ckecking import Check
 
 

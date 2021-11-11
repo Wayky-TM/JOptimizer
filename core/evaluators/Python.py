@@ -26,7 +26,7 @@ class PythonFunctionEvaluator(Evaluator):
         function_module = imp.load_source(name=Path(script_path).stem, pathname=script_path)
         self.python_function = getattr(function_module, function_name)
     
-    def evaluate( *args, **kwargs ):
+    def evaluate( self, *args, **kwargs ):
         
         objectives = self.python_function( *args, **kwargs )
         
