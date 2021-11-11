@@ -112,7 +112,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                         self.integer_lower_bounds.append(var.lower_bound)
                         self.integer_upper_bounds.append(var.upper_bound)
                         
-                    elif type(var) == DiscretizedVariable:
+                    elif type(var) == DiscretizedFloatVariable:
                         index = (self.integer_count,self.integer_count+1)
                         self.integer_count += 1
                         self.integer_lower_bounds.append(0)
