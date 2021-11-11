@@ -117,6 +117,9 @@ class DiscretizedFloatVariable(FloatVariable):
     def within_bounds_int( self, value: int ):
         return (value >= 0) and (value < self.resolution)
     
+    def to_float( self, value: int ):
+        return self.lower_bound + float(value)*self.step
+    
     
     
     
@@ -239,7 +242,8 @@ class IntegerVectorVariable( VectorVariable ):
         
         super(IntegerVectorVariable, self).__init__( keyword=keyword, length=length, vector_type=vector_type )
         
-        if len(lower_bound) != length or len(upper_bound) != length:
+        # if len(lower_bound) != length or len(upper_bound) != length:
+        if lower_bound >= upper_bound:
             raise ValueError( "%s.__init__(): Invalid bounds" % (type(self).__name__) )
         
         self.lower_bound=lower_bound
@@ -270,7 +274,8 @@ class DiscretizedVectorVariable( VectorVariable ):
         
         super(DiscretizedVectorVariable, self).__init__( keyword=keyword, length=length, vector_type=vector_type )
         
-        if len(lower_bound) != length or len(upper_bound) != length:
+        # if len(lower_bound) != length or len(upper_bound) != length:
+        if lower_bound >= upper_bound:
             raise ValueError( "%s.__init__(): Invalid bounds" % (type(self).__name__) )
         
         self.lower_bound = lower_bound
@@ -298,7 +303,8 @@ class DiscretizedVectorVariable( VectorVariable ):
     def within_bounds( self, vector ):
         return all( [(value >= self.lower_bound) and (value <= self.upper_bound) for value in vector] )    
 
-    
+    def to_float( self, values: List[int] ):
+        return [self.lower_bound + float(x)*self.step for x in values]
 
 
 class BinaryVectorVariable( IntegerVectorVariable ):

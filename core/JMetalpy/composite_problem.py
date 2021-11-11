@@ -312,21 +312,40 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 
                 if type(arg[0]) == FloatVariable:
                     value = solution.float_solutions[0].variables[arg[1][0]]
+                    
+                elif type(arg[0]) == FloatVectorVariable:
+                    value = solution.float_solutions[0].variables[arg[1][0]:arg[1][1]]
                 
                 elif type(arg[0]) == IntegerVariable:
                     value = solution.integer_solutions[0].variables[arg[1][0]]
                 
-                elif type(arg[0]) == FloatVectorVariable:
-                    value = solution.float_solutions[0].variables[arg[1][0]:arg[1][1]]
-                
                 elif type(arg[0]) == IntegerVectorVariable:
                     value = solution.integer_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    
+                elif type(arg[0]) == IntegerVariable:
+                    value = solution.integer_solutions[0].variables[arg[1][0]]    
+                    value = arg[0].to_float( value )
+                    
+                elif type(arg[0]) == DiscretizedVectorVariable:
+                    value = solution.integer_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    value = arg[0].to_float( value )
                 
                 elif type(arg[0]) == BinaryVariable:
                     value = solution.binary_solutions[0].variables[arg[1][0]]
+                    value = int(value)
+                    
+                elif type(arg[0]) == BinaryVectorVariable:
+                    value = solution.binary_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    value = [ int(bit) for bit in value ]
+                    
+                elif type(arg[0]) == BooleanVariable:
+                    value = solution.binary_solutions[0].variables[arg[1][0]]
+                    
+                elif type(arg[0]) == BooleanVectorVariable:
+                    value = solution.binary_solutions[0].variables[arg[1][0]:arg[1][1]]
                 
                 elif type(arg[0]) == PermutationVariable:
-                    value = solution.permutation_solutions[arg[1][0]]
+                    value = solution.permutation_solutions[arg[1][0]].variables
                     
                 else:
                     raise ValueError("_generate_args(): invalid arg type: %s" % (arg[1]))
@@ -339,7 +358,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 raise ValueError("_generate_args(): invalid symbol type: %s" % (type(arg[0])))
                 
         
-        return variables_dictionary, variables_list
+        return (variables_list, variables_dictionary)
     
     def get_name(self):
         return "CompositeProblem"

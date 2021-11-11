@@ -50,6 +50,8 @@ class ProblemParameters:
         self.defined_symbols = {}
         self.constraints = []
     
+        """ Defaults """
+        self.options["objectives"] = "1"
         self.options["constraints"] = "0"
     
     def add_variable( self, var: Variables.Variable ):

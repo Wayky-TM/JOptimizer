@@ -125,26 +125,32 @@ class PythonFrame(ProblemFrame):
                                                           variable_read_lambda=lambda: self.problem_parameters.options["python_script_path"],
                                                           widget_update_lambda=lambda var: self._update_function_parameters(var) ) )
         
-        tk.Label( master=self, text="Number of objectives").place( relx=0.02, rely=0.25 )
-        self.ObjectivesEntry = tk.Entry(master=self, state=tk.NORMAL)
-        self.ObjectivesEntry.insert(0, self.problem_parameters.options["objectives"])
-        self.ObjectivesEntry.place( relx=0.14, rely=0.25-0.005, relwidth=0.1 )
+        
+        tk.Label( master=self, text="Call argument format").place( relx=0.02, rely=0.25 )
+        self.ArgsEntry = tk.Entry(master=self, state=tk.NORMAL)
+        self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
+        self.ArgsEntry.place( relx=0.14, rely=0.25, relwidth=0.3 )
+        
+        objective_option_list = [i for i in range(1,16)]
+        tk.Label( master=self, text="Number of objectives").place( relx=0.02, rely=0.35 )
+        self.ObjectiveOption = tk.StringVar(self)
+        self.ObjectiveOption.set( to_integer(self.problem_parameters.options["objectives"]) )
+        self.objective_option = tk.OptionMenu(self, self.ObjectiveOption, *objective_option_list )
+        self.objective_option.place( relx=0.14, rely=0.35-0.005, relwidth=0.1 )
+        
+        # self.ObjectivesEntry = tk.Entry(master=self, state=tk.NORMAL)
+        # self.ObjectivesEntry.insert(0, self.problem_parameters.options["objectives"])
+        # self.ObjectivesEntry.place( relx=0.14, rely=0.25-0.005, relwidth=0.1 )
         
         self.objectives_parameter = Integer(name="number_of_objectives", fancy_name="Number of objectives", lower_bound=1, upper_bound=1000)
             
         self.parameters_bindings.append( ParameterBinding(parameter=self.objectives_parameter,
-                                                          widget_read_lambda=lambda: self.ObjectivesEntry.get(),
+                                                          widget_read_lambda=lambda: self.ObjectiveOption.get(),
                                                           variable_store_lambda=lambda var: self.problem_parameters.options.update({"objectives":var}),
-                                                          error_set_lambda=EntryInvalidator(self.ObjectivesEntry),
-                                                          error_reset_lambda=EntryValidator(self.ObjectivesEntry),
+                                                          # error_set_lambda=EntryInvalidator(self.ObjectivesEntry),
+                                                          # error_reset_lambda=EntryValidator(self.ObjectivesEntry),
                                                           variable_read_lambda=lambda: self.problem_parameters.options["objectives"],
-                                                          widget_update_lambda=lambda var: ClearInsertEntry(self.ObjectivesEntry, str(var)) ) )        
-       
-    
-        tk.Label( master=self, text="Call argument format").place( relx=0.02, rely=0.35 )
-        self.ArgsEntry = tk.Entry(master=self, state=tk.NORMAL)
-        self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
-        self.ArgsEntry.place( relx=0.14, rely=0.35-0.005, relwidth=0.3 )
+                                                          widget_update_lambda=lambda var: self.ObjectiveOption.set( str(var)) ) )        
     
         
     def check_args(self):

@@ -646,7 +646,7 @@ class VariablesFrame(ProblemFrame):
                 
                 vector_type = { option.value:option for option in variable_types.VECTOR_TYPE }[self.TypeOption.get()]
                 
-                variable = variable_types.IntegerVectorVariable(keyword=self.name_entry.get(),
+                variable = variable_types.DiscretizedVectorVariable(keyword=self.name_entry.get(),
                                                                 lower_bound=self.cast_type(self.lower_bound_entry.get()),
                                                                 upper_bound=self.cast_type(self.upper_bound_entry.get()),
                                                                 step=step,
@@ -724,7 +724,11 @@ class VariablesFrame(ProblemFrame):
             var_name = variable.keyword
             var_type = self.type_dict[type(variable)]
             
-            if type(variable) in [variable_types.BinaryVariable, variable_types.PermutationVariable]:
+            if type(variable) in [variable_types.BinaryVariable,
+                                  variable_types.BinaryVectorVariable,
+                                  variable_types.BooleanVariable,
+                                  variable_types.BooleanVectorVariable,
+                                  variable_types.PermutationVariable]:
                 var_lower_bound = "-"
                 var_upper_bound = "-"
                 

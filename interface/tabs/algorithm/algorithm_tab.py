@@ -156,7 +156,7 @@ class AlgorithmTab(ParameterFrame):
         crossover_frame = self.frames["Crossover"]
         mutation_frame = self.frames["Mutation"]
         
-        if variable_types.FloatVariable in used_variable_types:
+        if variable_types.FloatVariable in used_variable_types or variable_types.FloatVectorVariable in used_variable_types:
             crossover_frame.float_frame.enable()
             mutation_frame.float_frame.enable()
         else:
@@ -164,16 +164,24 @@ class AlgorithmTab(ParameterFrame):
             mutation_frame.float_frame.disable()
         
         
-        if variable_types.IntegerVariable in used_variable_types or variable_types.DiscretizedFloatVariable in used_variable_types:
+        if any([ var_type in used_variable_types for var_type in [variable_types.IntegerVariable,
+                                                                  variable_types.DiscretizedFloatVariable,
+                                                                  variable_types.IntegerVectorVariable,
+                                                                  variable_types.DiscretizedVectorVariable]]):
             crossover_frame.int_frame.enable()
             mutation_frame.int_frame.enable()
+            
         else:
             crossover_frame.int_frame.disable()
             mutation_frame.int_frame.disable()
         
-        if variable_types.BinaryVariable in used_variable_types:
+        if any([ var_type in used_variable_types for var_type in [variable_types.BinaryVariable,
+                                                                  variable_types.BooleanVariable,
+                                                                  variable_types.BinaryVectorVariable,
+                                                                  variable_types.BooleanVectorVariable]]):
             crossover_frame.binary_frame.enable()
             mutation_frame.binary_frame.enable()
+            
         else:
             crossover_frame.binary_frame.disable()
             mutation_frame.binary_frame.disable()
@@ -181,6 +189,7 @@ class AlgorithmTab(ParameterFrame):
         if variable_types.PermutationVariable in used_variable_types:
             crossover_frame.permutation_frame.enable()
             mutation_frame.permutation_frame.enable()
+            
         else:
             crossover_frame.permutation_frame.disable()
             mutation_frame.permutation_frame.disable()
