@@ -24,10 +24,10 @@ from core.constant import FloatConstant, IntegerConstant
 from core.evaluator import Evaluator
 from core.null import NullSolution
 
-# class ARGS_TYPES(Enum):
-#     VARIABLE=0
-#     CONSTANT=1
-    
+import util.string_utils as su
+import util.arg_parsing as AP
+from util.type_check import is_integer, to_integer
+
 class ARGS_MODES(Enum):
     NORMAL=0
     KEYWORD=1
@@ -81,8 +81,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                     if type(var) == FloatVectorVariable:
                         index = (self.float_count,self.float_count+var.length)
                         self.float_count += var.length
-                        self.float_lower_bounds.extend(var.lower_bound)
-                        self.float_upper_bounds.extend(var.upper_bound)
+                        self.float_lower_bounds.extend( [var.lower_bound]*var.length )
+                        self.float_upper_bounds.extend( [var.upper_bound]*var.length )
                         
                     elif type(var) == FloatVariable:
                         index = (self.float_count,self.float_count+1)
@@ -93,14 +93,14 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                     elif type(var) == IntegerVectorVariable:
                         index = (self.integer_count, self.integer_count+var.length)
                         self.integer_count += var.length
-                        self.integer_lower_bounds.extend(var.lower_bound)
-                        self.integer_upper_bounds.extend(var.upper_bound)
+                        self.integer_lower_bounds.extend( [var.lower_bound]*var.length )
+                        self.integer_upper_bounds.extend( [var.upper_bound]*var.length )
                         
                     elif type(var) == DiscretizedVectorVariable:
                         index = (self.integer_count, self.integer_count+var.length)
                         self.integer_count += var.length
                         self.integer_lower_bounds.extend( [0]*var.length )
-                        self.integer_upper_bounds.extend( var.resolution )
+                        self.integer_upper_bounds.extend( [var.resolution]*var.length )
                         
                     elif type(var) == IntegerVariable:
                         index = (self.integer_count,self.integer_count+1)
@@ -148,7 +148,12 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 raise Exception("CompositeProblem.__init__(): wrong argument '%'" % (argument[0]))
         
         
-        self.solution_shape = ( self.float_count, self.integer_count, self.binary_count, self.permutation_index )
+        self.solution_shape = ( self.float_count, self.integer_count, self.binary_count, self.permutation_solution_count )
+        
+        self.include_float = self.float_count > 0
+        self.include_integer = self.integer_count > 0
+        self.include_binary = self.binary_count > 0
+        self.include_permutation = self.permutation_solution_count > 0
         
         
         if (len(self.problem_parameters.variables) + len(self.problem_parameters.constants)) != evaluator.number_of_variables:
@@ -234,14 +239,14 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 arg_list.append( (ret[1],ARGS_MODES.KEYWORD,ret[0]) )
                 
             else:
-                ret = token_is_unpacked_arg(token)
+                ret = AP.token_is_unpacked_arg(token)
                 
                 if ret!=None:
-                    arg_list.add( (ret,ARGS_MODES.UNPACKED) )
+                    arg_list.append( (ret,ARGS_MODES.UNPACKED) )
                         
                 else:
-                    if token_is_arg(token):
-                        arg_list.add( (token,ARGS_MODES.NORMAL) )
+                    if AP.token_is_arg(token):
+                        arg_list.append( (token,ARGS_MODES.NORMAL) )
 
         return arg_list
     
@@ -252,12 +257,12 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
         
         if self.solution_shape[0] > 0: # Floats
             temp_solution = jsol.FloatSolution(lower_bound=self.float_lower_bounds, upper_bound=self.float_upper_bounds, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
-            temp_solution.variables = [ random.uniform(a, b) for lower, upper in zip(self.float_lower_bounds, self.float_upper_bounds) ]
+            temp_solution.variables = [ random.uniform(lower, upper) for lower, upper in zip(self.float_lower_bounds, self.float_upper_bounds) ]
             kwargs["float_solutions"] = [temp_solution]
         
         if self.solution_shape[1] > 0: # Integers
             temp_solution = jsol.IntegerSolution(lower_bound=self.integer_lower_bounds, upper_bound=self.integer_upper_bounds, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
-            temp_solution.variables = [ random.uniform(a, b) for lower, upper in zip(self.integer_lower_bounds, self.integer_upper_bounds) ]
+            temp_solution.variables = [ random.uniform(lower, upper) for lower, upper in zip(self.integer_lower_bounds, self.integer_upper_bounds) ]
             kwargs["integer_solutions"] = [temp_solution]
             
         if self.solution_shape[2] > 0: # Binary
@@ -277,13 +282,13 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             
             kwargs["permutation_solutions"] = permutation_solutions
         
-        return CS.CompositeSolution( **kwargs )
+        return CS.CompositeSolution( number_of_objectives=to_integer(self.problem_parameters.options["objectives"]), number_of_constraints=to_integer(self.problem_parameters.options["constraints"]), **kwargs )
     
     
     
     def evaluate( self, solution: jsol.CompositeSolution):
         
-        args, kwargs = _generate_args(solution)
+        args, kwargs = self._generate_args(solution)
         solution.objectives = self.evaluator.evaluate( *args, **kwargs )
         self.evaluations += 1
         

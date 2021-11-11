@@ -207,7 +207,8 @@ class AlgorithmParameters:
         """
             Float
         """
-        if problem.include_float or problem.include_floatVector:
+        # if problem.include_float or problem.include_floatVector:
+        if problem.include_float:
             
             """ Crossover """
             if self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION.value:
@@ -237,7 +238,8 @@ class AlgorithmParameters:
         """
             Int/discr
         """
-        if problem.include_int or problem.include_discretized or problem.include_integerVector or problem.include_discretizedVector:
+        # if problem.include_integer or problem.include_discretized or problem.include_integerVector or problem.include_discretizedVector:
+        if problem.include_integer:
             
             """ Crossover """
             if self.int_crossover_choice == AlgorithmParameters.INT_CROSSOVER.INT_SBX.value:

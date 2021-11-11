@@ -50,6 +50,7 @@ class ProblemParameters:
         self.defined_symbols = {}
         self.constraints = []
     
+        self.options["constraints"] = "0"
     
     def add_variable( self, var: Variables.Variable ):
         
@@ -94,7 +95,7 @@ class ProblemParameters:
         
         
         
-    def clear_all_variables(self):
+    def clear_all_constants(self):
         
         for const in self.constants:
             self.defined_symbols.pop( const.keyword )
@@ -118,7 +119,8 @@ class ProblemParameters:
             
         elif self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.PYTHON.value:
             
-            evaluator = PythonFunctionEvaluator( number_of_variables=int(self.options["variables"]),
+            evaluator = PythonFunctionEvaluator( #number_of_variables=int(self.options["variables"]),
+                                                 number_of_variables=len(self.variables)+len(self.constants),
                                                  number_of_objectives=int(self.options["objectives"]),
                                                  script_path=self.options["python_script_path"],
                                                  function_name=self.options["function_name"] )

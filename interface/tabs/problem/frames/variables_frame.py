@@ -71,14 +71,14 @@ class VariablesFrame(ProblemFrame):
             super(VariablesFrame.NumericParametersFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
             
             self.lower_bound_label = tk.Label( master=self, text="Lower Bound" )
-            self.lower_bound_label.place( relx=0.1, rely=0.3 )
+            self.lower_bound_label.place( relx=0.1, rely=0.2 )
             self.lower_bound_entry = tk.Entry( master=self )
-            self.lower_bound_entry.place( relx=0.4, rely=0.3, relwidth=0.5 )
+            self.lower_bound_entry.place( relx=0.4, rely=0.2, relwidth=0.36 )
             
             self.upper_bound_label = tk.Label( master=self, text="Upper Bound" )
-            self.upper_bound_label.place( relx=0.1, rely=0.4 )
+            self.upper_bound_label.place( relx=0.1, rely=0.3 )
             self.upper_bound_entry = tk.Entry( master=self )
-            self.upper_bound_entry.place( relx=0.4, rely=0.4, relwidth=0.5 )
+            self.upper_bound_entry.place( relx=0.4, rely=0.3, relwidth=0.36 )
             
         
         def clear_errors(self):
@@ -214,11 +214,11 @@ class VariablesFrame(ProblemFrame):
             self.points_radiobutton = tk.Radiobutton(master=self, text='Nº of points', variable=self.ps, value="points", command=lambda: self._radiobutton_command_(self.ps.get()))
             self.points_entry = tk.Entry(master=self, state=tk.DISABLED)
             
-            self.step_radiobutton.place( relx=0.1, rely=0.6 )
-            self.step_entry.place( relx=0.4, rely=0.6 )
+            self.step_radiobutton.place( relx=0.1, rely=0.4 )
+            self.step_entry.place( relx=0.4, rely=0.4, relwidth=0.36 )
             
-            self.points_radiobutton.place( relx=0.1, rely=0.7 )
-            self.points_entry.place( relx=0.4, rely=0.7 )
+            self.points_radiobutton.place( relx=0.1, rely=0.5 )
+            self.points_entry.place( relx=0.4, rely=0.5, relwidth=0.36 )
             
         def is_type(self, string: str):
             return is_float(string)
@@ -398,7 +398,7 @@ class VariablesFrame(ProblemFrame):
             self.TypeOption = tk.StringVar(self)
             self.TypeOption.set(self.type_options_list[0])
             self.type_option = tk.OptionMenu(self, self.TypeOption, *self.type_options_list )
-            self.type_option.place( relx=0.26, rely=0.2-0.005, relwidth=0.5 )
+            self.type_option.place( relx=0.26, rely=0.2-0.01, relwidth=0.5 )
             
             self.length_label = tk.Label( master=self, text="Length" )
             self.length_label.place( relx=0.1, rely=0.3 )
@@ -433,12 +433,12 @@ class VariablesFrame(ProblemFrame):
             self.lower_bound_label = tk.Label( master=self, text="Lower Bound" )
             self.lower_bound_label.place( relx=0.1, rely=0.4 )
             self.lower_bound_entry = tk.Entry( master=self )
-            self.lower_bound_entry.place( relx=0.4, rely=0.4, relwidth=0.26 )
+            self.lower_bound_entry.place( relx=0.4, rely=0.4, relwidth=0.36 )
             
             self.upper_bound_label = tk.Label( master=self, text="Upper Bound" )
             self.upper_bound_label.place( relx=0.1, rely=0.5 )
             self.upper_bound_entry = tk.Entry( master=self )
-            self.upper_bound_entry.place( relx=0.4, rely=0.5, relwidth=0.26 )
+            self.upper_bound_entry.place( relx=0.4, rely=0.5, relwidth=0.36 )
             
         
         def clear_errors(self):
@@ -574,10 +574,10 @@ class VariablesFrame(ProblemFrame):
             self.points_entry = tk.Entry(master=self, state=tk.DISABLED)
             
             self.step_radiobutton.place( relx=0.1, rely=0.6 )
-            self.step_entry.place( relx=0.4, rely=0.6, relwidth=0.26 )
+            self.step_entry.place( relx=0.4, rely=0.6, relwidth=0.36 )
             
             self.points_radiobutton.place( relx=0.1, rely=0.7 )
-            self.points_entry.place( relx=0.4, rely=0.7, relwidth=0.26 )
+            self.points_entry.place( relx=0.4, rely=0.7, relwidth=0.36 )
     
         def _radiobutton_command_(self, value):
         
@@ -744,20 +744,14 @@ class VariablesFrame(ProblemFrame):
             
             if self.problem_parameters.is_symbol_defined( symbol=var_name ):
                 self.problem_parameters.remove_symbol( symbol=var_name )
-            # self.problem_parameters.variables = [ x for x in self.problem_parameters.variables if x.keyword!=var_name ]
             
     
     def clearall_variable(self):
         
-        # var_names = []
-        
         for iid in self.parameters_tree.get_children():
-            # var_names.append( self.parameters_tree.item(iid)['text'] )
             self.parameters_tree.delete( iid )
         
         self.problem_parameters.clear_all_variables()
-        
-        # self.problem_parameters.variables = [ x for x in self.problem_parameters.variables if x.keyword not in var_names ]
     
     
     def update_type(self, new_value):
@@ -856,7 +850,12 @@ class VariablesFrame(ProblemFrame):
                               variable_types.DiscretizedFloatVariable:"Discretized real",
                               variable_types.BinaryVariable:"Binary",
                               variable_types.BooleanVariable:"Boolean",
-                              variable_types.PermutationVariable:"Permutation" }
+                              variable_types.PermutationVariable:"Permutation",
+                              variable_types.FloatVectorVariable:"Real vector",
+                              variable_types.IntegerVectorVariable:"Integer vector",
+                              variable_types.DiscretizedVectorVariable:"Disc. real vector",
+                              variable_types.BinaryVectorVariable:"Binary vector",
+                              variable_types.BooleanVectorVariable:"Boolean vector"}
         
         self.variable_frames = {}
         self.variable_frames["Real"] = VariablesFrame.FloatParametersFrame(master=labelframe_add, problem_parameters=self.problem_parameters)

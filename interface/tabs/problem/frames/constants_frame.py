@@ -20,23 +20,22 @@ class ConstantsFrame(ProblemFrame):
             self.name_entry = tk.Entry( master=self )
             self.name_entry.place( relx=0.26, rely=0.1, relwidth=0.5 )
             
-        def check_name(self, error_list: List[str]):
+        def __check_name__(self):
+            
+            error_list = []
             
             if not self.name_entry.get():
                 error_list.append("Empty constant name")
                 self._invalidate_entry_(self.name_entry)
             
-            elif self.name_entry.get() in { const.keyword for const in self.problem_parameters.constants }:
-                error_list.append("A constant with name '%s' was already defined" % self.name_entry.get())
+            elif self.problem_parameters.is_symbol_defined(self.name_entry.get()):
+                error_list.append("A constant or variable with name '%s' is already defined" % self.name_entry.get())
                 self._invalidate_entry_(self.name_entry)
+                
+            return error_list
         
         def check_errors(self):
-            
-            error_list = []
-            
-            self.check_name(error_list)
-            
-            return error_list
+            return self.__check_name__()
         
         def _invalidate_entry_(self, entry):
             entry.config({"background":"#ffc7c8"})
@@ -291,7 +290,8 @@ class ConstantsFrame(ProblemFrame):
                 
             const_value = str(constant.value)
         
-            self.problem_parameters.constants.append( constant )
+            # self.problem_parameters.constants.append( constant )
+            self.problem_parameters.add_constant( constant )
             self.constants_tree.insert('', 'end', text=const_name, values=(const_type, const_value))
     
     def delete_constant(self):
@@ -300,18 +300,16 @@ class ConstantsFrame(ProblemFrame):
             const_name = self.constants_tree.item(iid)['text']
             self.constants_tree.delete( iid )
             
-            self.problem_parameters.constants = [ x for x in self.problem_parameters.constants if x.keyword!=const_name ]
+            if self.problem_parameters.is_symbol_defined( symbol=const_name ):
+                self.problem_parameters.remove_symbol( symbol=const_name )
             
     
     def clearall_constants(self):
         
-        const_names = []
-        
         for iid in self.constants_tree.get_children():
-            const_names.append( self.constants_tree.item(iid)['text'] )
             self.constants_tree.delete( iid )
             
-        self.problem_parameters.constants = [ x for x in self.problem_parameters.constants if x.keyword not in const_names ]
+        self.problem_parameters.clear_all_constants()
     
     def load_constants(self):
         

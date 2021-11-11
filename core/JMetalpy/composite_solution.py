@@ -22,9 +22,9 @@ class CompositeSolution(Solution):
     def __init__(self,
                  number_of_objectives: int,
                  number_of_constraints: int,
-                 float_solutions: FloatSolution = [],
-                 integer_solutions: IntegerSolution = [],
-                 binary_solutions: BinarySolution = [],
+                 float_solutions: List[FloatSolution] = [],
+                 integer_solutions: List[IntegerSolution] = [],
+                 binary_solutions: List[BinarySolution] = [],
                  permutation_solutions: List[PermutationSolution] = []):
         
         self.variables = len(float_solutions) + len(integer_solutions) + len(binary_solutions) + len(permutation_solutions)

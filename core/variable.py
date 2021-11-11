@@ -207,7 +207,8 @@ class FloatVectorVariable( VectorVariable ):
         
         super(FloatVectorVariable, self).__init__( keyword=keyword, length=length, vector_type=vector_type )
         
-        if len(lower_bound) != length or len(upper_bound) != length:
+        # if len(lower_bound) != length or len(upper_bound) != length:
+        if lower_bound >= upper_bound:
             raise ValueError( "%s.__init__(): Invalid bounds" % (type(self).__name__) )
         
         self.lower_bound=lower_bound
@@ -262,8 +263,8 @@ class DiscretizedVectorVariable( VectorVariable ):
     def __init__( self,
                   keyword: str,
                   length: int,
-                  lower_bound: List[float],
-                  upper_bound: List[float],
+                  lower_bound: float,
+                  upper_bound: float,
                   step: float,
                   vector_type: VECTOR_TYPE = VECTOR_TYPE.PYTHON):
         
@@ -275,7 +276,8 @@ class DiscretizedVectorVariable( VectorVariable ):
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         self.step = step
-        self.resolution = [ int( math.floor((UB - LB)/step) ) for LB, UB in zip(self.lower_bound, self.upper_bound) ]
+        # self.resolution = [ int( math.floor((UB - LB)/step) ) for LB, UB in zip(self.lower_bound, self.upper_bound) ]
+        self.resolution = int( math.floor((upper_bound - lower_bound)/step) )
         
     def rand(self):
         v = [ (float( random.randint(0, self.resolution[i]) )*self.step + self.lower_bound) for i in range(self.length)]

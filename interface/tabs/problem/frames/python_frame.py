@@ -96,7 +96,7 @@ class PythonFrame(ProblemFrame):
         super(PythonFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
         
         ttk.Label( master=self, text="Function script path").place( relx=0.02, rely=0.05 )
-        self.ScriptFilePath = ttk.Entry(master=self, state=tk.NORMAL)
+        self.ScriptFilePath = tk.Entry(master=self, state=tk.NORMAL)
         self.ScriptFilePath.insert(0, problem_parameters.options["python_script_path"])
         self.ScriptFilePath.place(relx=0.12, rely=0.05+0.005, relwidth=0.3)
         self.ScriptFilePath.config(state=tk.DISABLED)
@@ -126,7 +126,7 @@ class PythonFrame(ProblemFrame):
                                                           widget_update_lambda=lambda var: self._update_function_parameters(var) ) )
         
         tk.Label( master=self, text="Number of objectives").place( relx=0.02, rely=0.25 )
-        self.ObjectivesEntry = ttk.Entry(master=self, state=tk.NORMAL)
+        self.ObjectivesEntry = tk.Entry(master=self, state=tk.NORMAL)
         self.ObjectivesEntry.insert(0, self.problem_parameters.options["objectives"])
         self.ObjectivesEntry.place( relx=0.14, rely=0.25-0.005, relwidth=0.1 )
         
@@ -142,7 +142,7 @@ class PythonFrame(ProblemFrame):
        
     
         tk.Label( master=self, text="Call argument format").place( relx=0.02, rely=0.35 )
-        self.ArgsEntry = ttk.Entry(master=self, state=tk.NORMAL)
+        self.ArgsEntry = tk.Entry(master=self, state=tk.NORMAL)
         self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
         self.ArgsEntry.place( relx=0.14, rely=0.35-0.005, relwidth=0.3 )
     
@@ -171,9 +171,6 @@ class PythonFrame(ProblemFrame):
                 if (ret[1] not in normal_vars) and (ret[1] not in vector_vars) and (ret[1] not in matrix_vars):
                     error_list.append( "Variable '%s' not defined" % ret[1] )
                     
-                else:
-                    keyword_symbols[ret[0]] = ret[1]
-                    
                     
             else:
     
@@ -188,15 +185,9 @@ class PythonFrame(ProblemFrame):
                     if ret not in vector_vars:
                         error_list.append( "Variable '%s' is not defined or not of an unpackable type" % ret )
                         
-                    else:
-                        unpack_symbols.add( ret )
-                        
                 else:
                     
-                    if token_is_arg(token) and (token in scalar_vars or token in vector_vars):
-                        simple_symbols.add(token)
-                        
-                    else:
+                    if not token_is_arg(token) or (token not in scalar_vars and token not in vector_vars):
                         error_list.append( "Variable '%s' is not defined or is syntactically incorrect" % token )
 
         return error_list
