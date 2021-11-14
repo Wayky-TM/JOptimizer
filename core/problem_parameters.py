@@ -42,6 +42,10 @@ class ProblemParameters:
         PYTHON="Python"
         CST="CST"
         MATLAB="Matlab"
+        
+    class OPTIMIZATION_TYPE(Enum):
+        MINIMIZE="Minimize"
+        MAXIMIZE="Maximize"
     
     def __init__(self):
         self.options = defaultdict(lambda: "")

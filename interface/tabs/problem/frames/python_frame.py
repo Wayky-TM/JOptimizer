@@ -20,6 +20,8 @@ from util.arg_parsing import *
 
 class PythonFrame(ProblemFrame):
         
+    NUMBER_OF_SUPPORTED_OBJECTIVES=10
+    
     def _browse(self): 
         
         path = filedialog.askopenfilename(title = "Select a script which contains the function", filetypes=[("Python script", "*.py")], initialdir=os.getcwd() )
@@ -92,6 +94,35 @@ class PythonFrame(ProblemFrame):
         self.problem_parameters.options["function_name"] = self.FunctionOption.get()
         self.problem_parameters.options["python_script_path"] = self.ScriptFilePath.get()
     
+    
+    def _objective_doubleclick_popup(self, event):
+        pass
+    
+    
+    def _update_objectives(self, new_value):
+        
+        new_objective_count = to_integer(new_value)
+        
+        if new_objective_count > self.current_objectives:
+            
+            for i in range(new_objective_count - self.current_objectives):
+                self.objectives_tree.insert('', 'end', text=str(self.current_objectives + i + 1), values=("O"+str(self.current_objectives + i + 1),ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE.value))
+                new_objective = ("O"+str(self.current_objectives + i + 1), ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE)
+                self.objectives.append( new_objective )
+                self.objectives_dict[ new_objective[0] ] = new_objective
+            
+        
+        elif new_objective_count < self.current_objectives:
+            
+            for i in range(self.current_objectives - new_objective_count):
+                objective = self.objectives.pop()
+                self.objectives_dict.pop(objective[0])
+                self.objectives_tree.delete(self.objectives_tree.get_children()[-1])
+            
+            
+        self.current_objectives = new_objective_count
+        
+    
     def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
         super(PythonFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
         
@@ -131,11 +162,12 @@ class PythonFrame(ProblemFrame):
         self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
         self.ArgsEntry.place( relx=0.14, rely=0.25, relwidth=0.3 )
         
-        objective_option_list = [i for i in range(1,16)]
+        objective_option_list = [i for i in range(1,PythonFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1)]
         tk.Label( master=self, text="Number of objectives").place( relx=0.02, rely=0.35 )
         self.ObjectiveOption = tk.StringVar(self)
-        self.ObjectiveOption.set( to_integer(self.problem_parameters.options["objectives"]) )
-        self.objective_option = tk.OptionMenu(self, self.ObjectiveOption, *objective_option_list )
+        # self.ObjectiveOption.set( to_integer(self.problem_parameters.options["objectives"]) )
+        self.ObjectiveOption.set( objective_option_list[0] )
+        self.objective_option = tk.OptionMenu(self, self.ObjectiveOption, *objective_option_list, command=self._update_objectives )
         self.objective_option.place( relx=0.14, rely=0.35-0.005, relwidth=0.1 )
         
         # self.ObjectivesEntry = tk.Entry(master=self, state=tk.NORMAL)
@@ -151,6 +183,30 @@ class PythonFrame(ProblemFrame):
                                                           # error_reset_lambda=EntryValidator(self.ObjectivesEntry),
                                                           variable_read_lambda=lambda: self.problem_parameters.options["objectives"],
                                                           widget_update_lambda=lambda var: self.ObjectiveOption.set( str(var)) ) )        
+        
+        self.objectives_headers = ["Name", "Type"]
+        self.objectives_tree = ttk.Treeview(master=self, columns=self.objectives_headers, selectmode="extended")
+        
+        self.objectives_tree.heading("#0", text="Index")
+        self.objectives_tree.column("#0", minwidth=100, width=200, stretch=tk.NO)
+        
+        self.objectives_tree.heading( "Name", text="Name" )
+        self.objectives_tree.column( "Name", minwidth=100, width=200, stretch=tk.NO )
+        
+        self.objectives_tree.heading( "Type", text="Type" )
+        self.objectives_tree.column( "Type", minwidth=100, width=200, stretch=tk.NO )
+        
+        self.objectives_tree.place(relx=0.02, rely=0.45, relwidth=0.955, relheight=0.5)
+    
+        self.reserved_objective_names = { "O"+str(i) for i in range(1,PythonFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1) }
+        self.current_objectives = 1
+        self.objectives = [("O1",ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE)]
+        self.objectives_dict = { "O1" : self.objectives[0] }
+        
+        for i, objective in enumerate(self.objectives,1):
+            self.objectives_tree.insert('', 'end', text=str(i), values=(objective[0], objective[1].value))
+            
+        self.objectives_tree.bind("<Double-1>", self._update_objectives)
     
         
     def check_args(self):
