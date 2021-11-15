@@ -29,17 +29,37 @@ from collections import defaultdict
 from interface.parameter_frames import *
 
 
+def treeview_sort_column(tv, col, reverse):
+    l = [(tv.set(k, col), k) for k in tv.get_children('')]
+    l.sort(key=lambda t: float(t[0]), reverse=reverse)
+
+    # rearrange items in sorted positions
+    for index, (val, k) in enumerate(l):
+        tv.move(k, '', index)
+
+    # reverse sort next time
+    tv.heading(col, command=lambda: \
+                treeview_sort_column(tv, col, not reverse))
+
+def treeview_sort_first_column(tv, col, reverse):
+    l = [(tv.item(k)["text"], k) for k in tv.get_children()] #Display column #0 cannot be set
+    l.sort(key=lambda t: float(t[0]), reverse=reverse)
+
+    for index, (val, k) in enumerate(l):
+        tv.move(k, '', index)
+
+    tv.heading(col, command=lambda: treeview_sort_first_column(tv, col, not reverse))
 
 class SolutionsFrame( ParameterFrame ):
     
     def __init__(self, master, controller, *args, **kwargs):
-        super().__init__(master=master, *args, **kwargs)
+        super( SolutionsFrame, self ).__init__(master=master, *args, **kwargs)
         
         self.controller = controller
         
         self.variable_headers = [ objective_name for objective_name in self.controller.problem_parameters.options["objectives_names"] ]
         self.solutions_tree = ttk.Treeview(master=master, columns=self.variable_headers, selectmode="extended")
-        self.solutions_tree.heading("#0", text="Index")
+        self.solutions_tree.heading("#0", text="Index", command=lambda _col="#0": treeview_sort_first_column(self.solutions_tree, _col, False) )
         self.solutions_tree.column("#0", stretch=tk.NO)
         
         # for variable in self.controller.problem_parameters.variables:
@@ -49,7 +69,7 @@ class SolutionsFrame( ParameterFrame ):
         
         for objective_name in self.controller.problem_parameters.options["objectives_names"]:
             
-            self.solutions_tree.heading( objective_name, text=objective_name )
+            self.solutions_tree.heading( objective_name, text=objective_name, command=lambda _col=objective_name: treeview_sort_column(self.solutions_tree, _col, False) )
             self.solutions_tree.column( objective_name, stretch=tk.NO )
         
         # self.solutions_tree.grid(row=0, column=0, columnspan=2,
@@ -71,6 +91,13 @@ class SolutionsFrame( ParameterFrame ):
             values_tuple = tuple( [ str(objective) for objective in solution[-1]] )
             self.solutions_tree.insert('', 'end', text=str(i), values=values_tuple)
             
+
+# class 2D_PlotFrame( ParameterFrame ):
+    
+#     def __init__(self, master, controller, *args, **kwargs):
+#         super( SolutionsFrame, self ).__init__(master=master, *args, **kwargs)
+        
+#         self.controller = controller
 
 def solution_analysis_popup( master, controller ):
 

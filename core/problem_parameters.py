@@ -86,7 +86,7 @@ class ProblemParameters:
         else:
             element = self.defined_symbols.pop(symbol)
             
-            if isinstance(var, Variables.Variable):
+            if isinstance(element, Variables.Variable):
                 self.variables.remove(element)
             else:
                 self.constants.remove(element)

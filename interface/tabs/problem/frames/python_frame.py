@@ -28,7 +28,7 @@ class PythonFrame(ProblemFrame):
         def __init__( self, controller, event ):
         
             self.controller = controller    
-            # self.entry_item = event[0]
+            
             self.entry_item = self.controller.objectives_tree.selection()[0]
         
             self.selection_index = to_integer(self.controller.objectives_tree.item( self.entry_item, "text" ))
@@ -286,8 +286,9 @@ class PythonFrame(ProblemFrame):
         already_warned = False
         error_list = []
         
-        vector_vars = { var.keyword:var for var in self.problem_parameters.variables if isinstance(var,VectorVariable) }
-        scalar_vars = { var.keyword:var for var in self.problem_parameters.variables if not isinstance(var,VectorVariable) }
+        # vector_vars = { var.keyword:var for var in self.problem_parameters.variables if isinstance(var,VectorVariable) }
+        # scalar_vars = { var.keyword:var for var in self.problem_parameters.variables if not isinstance(var,VectorVariable) }
+        # scalar_vars = set.union( scalar_vars, { var.keyword:var for var in self.problem_parameters.constants if not isinstance(var,VectorVariable) })
         
         for token in arg_tokens:
             
@@ -298,7 +299,8 @@ class PythonFrame(ProblemFrame):
                 
                 keywargs_started = True
                 
-                if (ret[1] not in normal_vars) and (ret[1] not in vector_vars) and (ret[1] not in matrix_vars):
+                # if (ret[1] not in scalar_vars) and (ret[1] not in vector_vars) and (ret[1] not in matrix_vars):
+                if ret[1] not in self.problem_parameters.defined_symbols:
                     error_list.append( "Variable '%s' not defined" % ret[1] )
                     
                     
@@ -312,12 +314,14 @@ class PythonFrame(ProblemFrame):
                 
                 elif ret!=None:
                     
-                    if ret not in vector_vars:
+                    # if ret not in vector_vars:
+                    if ret not in self.problem_parameters.defined_symbols or not (isinstance(self.problem_parameters.defined_symbols[ret],VectorVariable) or \
+                                                                                  isinstance(self.problem_parameters.defined_symbols[ret],PermutationVariable)):
                         error_list.append( "Variable '%s' is not defined or not of an unpackable type" % ret )
                         
                 else:
                     
-                    if not token_is_arg(token) or (token not in scalar_vars and token not in vector_vars):
+                    if not token_is_arg(token) or (token not in self.problem_parameters.defined_symbols):
                         error_list.append( "Variable '%s' is not defined or is syntactically incorrect" % token )
 
         return error_list

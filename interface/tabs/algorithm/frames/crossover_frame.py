@@ -219,7 +219,7 @@ class FloatCrossoverFrame(ParameterLabelFrame):
             self.frames[self.selected_frame_key].display()
         
     def check_errors(self):
-        error_list = super(CrossoverFrame.FloatCrossoverFrame,self).check_errors()
+        error_list = super(FloatCrossoverFrame,self).check_errors()
         error_list.extend( self.frames[self.selected_frame_key].check_errors() )
         
         return error_list

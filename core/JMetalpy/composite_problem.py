@@ -118,9 +118,13 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                         self.integer_lower_bounds.append(0)
                         self.integer_upper_bounds.append(var.resolution)
                         
-                    elif type(var) == BinaryVariable:
+                    elif type(var) == BinaryVariable or type(var) == BooleanVariable:
                         index = (self.binary_count,self.binary_count+1)
                         self.binary_count += 1
+                        
+                    elif type(var) == BinaryVectorVariable or type(var) == BooleanVectorVariable:
+                        index = (self.binary_count,self.binary_count+var.length)
+                        self.binary_count += var.length
                         
                     elif type(var) == PermutationVariable:
                         index = self.permutation_solution_count
@@ -142,10 +146,10 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             elif argument[0] in self.constants:
                 """ Format: (Var, Mode [, keyword]) """
                 if argument[1] is ARGS_MODES.KEYWORD:
-                    self.argument_list.append( (self.variables[argument[0]], argument[1], argument[2]) )
+                    self.argument_list.append( (self.constants[argument[0]], argument[1], argument[2]) )
                     
                 else:
-                    self.argument_list.append( (self.variables[argument[0]], argument[1]) )
+                    self.argument_list.append( (self.constants[argument[0]], argument[1]) )
                 
             
             else:
@@ -178,13 +182,13 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             
             if isinstance(arg[0], Constant):
                 
-                if arg[2] is ARGS_MODES.NORMAL:
+                if arg[1] is ARGS_MODES.NORMAL:
                     args.append( arg[0].value )
                 
-                elif arg[2] is ARGS_MODES.KEYWORD:
+                elif arg[1] is ARGS_MODES.KEYWORD:
                     kwargs[arg[-1]] = arg[0].value
                     
-                elif arg[2] is ARGS_MODES.UNPACKED:
+                elif arg[1] is ARGS_MODES.UNPACKED:
                     args.extend( arg[0].value )
                     
                 else:
