@@ -9,6 +9,7 @@ import random
 import math
 import yaml
 import os
+import re
 
 import imp
 from pathlib import Path
@@ -21,6 +22,77 @@ from util.arg_parsing import *
 class PythonFrame(ProblemFrame):
         
     NUMBER_OF_SUPPORTED_OBJECTIVES=10
+    
+    class ObjectiveDoubleclickPopup:
+        
+        def __init__( self, controller, event ):
+        
+            self.controller = controller    
+            # self.entry_item = event[0]
+            self.entry_item = self.controller.objectives_tree.selection()[0]
+        
+            self.selection_index = to_integer(self.controller.objectives_tree.item( self.entry_item, "text" ))
+            self.original_selection_values = self.controller.objectives_tree.item( self.entry_item, "values" )
+        
+            self.objective_popup_win = tk.Toplevel( master=self.controller )
+            self.objective_popup_win.wm_title("Change objective parameters")
+            self.objective_popup_win.resizable(False,False)
+            self.objective_popup_win.iconbitmap( os.path.join(os.getcwd(), 'interface', 'resources', 'images', 'joptimizer_icon.ico') )
+            
+            screen_width = self.objective_popup_win.winfo_screenwidth()
+            screen_height = self.objective_popup_win.winfo_screenheight()
+            
+            window_width = 230
+            window_height = 170
+            
+            window_x_offset = screen_width//2 - window_width//2
+            window_y_offset = screen_height//2 - window_height//2
+            
+            self.objective_popup_win.wm_geometry("%dx%d+%d+%d" % (window_width, window_height, window_x_offset, window_y_offset))
+            self.objective_popup_win.grab_set()
+            
+            name_label = tk.Label( master=self.objective_popup_win, text="Name" )
+            name_label.grid( row=0, column=0, sticky="NSEW", padx=(30,0), pady=(30,0), columnspan=1 )
+            
+            self.name_entry = tk.Entry( master=self.objective_popup_win )
+            self.name_entry.grid( row=0, column=1, sticky="NSEW", padx=(10,10), pady=(30,0), columnspan=2 )
+            self.name_entry.insert( 0, self.original_selection_values[0] )
+            
+            mode_label = tk.Label( master=self.objective_popup_win, text="Mode" )
+            mode_label.grid( row=1, column=0, sticky="NSEW", padx=(30,0), pady=(10,0), columnspan=1 )
+            
+            objective_option_list = [ ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE.value, ProblemParameters.OPTIMIZATION_TYPE.MAXIMIZE.value ]
+            
+            self.ObjectiveOption = tk.StringVar(self.objective_popup_win)
+            self.ObjectiveOption.set( self.original_selection_values[1] )
+            self.objective_option = tk.OptionMenu(self.objective_popup_win, self.ObjectiveOption, *objective_option_list )
+            self.objective_option.grid( row=1, column=1, sticky="NSEW", padx=(10,10), pady=(10,0), columnspan=2 )
+            
+            self.save_close_button = tk.Button( master=self.objective_popup_win, text="Close", command=self._close)
+            self.save_close_button.grid( row=2, column=0, sticky="NSEW", padx=(30,10), pady=(10,30), columnspan=3 )
+            
+        def _close(self):
+            
+            if not re.match("[a-zA-Z0-9][a-zA-Z0-9_]*", self.name_entry.get()):
+                tk.messagebox.showerror(title="Invalid objective name", message="Objective name contains invalid characters")
+                
+            elif self.original_selection_values[0] != self.name_entry.get() and \
+                ((self.name_entry.get() in self.controller.reserved_objective_names and self.name_entry.get() != "O"+str(self.selection_index)) or \
+                 self.name_entry.get() in self.controller.objectives_dict):
+                     
+                tk.messagebox.showerror(title="Invalid objective name", message="Objective name already exists or is a reserved word")
+                
+            else:
+                name = self.name_entry.get()
+                index = self.controller.objectives.index( self.controller.objectives_dict.pop( self.original_selection_values[0] ) )
+                new_objective = (name, ProblemParameters.OPTIMIZATION_TYPE(self.ObjectiveOption.get()))
+                self.controller.objectives[index] = new_objective
+                self.controller.objectives_dict[name] = new_objective
+                self.controller.objectives_tree.item( self.entry_item, values=(name,self.ObjectiveOption.get()) )
+                
+                self.objective_popup_win.destroy()
+                
+                
     
     def _browse(self): 
         
@@ -93,10 +165,6 @@ class PythonFrame(ProblemFrame):
     def _save_function_parameters(self, *args):
         self.problem_parameters.options["function_name"] = self.FunctionOption.get()
         self.problem_parameters.options["python_script_path"] = self.ScriptFilePath.get()
-    
-    
-    def _objective_doubleclick_popup(self, event):
-        pass
     
     
     def _update_objectives(self, new_value):
@@ -206,7 +274,7 @@ class PythonFrame(ProblemFrame):
         for i, objective in enumerate(self.objectives,1):
             self.objectives_tree.insert('', 'end', text=str(i), values=(objective[0], objective[1].value))
             
-        self.objectives_tree.bind("<Double-1>", self._update_objectives)
+        self.objectives_tree.bind("<Double-1>", lambda event: PythonFrame.ObjectiveDoubleclickPopup(controller=self, event=event))
     
         
     def check_args(self):
@@ -262,10 +330,33 @@ class PythonFrame(ProblemFrame):
     def save_parameters(self):
         super(PythonFrame,self).save_parameters()
         self.problem_parameters.options["call_args"] = self.ArgsEntry.get()
+        self.problem_parameters.options["objectives_names"] = [ objective[0] for objective in self.objectives]
+        self.problem_parameters.options["objectives_minimize"] = [ objective[1]==ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE for objective in self.objectives]
             
     def load_parameters(self):
         super(PythonFrame,self).load_parameters()
         self.ArgsEntry.set(self.problem_parameters.options["call_args"])
+        
+        self.objectives = []
+        self.objectives_dict = {}
+        
+        for name, minimize in zip(self.problem_parameters.options["objectives_names"],self.problem_parameters.options["objectives_minimize"]):
+            
+            if minimize:
+                objective_type = ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE
+            else:
+                objective_type = ProblemParameters.OPTIMIZATION_TYPE.MAXIMIZE
+            
+            objective = (name,objective_type)
+            self.objectives.append(objective)
+            self.objectives_dict[name] = objective
+        
+        for iid in self.objectives_tree.get_children():
+            self.objectives_tree.delete( iid )
+        
+        for i, objective in enumerate(self.objectives,1):
+            self.objectives_tree.insert('', 'end', text=str(i), values=(objective[0], objective[1].value))
+        
     
     # def __is_evaluator_instance(self, parameter: Parameter):
             

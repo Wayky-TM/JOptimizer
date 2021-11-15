@@ -151,6 +151,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             else:
                 raise Exception("CompositeProblem.__init__(): wrong argument '%'" % (argument[0]))
         
+        # Coeffiecients in {-1,1} to transform minimization problems to maximization
+        self.objective_transformation_vector = [ 1-int(boolean)*2 for boolean in self.problem_parameters.options["objectives_minimize"] ]
         
         self.solution_shape = ( self.float_count, self.integer_count, self.binary_count, self.permutation_solution_count )
         
@@ -287,6 +289,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             
             kwargs["permutation_solutions"] = permutation_solutions
         
+        # print(kwargs)
+        
         return CS.CompositeSolution( number_of_objectives=to_integer(self.problem_parameters.options["objectives"]),
                                      number_of_constraints=to_integer(self.problem_parameters.options["constraints"]),
                                      **kwargs )
@@ -296,7 +300,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
     def evaluate( self, solution: jsol.CompositeSolution):
         
         args, kwargs = self._generate_args(solution)
-        solution.objectives = self.evaluator.evaluate( *args, **kwargs )
+        # solution.objectives = self.evaluator.evaluate( *args, **kwargs )
+        solution.objectives = [ coefficient*objective for objective, coefficient in zip(self.evaluator.evaluate( *args, **kwargs ),self.objective_transformation_vector) ]
         self.evaluations += 1
         
         return solution
@@ -353,12 +358,13 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 var = ( arg[0], value )
                 variables_list.append( var )
                 variables_dictionary[arg[0].keyword] = var
+                objectives_list = [ coefficient*objective for coefficient, objective in zip(self.objective_transformation_vector, solution.objectives) ]
                 
             else:
                 raise ValueError("_generate_args(): invalid symbol type: %s" % (type(arg[0])))
                 
         
-        return (variables_list, variables_dictionary)
+        return (variables_list, variables_dictionary, objectives_list)
     
     def get_name(self):
         return "CompositeProblem"

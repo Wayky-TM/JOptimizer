@@ -19,6 +19,7 @@ import signal
 
 from enum import Enum
 from abc import *
+from typing import List
 
 from core.engine_parameters import EngineParameters
 from core.problem_parameters import ProblemParameters
@@ -26,6 +27,7 @@ from core.algorithm_parameters import AlgorithmParameters
 # from core.composite_problem import CompositeProblem
 from jmetal.core.algorithm import Algorithm
 import jmetal.util.termination_criterion as jterm
+import core.JMetalpy.composite_solution as CS
 
 
 class OptimizationEngine:
@@ -137,9 +139,10 @@ class OptimizationEngine:
     def resume(self):
         self.pause_event.set()
     
-    
     def get_front(self):
-        solutions = self.algorithm.get_result()
+        return self.algorithm.get_result()
+        
+    def get_variables(self, solutions: List[CS.CompositeSolution]):
         return [ self.problem.recover_variables(x) for x in solutions ]
     
     

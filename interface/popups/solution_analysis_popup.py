@@ -37,40 +37,44 @@ class SolutionsFrame( ParameterFrame ):
         
         self.controller = controller
         
-        self.variable_headers = [variable.keyword for variable in self.controller.problem_parameters.variables]
+        self.variable_headers = [ objective_name for objective_name in self.controller.problem_parameters.options["objectives_names"] ]
         self.solutions_tree = ttk.Treeview(master=master, columns=self.variable_headers, selectmode="extended")
         self.solutions_tree.heading("#0", text="Index")
         self.solutions_tree.column("#0", stretch=tk.NO)
         
-        for variable in self.controller.problem_parameters.variables:
+        # for variable in self.controller.problem_parameters.variables:
             
-            self.solutions_tree.heading( variable.keyword, text=variable.keyword )
-            self.solutions_tree.column( variable.keyword, stretch=tk.NO )
+        #     self.solutions_tree.heading( variable.keyword, text=variable.keyword )
+        #     self.solutions_tree.column( variable.keyword, stretch=tk.NO )
         
-        self.solutions_tree.grid(row=0, column=0, columnspan=2,
-                                 padx=10, pady=10, sticky="nsew")
+        for objective_name in self.controller.problem_parameters.options["objectives_names"]:
+            
+            self.solutions_tree.heading( objective_name, text=objective_name )
+            self.solutions_tree.column( objective_name, stretch=tk.NO )
         
-        scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.solutions_tree.yview)
-        scrollbar.grid(row=0, column=3, sticky="nse", pady="10")
+        # self.solutions_tree.grid(row=0, column=0, columnspan=2,
+                                 # padx=10, pady=10, sticky="nsew")
         
-        # self.solutions_tree.place(relx=0.02, rely=0.17, relwidth=0.955, relheight=0.8)
+        # scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.solutions_tree.yview)
+        # scrollbar.grid(row=0, column=3, sticky="nse", pady="10")
+        
+        self.solutions_tree.place(relx=0.02, rely=0.17, relwidth=0.955, relheight=0.8)
     
     def display(self):
         self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
         
     def load_front(self):
-        front = self.controller.engine.get_front()
+        self.front = self.controller.engine.get_front()
+        self.solutions = self.controller.engine.get_variables(self.front)
         
-        # number_of_variables = len(self.controller.problem_parameters.variables)
-                
-        for i, solution in enumerate(front):
-            values_tuple = tuple( [ str(component[1]) for component in solution] )
+        for i, solution in enumerate(self.solutions):
+            values_tuple = tuple( [ str(objective) for objective in solution[-1]] )
             self.solutions_tree.insert('', 'end', text=str(i), values=values_tuple)
             
 
-def solution_analysis_popup( controller ):
+def solution_analysis_popup( master, controller ):
 
-    win = tk.Toplevel( master=controller )
+    win = tk.Toplevel( master=master )
     win.wm_title("Solutions analysis tools")
     win.resizable(False,False)
     win.iconbitmap( os.path.join(os.getcwd(), 'interface', 'resources', 'images', 'joptimizer_icon.ico') )

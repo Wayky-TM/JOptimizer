@@ -101,7 +101,7 @@ class OptimizeTab(ttk.Frame):
         
     
     def __results_analysis(self):
-        solution_analysis_popup( controller=self.controller )
+        solution_analysis_popup( master=self, controller=self.controller )
     
     def __save_solutions(self):
         pass

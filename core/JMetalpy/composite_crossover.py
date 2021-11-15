@@ -44,7 +44,6 @@ class CompositeCrossover(Crossover[CompositeSolution, CompositeSolution]):
         permutation_solutions_offspring1 = []
         permutation_solutions_offspring2 = []
 
-
         for ParentA, ParentB in zip( solutions[0].float_solutions, solutions[1].float_solutions ):
             children = self.float_crossover.execute( [ParentA, ParentB] )
             float_solutions_offspring1.append( children[0] )
