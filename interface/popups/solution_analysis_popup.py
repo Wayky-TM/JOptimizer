@@ -27,6 +27,7 @@ except ImportError:
 from collections import defaultdict
 
 from interface.parameter_frames import *
+from util.type_check import *
 
 
 def treeview_sort_column(tv, col, reverse):
@@ -49,6 +50,52 @@ def treeview_sort_first_column(tv, col, reverse):
         tv.move(k, '', index)
 
     tv.heading(col, command=lambda: treeview_sort_first_column(tv, col, not reverse))
+
+
+class InspectSolutionPopup:
+    
+    def __init__( self, controller, event ):
+        
+        self.controller = controller    
+        
+        self.entry_item = self.controller.solutions_tree.selection()[0]
+        self.selection_index = to_integer(self.controller.solutions_tree.item( self.entry_item, "text" ))
+        
+        self.solution = self.controller.solutions[self.selection_index]
+        
+        self.variables_popup_win = tk.Toplevel( master=self.controller )
+        self.variables_popup_win.wm_title("Solution values")
+        self.variables_popup_win.resizable(False,False)
+        self.variables_popup_win.iconbitmap( os.path.join(os.getcwd(), 'interface', 'resources', 'images', 'joptimizer_icon.ico') )
+        
+        screen_width = self.variables_popup_win .winfo_screenwidth()
+        screen_height = self.variables_popup_win .winfo_screenheight()
+        
+        window_width = 500
+        window_height = 250
+        
+        window_x_offset = screen_width//2 - window_width//2
+        window_y_offset = screen_height//2 - window_height//2
+        
+        self.variables_popup_win .wm_geometry("%dx%d+%d+%d" % (window_width, window_height, window_x_offset, window_y_offset))
+        self.variables_popup_win .grab_set()
+        
+        self.variable_headers = [ "Value" ]
+        self.solutions_tree = ttk.Treeview(master=self.variables_popup_win, columns=self.variable_headers, selectmode="extended")
+        
+        self.solutions_tree.heading("#0", text="Variable" )
+        self.solutions_tree.column("#0", stretch=tk.NO)
+        
+        self.solutions_tree.heading("Value", text="Value" )
+        self.solutions_tree.column("Value", stretch=tk.NO)
+        
+        print(self.solution)
+        
+        for variable in self.solution[0]:
+            self.solutions_tree.insert('', 'end', text=variable[0].keyword, values=(str(variable[1])))
+            
+        self.solutions_tree.place( relx=0.015, rely=0.03, relwidth=0.97, relheight=0.94 )
+
 
 class SolutionsFrame( ParameterFrame ):
     
@@ -79,6 +126,7 @@ class SolutionsFrame( ParameterFrame ):
         # scrollbar.grid(row=0, column=3, sticky="nse", pady="10")
         
         self.solutions_tree.place(relx=0.02, rely=0.17, relwidth=0.955, relheight=0.8)
+        self.solutions_tree.bind("<Double-1>", lambda event: InspectSolutionPopup(controller=self, event=event))
     
     def display(self):
         self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )

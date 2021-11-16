@@ -142,6 +142,7 @@ class EvolutionaryAlgorithm(Algorithm[S, R], ABC):
 
     def step(self):
         mating_population = self.selection(self.solutions)
+        
         offspring_population = self.reproduction(mating_population)
         offspring_population = self.evaluate(offspring_population)
 

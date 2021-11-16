@@ -21,7 +21,7 @@ from core.variable import *
 from core.constant import *
                   
 from core.problem_parameters import ProblemParameters
-from core.constant import FloatConstant, IntegerConstant
+# from core.constant import FloatConstant, IntegerConstant
 from core.evaluator import Evaluator
 from core.null import NullSolution
 
@@ -131,6 +131,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                         self.permutation_solution_count += 1
                         self.permutations.append( var.elements )
                     
+                    
                     self.included_variables_dict[var] = index
                     
                 else:
@@ -198,21 +199,40 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 
                 if type(arg[0]) == FloatVariable:
                     value = solution.float_solutions[0].variables[arg[1][0]]
+                    
+                elif type(arg[0]) == FloatVectorVariable:
+                    value = solution.float_solutions[0].variables[arg[1][0]:arg[1][1]]
                 
                 elif type(arg[0]) == IntegerVariable:
                     value = solution.integer_solutions[0].variables[arg[1][0]]
                 
-                elif type(arg[0]) == FloatVectorVariable:
-                    value = solution.float_solutions[0].variables[arg[1][0]:arg[1][1]]
-                
                 elif type(arg[0]) == IntegerVectorVariable:
                     value = solution.integer_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    
+                elif type(arg[0]) == DiscretizedFloatVariable:
+                    value = solution.integer_solutions[0].variables[arg[1][0]]    
+                    value = arg[0].to_float( value )
+                    
+                elif type(arg[0]) == DiscretizedVectorVariable:
+                    value = solution.integer_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    value = arg[0].to_float( value )
                 
                 elif type(arg[0]) == BinaryVariable:
                     value = solution.binary_solutions[0].variables[arg[1][0]]
+                    value = int(value)
+                    
+                elif type(arg[0]) == BinaryVectorVariable:
+                    value = solution.binary_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    value = [ int(bit) for bit in value ]
+                    
+                elif type(arg[0]) == BooleanVariable:
+                    value = solution.binary_solutions[0].variables[arg[1][0]]
+                    
+                elif type(arg[0]) == BooleanVectorVariable:
+                    value = solution.binary_solutions[0].variables[arg[1][0]:arg[1][1]]
                 
                 elif type(arg[0]) == PermutationVariable:
-                    value = solution.permutation_solutions[arg[1]].variables
+                    value = solution.permutation_solutions[arg[1][0]].variables
                     
                     
                 if arg[2] is ARGS_MODES.NORMAL:
@@ -363,6 +383,9 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 variables_list.append( var )
                 variables_dictionary[arg[0].keyword] = var
                 objectives_list = [ coefficient*objective for coefficient, objective in zip(self.objective_transformation_vector, solution.objectives) ]
+                
+            elif isinstance(arg[0], Constant):
+                pass
                 
             else:
                 raise ValueError("_generate_args(): invalid symbol type: %s" % (type(arg[0])))
