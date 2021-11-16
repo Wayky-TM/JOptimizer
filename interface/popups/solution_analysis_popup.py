@@ -89,8 +89,6 @@ class InspectSolutionPopup:
         self.solutions_tree.heading("Value", text="Value" )
         self.solutions_tree.column("Value", stretch=tk.NO)
         
-        print(self.solution)
-        
         for variable in self.solution[0]:
             self.solutions_tree.insert('', 'end', text=variable[0].keyword, values=(str(variable[1])))
             

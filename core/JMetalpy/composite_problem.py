@@ -157,7 +157,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 raise Exception("CompositeProblem.__init__(): wrong argument '%'" % (argument[0]))
         
         # Coeffiecients in {-1,1} to transform minimization problems to maximization
-        self.objective_transformation_vector = [ 1-int(boolean)*2 for boolean in self.problem_parameters.options["objectives_minimize"] ]
+        self.objective_transformation_vector = [ int(boolean)*2 - 1 for boolean in self.problem_parameters.options["objectives_minimize"] ]
         
         self.solution_shape = ( self.float_count, self.integer_count, self.binary_count, self.permutation_solution_count )
         
@@ -351,7 +351,7 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                 elif type(arg[0]) == IntegerVectorVariable:
                     value = solution.integer_solutions[0].variables[arg[1][0]:arg[1][1]]
                     
-                elif type(arg[0]) == IntegerVariable:
+                elif type(arg[0]) == DiscretizedFloatVariable:
                     value = solution.integer_solutions[0].variables[arg[1][0]]    
                     value = arg[0].to_float( value )
                     

@@ -252,6 +252,10 @@ class VariablesFrame(ProblemFrame):
                 error_list.append( "Invalid step value" )
                 self._invalidate_entry_(self.step_entry)
                 
+            elif len(error_list) == 0 and self.ps.get() == "step" and is_float(self.step_entry.get()) and 2.0*float(self.step_entry.get()) > (float(self.upper_bound_entry.get()) - float(self.lower_bound_entry.get())):
+                error_list.append( "Step value must be smaller than a half of the interval defined by lower and upper bounds" )
+                self._invalidate_entry_(self.step_entry)
+                
             elif self.ps.get() == "points" and (not is_integer(self.points_entry.get()) or to_integer(self.points_entry.get()) < 1):
                 error_list.append( "Invalid number of points" )
                 self._invalidate_entry_(self.points_entry)
@@ -619,6 +623,10 @@ class VariablesFrame(ProblemFrame):
                 
             elif self.ps.get() == "step" and (not is_float(self.step_entry.get()) or float(self.step_entry.get())<= 0.0):
                 error_list.append( "Invalid step value" )
+                self._invalidate_entry_(self.step_entry)
+                
+            elif len(error_list) == 0 and self.ps.get() == "step" and is_float(self.step_entry.get()) and 2.0*float(self.step_entry.get()) > (float(self.upper_bound_entry.get()) - float(self.lower_bound_entry.get())):
+                error_list.append( "Step value must be smaller than a half of the interval defined by lower and upper bounds" )
                 self._invalidate_entry_(self.step_entry)
                 
             elif self.ps.get() == "points" and (not is_integer(self.points_entry.get()) or to_integer(self.points_entry.get()) < 1):
