@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  8 01:07:50 2021
 
-@author: Wayky
-"""
 
 import sys
-sys.path.append(r"./..")
+# sys.path.append(r"./..")
 
 import copy
 import random
@@ -307,14 +303,15 @@ class DiscretizedVectorVariable( VectorVariable ):
         return [self.lower_bound + float(x)*self.step for x in values]
 
 
-class BinaryVectorVariable( IntegerVectorVariable ):
+class BinaryVectorVariable( VectorVariable ):
     
     def __init__( self,
                   keyword: str,
                   length: int,
                   vector_type: VECTOR_TYPE = VECTOR_TYPE.PYTHON):
         
-        super(BinaryVectorVariable, self).__init__(keyword=keyword, length=length, lower_bound=0, upper_bound=1, vector_type=vector_type)
+        # super(BinaryVectorVariable, self).__init__(keyword=keyword, length=length, lower_bound=0, upper_bound=1, vector_type=vector_type)
+        super(BinaryVectorVariable, self).__init__( keyword=keyword, length=length, vector_type=vector_type )
     
     
  

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.append(r"./../../../../../")
+# sys.path.append(r"./../../../../../")
 
 from interface.tabs.problem.frames.problem_frame import *
-
+from core.variable import *
 
 class VariablesFrame(ProblemFrame):
         
@@ -145,7 +145,7 @@ class VariablesFrame(ProblemFrame):
             
             if len(error_list)==0:
                 
-                variable = variable_types.FloatVariable(keyword=self.name_entry.get(), lower_bound=float(self.lower_bound_entry.get()), upper_bound=float(self.upper_bound_entry.get()))
+                variable = FloatVariable(keyword=self.name_entry.get(), lower_bound=float(self.lower_bound_entry.get()), upper_bound=float(self.upper_bound_entry.get()))
                 
                 self.clear_entries()
                 
@@ -176,7 +176,7 @@ class VariablesFrame(ProblemFrame):
             
             if len(error_list)==0:
                 
-                variable = variable_types.IntegerVariable(keyword=self.name_entry.get(), lower_bound=to_integer(self.lower_bound_entry.get()), upper_bound=to_integer(self.upper_bound_entry.get()))
+                variable = IntegerVariable(keyword=self.name_entry.get(), lower_bound=to_integer(self.lower_bound_entry.get()), upper_bound=to_integer(self.upper_bound_entry.get()))
                 
                 self.clear_entries()
                 
@@ -281,7 +281,7 @@ class VariablesFrame(ProblemFrame):
                 elif self.ps.get() == "points":
                     step = (float(self.upper_bound_entry.get()) - float(self.lower_bound_entry.get()))/float(self.points_entry.get())
                 
-                variable = variable_types.DiscretizedFloatVariable(keyword=self.name_entry.get(), lower_bound=float(self.lower_bound_entry.get()), upper_bound=float(self.upper_bound_entry.get()), step=step)
+                variable = DiscretizedFloatVariable(keyword=self.name_entry.get(), lower_bound=float(self.lower_bound_entry.get()), upper_bound=float(self.upper_bound_entry.get()), step=step)
                 
                 self.clear_entries()
                 
@@ -301,7 +301,7 @@ class VariablesFrame(ProblemFrame):
             error_list = self.check_errors()
             
             if len(error_list)==0:
-                variable = variable_types.BinaryVariable(keyword=self.name_entry.get())
+                variable = BinaryVariable(keyword=self.name_entry.get())
                 self.clear_entries()
                 
                 return variable
@@ -320,7 +320,7 @@ class VariablesFrame(ProblemFrame):
             error_list = self.check_errors()
             
             if len(error_list)==0:
-                variable = variable_types.BooleanVariable(keyword=self.name_entry.get())
+                variable = BooleanVariable(keyword=self.name_entry.get())
                 self.clear_entries()
                 
                 return variable
@@ -377,7 +377,7 @@ class VariablesFrame(ProblemFrame):
                 elements = string.split(",")
                 elements_int = [ to_integer(e) for e in elements ]
                 
-                variable = variable_types.PermutationVariable(keyword=self.name_entry.get(), elements=elements_int)
+                variable = PermutationVariable(keyword=self.name_entry.get(), elements=elements_int)
                 
                 self.clear_entries()
                 
@@ -397,7 +397,7 @@ class VariablesFrame(ProblemFrame):
             self.name_label = tk.Label( master=self, text="Type" )
             self.name_label.place( relx=0.1, rely=0.2 )
             
-            self.type_options_list = [ option.value for option in variable_types.VECTOR_TYPE ]
+            self.type_options_list = [ option.value for option in VECTOR_TYPE ]
             
             self.TypeOption = tk.StringVar(self)
             self.TypeOption.set(self.type_options_list[0])
@@ -507,9 +507,9 @@ class VariablesFrame(ProblemFrame):
                 
             if len(error_list)==0:
                 
-                vector_type = { option.value:option for option in variable_types.VECTOR_TYPE }[self.TypeOption.get()]
+                vector_type = { option.value:option for option in VECTOR_TYPE }[self.TypeOption.get()]
                 
-                variable = variable_types.FloatVectorVariable(keyword=self.name_entry.get(),
+                variable = FloatVectorVariable(keyword=self.name_entry.get(),
                                                               lower_bound=float(self.lower_bound_entry.get()),
                                                               upper_bound=float(self.upper_bound_entry.get()),
                                                               length=to_integer(self.length_entry.get()),
@@ -544,9 +544,9 @@ class VariablesFrame(ProblemFrame):
                 
             if len(error_list)==0:
                 
-                vector_type = { option.value:option for option in variable_types.VECTOR_TYPE }[self.TypeOption.get()]
+                vector_type = { option.value:option for option in VECTOR_TYPE }[self.TypeOption.get()]
                 
-                variable = variable_types.IntegerVectorVariable(keyword=self.name_entry.get(),
+                variable = IntegerVectorVariable(keyword=self.name_entry.get(),
                                                                 lower_bound=self.cast_type(self.lower_bound_entry.get()),
                                                                 upper_bound=self.cast_type(self.upper_bound_entry.get()),
                                                                 length=to_integer(self.length_entry.get()),
@@ -652,9 +652,9 @@ class VariablesFrame(ProblemFrame):
                 elif self.ps.get() == "points":
                     step = (float(self.upper_bound_entry.get()) - float(self.lower_bound_entry.get()))/float(self.points_entry.get())
                 
-                vector_type = { option.value:option for option in variable_types.VECTOR_TYPE }[self.TypeOption.get()]
+                vector_type = { option.value:option for option in VECTOR_TYPE }[self.TypeOption.get()]
                 
-                variable = variable_types.DiscretizedVectorVariable(keyword=self.name_entry.get(),
+                variable = DiscretizedVectorVariable(keyword=self.name_entry.get(),
                                                                 lower_bound=self.cast_type(self.lower_bound_entry.get()),
                                                                 upper_bound=self.cast_type(self.upper_bound_entry.get()),
                                                                 step=step,
@@ -683,9 +683,9 @@ class VariablesFrame(ProblemFrame):
                 
             if len(error_list)==0:
                 
-                vector_type = { option.value:option for option in variable_types.VECTOR_TYPE }[self.TypeOption.get()]
+                vector_type = { option.value:option for option in VECTOR_TYPE }[self.TypeOption.get()]
                 
-                variable = variable_types.BinaryVectorVariable(keyword=self.name_entry.get(),
+                variable = BinaryVectorVariable(keyword=self.name_entry.get(),
                                                                 length=to_integer(self.length_entry.get()),
                                                                 vector_type=vector_type)
                 
@@ -708,9 +708,9 @@ class VariablesFrame(ProblemFrame):
                 
             if len(error_list)==0:
                 
-                vector_type = { option.value:option for option in variable_types.VECTOR_TYPE }[self.TypeOption.get()]
+                vector_type = { option.value:option for option in VECTOR_TYPE }[self.TypeOption.get()]
                 
-                variable = variable_types.BooleanVectorVariable(keyword=self.name_entry.get(),
+                variable = BooleanVectorVariable(keyword=self.name_entry.get(),
                                                                 length=to_integer(self.length_entry.get()),
                                                                 vector_type=vector_type)
                 
@@ -732,11 +732,11 @@ class VariablesFrame(ProblemFrame):
             var_name = variable.keyword
             var_type = self.type_dict[type(variable)]
             
-            if type(variable) in [variable_types.BinaryVariable,
-                                  variable_types.BinaryVectorVariable,
-                                  variable_types.BooleanVariable,
-                                  variable_types.BooleanVectorVariable,
-                                  variable_types.PermutationVariable]:
+            if type(variable) in [BinaryVariable,
+                                  BinaryVectorVariable,
+                                  BooleanVariable,
+                                  BooleanVectorVariable,
+                                  PermutationVariable]:
                 var_lower_bound = "-"
                 var_upper_bound = "-"
                 
@@ -784,11 +784,11 @@ class VariablesFrame(ProblemFrame):
             var_name = variable.keyword
             var_type = self.type_dict[type(variable)]
             
-            if type(variable) in [variable_types.BinaryVariable,
-                                  variable_types.BooleanVariable,
-                                  variable_types.PermutationVariable,
-                                  variable_types.BinaryVectorVariable,
-                                  variable_types.BooleanVectorVariable]:
+            if type(variable) in [BinaryVariable,
+                                  BooleanVariable,
+                                  PermutationVariable,
+                                  BinaryVectorVariable,
+                                  BooleanVectorVariable]:
                 var_lower_bound = "-"
                 var_upper_bound = "-"
                 
@@ -857,17 +857,17 @@ class VariablesFrame(ProblemFrame):
         self.add_button = ttk.Button(labelframe_add, text="Add", command=self.add_variable)
         self.add_button.place(relx=0.325, rely=0.86, relwidth=0.35, relheight=0.1)
         
-        self.type_dict = { variable_types.FloatVariable:"Real",
-                              variable_types.IntegerVariable:"Integer",
-                              variable_types.DiscretizedFloatVariable:"Discretized real",
-                              variable_types.BinaryVariable:"Binary",
-                              variable_types.BooleanVariable:"Boolean",
-                              variable_types.PermutationVariable:"Permutation",
-                              variable_types.FloatVectorVariable:"Real vector",
-                              variable_types.IntegerVectorVariable:"Integer vector",
-                              variable_types.DiscretizedVectorVariable:"Disc. real vector",
-                              variable_types.BinaryVectorVariable:"Binary vector",
-                              variable_types.BooleanVectorVariable:"Boolean vector"}
+        self.type_dict = { FloatVariable:"Real",
+                              IntegerVariable:"Integer",
+                              DiscretizedFloatVariable:"Discretized real",
+                              BinaryVariable:"Binary",
+                              BooleanVariable:"Boolean",
+                              PermutationVariable:"Permutation",
+                              FloatVectorVariable:"Real vector",
+                              IntegerVectorVariable:"Integer vector",
+                              DiscretizedVectorVariable:"Disc. real vector",
+                              BinaryVectorVariable:"Binary vector",
+                              BooleanVectorVariable:"Boolean vector"}
         
         self.variable_frames = {}
         self.variable_frames["Real"] = VariablesFrame.FloatParametersFrame(master=labelframe_add, problem_parameters=self.problem_parameters)

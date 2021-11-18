@@ -3,7 +3,7 @@
 import inspect
 import imp
 import sys
-sys.path.append(r"./..")
+# sys.path.append(r"./..")
 
 from win32api import GetSystemMetrics
 from collections import defaultdict
@@ -29,6 +29,11 @@ class PythonFunctionEvaluator(Evaluator):
     def evaluate( self, *args, **kwargs ):
         
         objectives = self.python_function( *args, **kwargs )
+        
+        try:
+            iterator = iter(objectives)
+        except:
+            objectives = [objectives]
         
         if len(objectives) != self.number_of_objectives:
             raise ValueError("Function '%s' returned an inappropiate number of values: expected %d, received %d" % (function_name, self.number_of_objectives, len(objectives)))

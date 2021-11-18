@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.append(r"./../../../../../")
+# sys.path.append(r"./../../../../../")
 
 from interface.tabs.problem.frames.problem_frame import *
-
+from core.constant import *
 
 class ConstantsFrame(ProblemFrame):
         
@@ -112,7 +112,7 @@ class ConstantsFrame(ProblemFrame):
             
             if len(error_list)==0:
                 
-                variable = constant_types.FloatConstant(keyword=self.name_entry.get(), value=self.cast_type(self.value_entry.get()))
+                variable = FloatConstant(keyword=self.name_entry.get(), value=self.cast_type(self.value_entry.get()))
                 
                 self.clear_entries()
                 
@@ -142,7 +142,7 @@ class ConstantsFrame(ProblemFrame):
             
             if len(error_list)==0:
                 
-                variable = constant_types.IntegerConstant(keyword=self.name_entry.get(), value=self.cast_type(self.value_entry.get()))
+                variable = IntegerConstant(keyword=self.name_entry.get(), value=self.cast_type(self.value_entry.get()))
                 
                 self.clear_entries()
                 
@@ -182,7 +182,7 @@ class ConstantsFrame(ProblemFrame):
             
             if len(error_list)==0:
                 
-                variable = constant_types.BinaryConstant(keyword=self.name_entry.get(), value=self.cast_type(self.value_option.get()))
+                variable = BinaryConstant(keyword=self.name_entry.get(), value=self.cast_type(self.value_option.get()))
                 
                 self.clear_entries()
                 
@@ -235,7 +235,7 @@ class ConstantsFrame(ProblemFrame):
             
             if len(error_list)==0:
                 elements_int = [ to_integer(e) for e in self.elements ]
-                variable = constant_types.PermutationConstant(keyword=self.name_entry.get(), value=elements_int)
+                variable = PermutationConstant(keyword=self.name_entry.get(), value=elements_int)
                 
                 self.clear_entries()
                 
@@ -269,7 +269,7 @@ class ConstantsFrame(ProblemFrame):
             
             if len(error_list)==0:
                 
-                variable = constant_types.StringConstant(keyword=self.name_entry.get(), value=self.string_textbox.get("1.0", tk.END))
+                variable = StringConstant(keyword=self.name_entry.get(), value=self.string_textbox.get("1.0", tk.END))
                 
                 self.clear_entries()
                 
@@ -379,11 +379,11 @@ class ConstantsFrame(ProblemFrame):
         self.add_button = ttk.Button(labelframe_add, text="Add", command=self.add_constant)
         self.add_button.place(relx=0.325, rely=0.86, relwidth=0.35, relheight=0.1)
         
-        self.type_dict = { constant_types.FloatConstant:"Real",
-                      constant_types.IntegerConstant:"Integer",
-                      constant_types.BinaryConstant:"Binary",
-                      constant_types.PermutationConstant:"Permutation",
-                      constant_types.StringConstant:"String" }
+        self.type_dict = { FloatConstant:"Real",
+                      IntegerConstant:"Integer",
+                      BinaryConstant:"Binary",
+                      PermutationConstant:"Permutation",
+                      StringConstant:"String" }
         
         self.constant_frames = {}
         self.constant_frames["Real"] = ConstantsFrame.FloatConstantFrame(master=labelframe_add, problem_parameters=self.problem_parameters)

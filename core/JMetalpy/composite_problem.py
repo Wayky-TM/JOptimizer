@@ -1,6 +1,6 @@
 
 import sys
-sys.path.append(r"./..")
+# sys.path.append(r"./..")
 # sys.path.append(r"./../../")
 
 import copy
@@ -13,12 +13,14 @@ from typing import List
 
 import jmetal.core.problem as jprob
 import jmetal.core.solution as jsol
-import jmetal.operator.crossover as Crossover
-import jmetal.operator.mutation as Mutation
+# import jmetal.operator.crossover as Crossover
+# import jmetal.operator.mutation as Mutation
 import core.JMetalpy.composite_solution as CS
 
 from core.variable import *
 from core.constant import *
+# import core.variable
+# import core.constant
                   
 from core.problem_parameters import ProblemParameters
 # from core.constant import FloatConstant, IntegerConstant
@@ -29,6 +31,12 @@ import util.string_utils as su
 import util.arg_parsing as AP
 from util.type_check import is_integer, to_integer
 
+
+"""
+    TODO:
+        -Make variables typechecking work without using classes __name__ attr.
+"""
+
 @unique
 class ARGS_MODES(Enum):
     NORMAL=0
@@ -37,7 +45,7 @@ class ARGS_MODES(Enum):
 
 
 
-class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
+class CompositeProblem(jprob.Problem[CS.CompositeSolution], ABC):
         
     def __init__(self,
                  evaluator: Evaluator,
@@ -118,11 +126,13 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                         self.integer_lower_bounds.append(0)
                         self.integer_upper_bounds.append(var.resolution)
                         
-                    elif type(var) == BinaryVariable or type(var) == BooleanVariable:
+                    elif isinstance(var,BinaryVariable) or isinstance(var,BooleanVariable):
                         index = (self.binary_count,self.binary_count+1)
                         self.binary_count += 1
                         
-                    elif type(var) == BinaryVectorVariable or type(var) == BooleanVectorVariable:
+                    # elif type(var) == BinaryVectorVariable or type(var) == BooleanVectorVariable:
+                    elif isinstance(var,BinaryVectorVariable) or isinstance(var,BooleanVectorVariable):
+                    # elif type(var).__name__ == BinaryVectorVariable.__name__ or type(var).__name__ == BooleanVectorVariable.__name__:
                         index = (self.binary_count,self.binary_count+var.length)
                         self.binary_count += var.length
                         
@@ -130,7 +140,9 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                         index = self.permutation_solution_count
                         self.permutation_solution_count += 1
                         self.permutations.append( var.elements )
-                    
+                        
+                    else:
+                        raise Exception( "%s.__init__(): Variable of unsuitable type: %s" % (type(self).__name__,type(var)) )
                     
                     self.included_variables_dict[var] = index
                     
@@ -218,18 +230,18 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                     value = arg[0].to_float( value )
                 
                 elif type(arg[0]) == BinaryVariable:
-                    value = solution.binary_solutions[0].variables[arg[1][0]]
+                    value = solution.binary_solutions[0].variables[0][arg[1][0]]
                     value = int(value)
                     
                 elif type(arg[0]) == BinaryVectorVariable:
-                    value = solution.binary_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    value = solution.binary_solutions[0].variables[0][arg[1][0]:arg[1][1]]
                     value = [ int(bit) for bit in value ]
                     
                 elif type(arg[0]) == BooleanVariable:
-                    value = solution.binary_solutions[0].variables[arg[1][0]]
+                    value = solution.binary_solutions[0].variables[0][arg[1][0]]
                     
                 elif type(arg[0]) == BooleanVectorVariable:
-                    value = solution.binary_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    value = solution.binary_solutions[0].variables[0][arg[1][0]:arg[1][1]]
                 
                 elif type(arg[0]) == PermutationVariable:
                     value = solution.permutation_solutions[arg[1][0]].variables
@@ -297,8 +309,8 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
             kwargs["integer_solutions"] = [temp_solution]
             
         if self.solution_shape[2] > 0: # Binary
-            temp_solution = jsol.BinarySolution(number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
-            temp_solution.variables = [ bool(random.getrandbits(1)) for i in range(self.solution_shape[2]) ]
+            temp_solution = jsol.BinarySolution( number_of_variables=1, number_of_objectives=self.number_of_objectives, number_of_constraints=0 )
+            temp_solution.variables = [[ bool(random.getrandbits(1)) for i in range(self.solution_shape[2]) ]]
             kwargs["binary_solutions"] = [temp_solution]
             
         if self.solution_shape[3] > 0: # Permutation
@@ -360,18 +372,18 @@ class CompositeProblem(jprob.Problem[jsol.CompositeSolution], ABC):
                     value = arg[0].to_float( value )
                 
                 elif type(arg[0]) == BinaryVariable:
-                    value = solution.binary_solutions[0].variables[arg[1][0]]
+                    value = solution.binary_solutions[0].variables[0][arg[1][0]]
                     value = int(value)
                     
                 elif type(arg[0]) == BinaryVectorVariable:
-                    value = solution.binary_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    value = solution.binary_solutions[0].variables[0][arg[1][0]:arg[1][1]]
                     value = [ int(bit) for bit in value ]
                     
                 elif type(arg[0]) == BooleanVariable:
-                    value = solution.binary_solutions[0].variables[arg[1][0]]
+                    value = solution.binary_solutions[0].variables[0][arg[1][0]]
                     
                 elif type(arg[0]) == BooleanVectorVariable:
-                    value = solution.binary_solutions[0].variables[arg[1][0]:arg[1][1]]
+                    value = solution.binary_solutions[0].variables[0][arg[1][0]:arg[1][1]]
                 
                 elif type(arg[0]) == PermutationVariable:
                     value = solution.permutation_solutions[arg[1][0]].variables

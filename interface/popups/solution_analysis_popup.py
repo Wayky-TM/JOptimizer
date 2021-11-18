@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Oct 12 19:56:28 2021
 
-@author: Wayky
-"""
 
 import os
 import sys
-sys.path.append(r"./../..")
+# sys.path.append(r"./../..")
 
 try:
     import tkinter as tk                # python 3
@@ -28,6 +24,8 @@ from collections import defaultdict
 
 from interface.parameter_frames import *
 from util.type_check import *
+
+import tkinter.tix as tix
 
 
 def treeview_sort_column(tv, col, reverse):
@@ -138,12 +136,12 @@ class SolutionsFrame( ParameterFrame ):
             self.solutions_tree.insert('', 'end', text=str(i), values=values_tuple)
             
 
-# class 2D_PlotFrame( ParameterFrame ):
+class Plot2DFrontFrame( ParameterFrame ):
     
-#     def __init__(self, master, controller, *args, **kwargs):
-#         super( SolutionsFrame, self ).__init__(master=master, *args, **kwargs)
+    def __init__(self, master, controller, *args, **kwargs):
+        super( SolutionsFrame, self ).__init__(master=master, *args, **kwargs)
         
-#         self.controller = controller
+        self.controller = controller
 
 def solution_analysis_popup( master, controller ):
 

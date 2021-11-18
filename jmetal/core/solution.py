@@ -47,11 +47,13 @@ class BinarySolution(Solution[BitSet]):
         return new_solution
 
     def get_total_number_of_bits(self) -> int:
+        # //IMP_CHANGED
         total = 0
         for var in self.variables:
             total += len(var)
 
         return total
+        # return len(self.variables)
 
     def get_binary_string(self) -> str:
         string = ""

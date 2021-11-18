@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Sep 19 17:53:21 2021
 
-@author: Wayky
-"""
 
 import sys
-sys.path.append(r"./..")
+# sys.path.append(r"./..")
 
 import copy
 import random
