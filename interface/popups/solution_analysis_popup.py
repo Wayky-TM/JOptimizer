@@ -25,7 +25,8 @@ from collections import defaultdict
 from interface.parameter_frames import *
 from util.type_check import *
 
-import tkinter.tix as tix
+# import tkinter.tix as tix
+import Tix
 
 
 def treeview_sort_column(tv, col, reverse):
@@ -139,9 +140,14 @@ class SolutionsFrame( ParameterFrame ):
 class Plot2DFrontFrame( ParameterFrame ):
     
     def __init__(self, master, controller, *args, **kwargs):
-        super( SolutionsFrame, self ).__init__(master=master, *args, **kwargs)
+        super( Plot2DFrontFrame, self ).__init__(master=master, *args, **kwargs)
         
         self.controller = controller
+        self.checklist = tix.CheckList( master=self )
+        self.checklist.place( relx=0.015, rely=0.025, relwidth=0.2, relheight=0.85 )
+        
+    def display(self):
+        self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
 
 def solution_analysis_popup( master, controller ):
 
@@ -167,10 +173,14 @@ def solution_analysis_popup( master, controller ):
     
     notebook = ttk.Notebook(master=win)
     
-    solutions_frame = SolutionsFrame(master=notebook, controller=controller)
+    solutions_frame = SolutionsFrame( master=notebook, controller=controller )
     solutions_frame.display()
     solutions_frame.load_front()
     
+    plot2D_frame = Plot2DFrontFrame( master=notebook, controller=controller )
+    plot2D_frame.display()
+    
     notebook.add( solutions_frame, text="   Solutions   " )
+    notebook.add( plot2D_frame, text="   2D Plot   " )
     notebook.place(relx=0.01, rely=0.03, relwidth=0.98, relheight=0.95)
     
