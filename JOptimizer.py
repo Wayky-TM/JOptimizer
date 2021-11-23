@@ -7,7 +7,8 @@ Created on Fri Sep 24 12:05:45 2021
 
 import os
 import sys
-sys.path.append(r"./../..")
+# sys.path.append(r"./../..")
+sys.path.append(r"./")
 
 try:
     import tkinter as tk                # python 3
@@ -83,7 +84,7 @@ class JOptimizer_App(tk.Tk):
         
         if self.engine_parameters.TERMINATION_CRITERIA.EVALUATIONS.value in self.engine_parameters.temination_criteria:
             time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)
-            estimations.append( (time_elapsed/float(self.engine.problem.evaluations))*(int(self.engine_parameters.termination_parameters["evaluations"]) - self.engine.problem.evaluations) )
+            estimations.append( (time_elapsed/float(max([self.engine.problem.evaluations,1])))*(int(self.engine_parameters.termination_parameters["evaluations"]) - self.engine.problem.evaluations) )
             
         if self.engine_parameters.TERMINATION_CRITERIA.TIME.value in self.engine_parameters.temination_criteria:
             time_elapsed = self.engine.acum_execution_time + (time.time() - self.engine.last_execution_time_resume)

@@ -6,6 +6,7 @@ import sys
 import copy
 import random
 import math
+import threading
 
 from enum import Enum, unique
 from abc import *
@@ -182,6 +183,7 @@ class CompositeProblem(jprob.Problem[CS.CompositeSolution], ABC):
         if (len(self.problem_parameters.variables) + len(self.problem_parameters.constants)) != evaluator.number_of_variables:
             raise ValueError( "%s.__init__(): provided variables and constants do not match the required by the evaluator" % (type(self).__name__) )
         
+        self.evaluations_lock = threading.Lock()
         self.evaluations = 0
         
         
@@ -338,7 +340,9 @@ class CompositeProblem(jprob.Problem[CS.CompositeSolution], ABC):
         args, kwargs = self._generate_args(solution)
         # solution.objectives = self.evaluator.evaluate( *args, **kwargs )
         solution.objectives = [ coefficient*objective for objective, coefficient in zip(self.evaluator.evaluate( *args, **kwargs ),self.objective_transformation_vector) ]
-        self.evaluations += 1
+        
+        with self.evaluations_lock:
+            self.evaluations += 1
         
         return solution
     

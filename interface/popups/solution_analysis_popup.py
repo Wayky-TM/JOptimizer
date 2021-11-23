@@ -26,7 +26,7 @@ from interface.parameter_frames import *
 from util.type_check import *
 
 # import tkinter.tix as tix
-import Tix
+# import Tix
 
 
 def treeview_sort_column(tv, col, reverse):
@@ -89,7 +89,7 @@ class InspectSolutionPopup:
         self.solutions_tree.column("Value", stretch=tk.NO)
         
         for variable in self.solution[0]:
-            self.solutions_tree.insert('', 'end', text=variable[0].keyword, values=(str(variable[1])))
+            self.solutions_tree.insert('', 'end', text=variable[0].keyword, values=(str(variable[1]).replace(' ','')))
             
         self.solutions_tree.place( relx=0.015, rely=0.03, relwidth=0.97, relheight=0.94 )
 
@@ -143,8 +143,8 @@ class Plot2DFrontFrame( ParameterFrame ):
         super( Plot2DFrontFrame, self ).__init__(master=master, *args, **kwargs)
         
         self.controller = controller
-        self.checklist = tix.CheckList( master=self )
-        self.checklist.place( relx=0.015, rely=0.025, relwidth=0.2, relheight=0.85 )
+        # self.checklist = tix.CheckList( master=self )
+        # self.checklist.place( relx=0.015, rely=0.025, relwidth=0.2, relheight=0.85 )
         
     def display(self):
         self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
