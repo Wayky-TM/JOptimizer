@@ -1,16 +1,7 @@
 
-import sys
-# sys.path.append(r"./..")
-# sys.path.append(r"./../../")
-
-import copy
-import random
-import math
 import threading
 
 from enum import Enum, unique
-from abc import *
-from typing import List
 
 import jmetal.core.problem as jprob
 import jmetal.core.solution as jsol
@@ -18,13 +9,10 @@ import jmetal.core.solution as jsol
 # import jmetal.operator.mutation as Mutation
 import core.JMetalpy.composite_solution as CS
 
-from core.variable import *
-from core.constant import *
-# import core.variable
-# import core.constant
+# from core.variable import *
+# from core.constant import *
                   
-from core.problem_parameters import ProblemParameters
-# from core.constant import FloatConstant, IntegerConstant
+from core.problem_parameters import *
 from core.evaluator import Evaluator
 from core.null import NullSolution
 

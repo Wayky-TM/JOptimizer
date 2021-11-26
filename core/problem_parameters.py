@@ -18,8 +18,8 @@ from abc import *
 from typing import List
 from collections import defaultdict
 
-import core.variable as Variables
-import core.constant as Constants
+from core.variable import *
+from core.constant import *
 import core.JMetalpy.composite_problem as cproblem
 import jmetal.core.solution as jsol
 
@@ -54,7 +54,7 @@ class ProblemParameters:
         self.options["objectives"] = "1"
         self.options["constraints"] = "0"
     
-    def add_variable( self, var: Variables.Variable ):
+    def add_variable( self, var: Variable ):
         
         if var.keyword in self.defined_symbols:
             raise ValueError("%s.add_variable(): symbol %s already defined" % (type(self).__name__, var.keyword))
@@ -64,7 +64,7 @@ class ProblemParameters:
             self.defined_symbols[var.keyword] = var
     
     
-    def add_constant( self, const: Constants.Constant ):
+    def add_constant( self, const: Constant ):
         
         if const.keyword in self.defined_symbols:
             raise ValueError("%s.add_variable(): symbol %s already defined" % (type(self).__name__, const.keyword))
@@ -82,7 +82,7 @@ class ProblemParameters:
         else:
             element = self.defined_symbols.pop(symbol)
             
-            if isinstance(element, Variables.Variable):
+            if isinstance(element, Variable):
                 self.variables.remove(element)
             else:
                 self.constants.remove(element)
@@ -142,18 +142,18 @@ class ProblemParameters:
         
         if TC.is_dir( dir_path ):
             
-            var_dict = { Variables.FloatVariable : "float",
-                         Variables.IntegerVariable : "integer",
-                         Variables.DiscretizedFloatVariable : "discretized",
-                         Variables.BinaryVariable : "binary",
-                         Variables.PermutationVariable : "permutation",
+            var_dict = { FloatVariable : "float",
+                         IntegerVariable : "integer",
+                         DiscretizedFloatVariable : "discretized",
+                         BinaryVariable : "binary",
+                         PermutationVariable : "permutation",
                          }
             
-            const_dict = { Constants.FloatConstant : "float",
-                           Constants.IntegerConstant : "integer",
-                           Constants.BinaryConstant : "binary",
-                           Constants.PermutationConstant : "permutation",
-                           Constants.StringConstant : "string"}
+            const_dict = { FloatConstant : "float",
+                           IntegerConstant : "integer",
+                           BinaryConstant : "binary",
+                           PermutationConstant : "permutation",
+                           StringConstant : "string"}
             
             output = {}
             output["options"] = {}
@@ -229,30 +229,30 @@ class ProblemParameters:
             for key, var_data in yaml_content["variables"].items():
                 
                 if var_data["type"] == "float":
-                    self.variables.append( Variables.FloatVariable(keyword=key,
+                    self.variables.append( FloatVariable(keyword=key,
                                                                    name=var_data["name"],
                                                                    lower_bound=var_data["lower_bound"],
                                                                    upper_bound=var_data["upper_bound"]) )
                     
                 elif var_data["type"] == "integer":
-                    self.variables.append( Variables.IntegerVariable(keyword=key,
+                    self.variables.append( IntegerVariable(keyword=key,
                                                                      name=var_data["name"],
                                                                      lower_bound=var_data["lower_bound"],
                                                                      upper_bound=var_data["upper_bound"]) )
                     
                 elif var_data["type"] == "discretized":
-                    self.variables.append( Variables.DiscretizedFloatVariable(keyword=key,
+                    self.variables.append( DiscretizedFloatVariable(keyword=key,
                                                                                  name=var_data["name"],
                                                                                  lower_bound=var_data["lower_bound"],
                                                                                  upper_bound=var_data["upper_bound"],
                                                                                  step=var_data["step"]) )
                 
                 elif var_data["type"] == "binary":
-                    self.variables.append( Variables.BinaryVariable(keyword=key,
+                    self.variables.append( BinaryVariable(keyword=key,
                                                                     name=var_data["name"]) )
                     
                 elif var_data["type"] == "permutation":
-                    self.variables.append( Variables.BinaryVariable(keyword=key,
+                    self.variables.append( BinaryVariable(keyword=key,
                                                                     name=var_data["name"],
                                                                     elements=var_data["elements"]) )
             """ Constants """
@@ -261,19 +261,19 @@ class ProblemParameters:
             for key, const_data in yaml_content["constants"].items():
                 
                 if const_data["type"] == "float":
-                    self.constants.append( Constants.FloatConstant(keyword=key, value=const_data["value"]) )
+                    self.constants.append( FloatConstant(keyword=key, value=const_data["value"]) )
                 
                 elif const_data["type"] == "integer":
-                    self.constants.append( Constants.IntegeConstant(keyword=key, value=const_data["value"]) )
+                    self.constants.append( IntegeConstant(keyword=key, value=const_data["value"]) )
                 
                 elif const_data["type"] == "binary":
-                    self.constants.append( Constants.BinaryConstant(keyword=key, value=const_data["value"]) )
+                    self.constants.append( BinaryConstant(keyword=key, value=const_data["value"]) )
                 
                 elif const_data["type"] == "permutation":
-                    self.constants.append( Constants.PermutationConstant(keyword=key, value=const_data["value"]) )
+                    self.constants.append( PermutationConstant(keyword=key, value=const_data["value"]) )
                     
                 elif const_data["type"] == "string":
-                    self.constants.append( Constants.StringConstant(keyword=key, value=const_data["value"]) )
+                    self.constants.append( StringConstant(keyword=key, value=const_data["value"]) )
             
         
         else:

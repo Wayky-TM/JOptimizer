@@ -39,10 +39,10 @@ class RouletteWheelSelection(Selection[List[S], S]):
         for solution in front:
             value += solution.objectives[0]
 
-            if value > rand:
+            if value >= rand:
                 return solution
 
-        return None
+        return front[-1]
 
     def get_name(self) -> str:
         return 'Roulette wheel selection'

@@ -4,7 +4,7 @@ import sys
 # sys.path.append(r"./../../../../../")
 
 from interface.tabs.problem.frames.problem_frame import *
-from core.variable import *
+# from core.variable import *
 
 class VariablesFrame(ProblemFrame):
         

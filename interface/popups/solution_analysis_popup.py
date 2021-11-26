@@ -146,6 +146,8 @@ class Plot2DFrontFrame( ParameterFrame ):
         # self.checklist = tix.CheckList( master=self )
         # self.checklist.place( relx=0.015, rely=0.025, relwidth=0.2, relheight=0.85 )
         
+        
+        
     def display(self):
         self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
 

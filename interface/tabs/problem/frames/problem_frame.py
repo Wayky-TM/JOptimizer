@@ -30,8 +30,8 @@ import inspect
 # import core.constant as constant_types
 # from core.variable import *
 # from core.constant import *
-from core.algorithm_parameters import AlgorithmParameters
-from core.problem_parameters import ProblemParameters
+from core.algorithm_parameters import *
+from core.problem_parameters import *
 from core.evaluator import Evaluator
 from util.type_check import is_integer, is_float, to_integer
 from util.string_utils import remove_whitespaces
