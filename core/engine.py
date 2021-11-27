@@ -26,6 +26,7 @@ from core.problem_parameters import ProblemParameters
 from core.algorithm_parameters import AlgorithmParameters
 # from core.composite_problem import CompositeProblem
 from jmetal.core.algorithm import Algorithm
+from jmetal.util.solution import get_non_dominated_solutions
 import jmetal.util.termination_criterion as jterm
 import core.JMetalpy.composite_solution as CS
 
@@ -140,6 +141,9 @@ class OptimizationEngine:
         self.pause_event.set()
     
     def get_front(self):
+        return get_non_dominated_solutions( self.algorithm.get_result() )
+    
+    def get_solutions(self):
         return self.algorithm.get_result()
         
     def get_variables(self, solutions: List[CS.CompositeSolution]):

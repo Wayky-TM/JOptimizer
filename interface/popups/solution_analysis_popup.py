@@ -24,9 +24,7 @@ from collections import defaultdict
 
 from interface.parameter_frames import *
 from util.type_check import *
-
-# import tkinter.tix as tix
-# import Tix
+from util.interactive_front_plot import SolutionsInteractivePlot
 
 
 def treeview_sort_column(tv, col, reverse):
@@ -136,17 +134,26 @@ class SolutionsFrame( ParameterFrame ):
             values_tuple = tuple( [ str(objective) for objective in solution[-1]] )
             self.solutions_tree.insert('', 'end', text=str(i), values=values_tuple)
             
+    def load_solutions(self):
+        self.front = self.controller.engine.get_solutions()
+        self.solutions = self.controller.engine.get_variables(self.front)
+        
+        for i, solution in enumerate(self.solutions):
+            values_tuple = tuple( [ str(objective) for objective in solution[-1]] )
+            self.solutions_tree.insert('', 'end', text=str(i), values=values_tuple)
+            
 
-class Plot2DFrontFrame( ParameterFrame ):
+class PlotFrontFrame( ParameterFrame ):
     
     def __init__(self, master, controller, *args, **kwargs):
-        super( Plot2DFrontFrame, self ).__init__(master=master, *args, **kwargs)
+        super( PlotFrontFrame, self ).__init__(master=master, *args, **kwargs)
         
         self.controller = controller
-        # self.checklist = tix.CheckList( master=self )
-        # self.checklist.place( relx=0.015, rely=0.025, relwidth=0.2, relheight=0.85 )
         
+        self.front = self.controller.engine.get_front()
         
+        plot_front = SolutionsInteractivePlot( self.controller.engine.problem, title='Pareto front approximation', axis_labels=self.controller.problem_parameters.options["objectives_names"])
+        plot_front.plot(self.front, label='Algorithm: %s' % (self.controller.engine.algorithm.get_name()), filename='interactive-plot')
         
     def display(self):
         self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
@@ -177,12 +184,20 @@ def solution_analysis_popup( master, controller ):
     
     solutions_frame = SolutionsFrame( master=notebook, controller=controller )
     solutions_frame.display()
-    solutions_frame.load_front()
     
-    plot2D_frame = Plot2DFrontFrame( master=notebook, controller=controller )
-    plot2D_frame.display()
+    if len(controller.problem_parameters.objectives_names)>1:
+        notebook.add( solutions_frame, text="   Front   " )
+        solutions_frame.load_front()
+        
+        plot_front_frame = PlotFrontFrame( master=notebook, controller=controller )
+        plot_front_frame.display()
+        
+        notebook.add( plot_front_frame, text="   Front Plot   " )
+        
+    else:
+        notebook.add( solutions_frame, text="   Solutions   " )
+        solutions_frame.load_solutions()
     
-    notebook.add( solutions_frame, text="   Solutions   " )
-    notebook.add( plot2D_frame, text="   2D Plot   " )
+    
     notebook.place(relx=0.01, rely=0.03, relwidth=0.98, relheight=0.95)
     
