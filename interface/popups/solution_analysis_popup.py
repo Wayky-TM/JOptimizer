@@ -152,8 +152,8 @@ class PlotFrontFrame( ParameterFrame ):
         
         self.front = self.controller.engine.get_front()
         
-        plot_front = SolutionsInteractivePlot( self.controller.engine.problem, title='Pareto front approximation', axis_labels=self.controller.problem_parameters.options["objectives_names"])
-        plot_front.plot(self.front, label='Algorithm: %s' % (self.controller.engine.algorithm.get_name()), filename='interactive-plot')
+        plot_front = SolutionsInteractivePlot( self.controller.engine, title='Pareto front approximation', axis_labels=self.controller.problem_parameters.options["objectives_names"])
+        plot_front.plot(self.front, self.controller.engine.problem_parameters.options["objectives_names"], label='Algorithm: %s' % (self.controller.engine.algorithm.get_name()), filename='interactive-plot')
         
     def display(self):
         self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )
@@ -185,7 +185,7 @@ def solution_analysis_popup( master, controller ):
     solutions_frame = SolutionsFrame( master=notebook, controller=controller )
     solutions_frame.display()
     
-    if len(controller.problem_parameters.objectives_names)>1:
+    if len(controller.problem_parameters.options["objectives_names"])>1:
         notebook.add( solutions_frame, text="   Front   " )
         solutions_frame.load_front()
         

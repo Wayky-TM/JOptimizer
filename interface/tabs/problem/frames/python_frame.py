@@ -334,6 +334,7 @@ class PythonFrame(ProblemFrame):
     def save_parameters(self):
         super(PythonFrame,self).save_parameters()
         self.problem_parameters.options["call_args"] = self.ArgsEntry.get()
+        self.problem_parameters.options["objectives"] = len(self.objectives)
         self.problem_parameters.options["objectives_names"] = [ objective[0] for objective in self.objectives]
         self.problem_parameters.options["objectives_minimize"] = [ objective[1]==ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE for objective in self.objectives]
             
