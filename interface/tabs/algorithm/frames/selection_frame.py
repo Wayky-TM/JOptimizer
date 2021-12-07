@@ -17,7 +17,12 @@ class SelectionFrame(AlgorithmFrame):
             self.algorithm_parameters = algorithm_parameters
             
         def display(self):
-            self.place( relx=0.05, rely=0.16, relwidth=0.9, relheight=0.79 )
+            # self.place( relx=0.05, rely=0.16, relwidth=0.9, relheight=0.79 )
+            self.grid( row=1, column=0, sticky="NSEW", pady=25, padx=25 )
+            
+        def hide(self):
+            # self.place( relx=0.05, rely=0.16, relwidth=0.9, relheight=0.79 )
+            self.grid_forget()
                 
             
     class NaryParametersPane(SelectionParametersPane):
@@ -93,16 +98,21 @@ class SelectionFrame(AlgorithmFrame):
         self.frames[ AlgorithmParameters.SELECTION.RANKING_AND_CROWDING.value ] = SelectionFrame.RankingAndCrowdingParametersPane(master=self, algorithm_parameters=self.algorithm_parameters, text="Parameters")
         
         
-        tk.Label( master=self, text="Selection operator").place( relx=0.02, rely=0.05 )
-        
+        self.selection_frame = ttk.Frame(self)
+        # tk.Label( master=self.selection_frame, text="Selection operator").place( relx=0.02, rely=0.05 )
+        tk.Label( master=self.selection_frame, text="Selection operator").grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
         self.SelectionOption = tk.StringVar(self)
-        self.SelectionOption.set(self.selection_options[0])
-        self.selected_frame_key = self.selection_options[0]
+        self.SelectionOption.set(self.selection_options[1])
+        self.selected_frame_key = self.selection_options[1]
         self.frames[self.selected_frame_key].display()
-        self.selection_option = tk.OptionMenu(self, self.SelectionOption, *self.selection_options, command=self.update_operator)
+        self.selection_option = tk.OptionMenu(self.selection_frame, self.SelectionOption, *self.selection_options, command=self.update_operator)
         # selection_option.config( font=('URW Gothic L','11') )
         self.selection_option.config( state=tk.NORMAL )
-        self.selection_option.place( relx=0.11, rely=0.045, relwidth=0.15 )
+        self.selection_option.grid( row=0, column=1, columnspan=2, padx=8, pady=2, sticky="NSEW" )
+        self.selection_frame.grid( row=0, column=0, sticky="NSEW", pady=25, padx=25 )
+        
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
         
         self.selection_option_parameter = Parameter(name="selection_operator", fancy_name="Selection operator")
         

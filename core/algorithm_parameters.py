@@ -49,7 +49,9 @@ class AlgorithmParameters:
         NSGAII="NSGAII"
         MOCELL="MOCELL"
         MOEAD="MOEAD"
-        GA_MONO="GA_mono-objective"
+        GA_MONO="GA (mono)"
+        ANNEALING="Simulated annealing (mono)"
+        LOCAL_SEARCH="Local search (mono)"
         
         
     

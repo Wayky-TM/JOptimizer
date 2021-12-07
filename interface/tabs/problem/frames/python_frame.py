@@ -205,7 +205,7 @@ class PythonFrame(ProblemFrame):
         self.button_browse_operator = ttk.Button( master=self.script_file_path_frame,  text="Browse", command=lambda: self._browse() )
         self.button_browse_operator.grid( row=0, column=2, sticky="NSEW", padx=8, pady=0, columnspan=1 )
         
-        self.script_file_path_frame.grid( row=0, column=0, sticky="NSW", pady=(30,0), padx=15 )
+        self.script_file_path_frame.grid( row=0, column=0, sticky="NSW", pady=(30,0), padx=25 )
         
         
         # Function choice
@@ -219,7 +219,7 @@ class PythonFrame(ProblemFrame):
         
         self.function_option.config( state=tk.NORMAL )
         self.function_option.grid( row=0, column=1, sticky="NSEW", padx=8, pady=2, columnspan=1, ipadx=60 )
-        self.function_frame.grid( row=1, column=0, sticky="NSEW", pady=(30,0), padx=15 )
+        self.function_frame.grid( row=1, column=0, sticky="NSEW", pady=(30,0), padx=25 )
         
         # self.function_option_parameter = Parameter(name="function_operator", fancy_name="Function operator")
         
@@ -241,7 +241,7 @@ class PythonFrame(ProblemFrame):
         self.ArgsEntry = tk.Entry(master=self.call_args_frame, state=tk.NORMAL)
         self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
         self.ArgsEntry.grid( row=0, column=1, sticky="NSEW", padx=8, pady=2, columnspan=1, ipadx=145 )
-        self.call_args_frame.grid( row=2, column=0, sticky="NSEW", pady=(30,0), padx=15 )
+        self.call_args_frame.grid( row=2, column=0, sticky="NSEW", pady=(30,0), padx=25 )
    
     
         # Number of objectives
@@ -253,7 +253,7 @@ class PythonFrame(ProblemFrame):
         self.ObjectiveOption.set( objective_option_list[0] )
         self.objective_option = tk.OptionMenu(self.number_of_objectives_frame, self.ObjectiveOption, *objective_option_list, command=self._update_objectives )
         self.objective_option.grid( row=0, column=1, sticky="NSEW", padx=8, pady=2, columnspan=1, ipadx=40 )
-        self.number_of_objectives_frame.grid( row=3, column=0, sticky="NSEW", pady=(30,0), padx=15 )
+        self.number_of_objectives_frame.grid( row=3, column=0, sticky="NSEW", pady=(30,0), padx=25 )
         
         # self.ObjectivesEntry = tk.Entry(master=self, state=tk.NORMAL)
         # self.ObjectivesEntry.insert(0, self.problem_parameters.options["objectives"])
@@ -281,7 +281,7 @@ class PythonFrame(ProblemFrame):
         self.objectives_tree.heading( "Type", text="Type" )
         self.objectives_tree.column( "Type", minwidth=100, width=200, stretch=tk.NO )
         
-        self.objectives_tree.grid( row=4, column=0, sticky="NSEW", pady=(30,15), padx=15 )
+        self.objectives_tree.grid( row=4, column=0, sticky="NSEW", pady=(30,15), padx=25 )
         self.grid_rowconfigure(4, weight=1)
         self.grid_columnconfigure(0, weight=1)
     

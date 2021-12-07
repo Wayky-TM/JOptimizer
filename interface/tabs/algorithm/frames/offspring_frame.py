@@ -17,7 +17,7 @@ class OffspringFrame(AlgorithmFrame):
         tk.Label( master=self.offspring_frame, text="Offspring size").grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
         self.offspring_size_entry = tk.Entry(master=self.offspring_frame, state=tk.NORMAL)
         self.offspring_size_entry.insert(0, self.algorithm_parameters.general_parameters["offspring_size"])
-        self.offspring_size_entry.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
+        self.offspring_size_entry.grid( row=0, column=1, columnspan=2, padx=8, pady=2, sticky="NSEW" )
         self.offspring_size_entry.config(state=tk.NORMAL)
         self.offspring_frame.grid( row=0, column=0, sticky="NSEW", pady=25, padx=25 )
         

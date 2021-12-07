@@ -16,7 +16,7 @@ class PopulationFrame(AlgorithmFrame):
         tk.Label( master=self.population_frame, text="Population size").grid( row=0, column=0, sticky="NSEW", padx=2, pady=2 )
         self.population_size_entry = tk.Entry(master=self.population_frame, state=tk.NORMAL)
         self.population_size_entry.insert(0, self.algorithm_parameters.general_parameters["population_size"])
-        self.population_size_entry.grid( row=0, column=1, columnspan=2, padx=2, pady=2, sticky="NSEW" )
+        self.population_size_entry.grid( row=0, column=1, columnspan=2, padx=8, pady=2, sticky="NSEW" )
         self.population_size_entry.config(state=tk.NORMAL)
         self.population_frame.grid( row=0, column=0, sticky="NSEW", pady=25, padx=25 )
         
