@@ -12,6 +12,7 @@ from core.engine import OptimizationEngine
 from jmetal.lab.visualization.interactive import *
 
 import plotly.express as px
+import plotly.graph_objs as go
 import pandas as pd
 import webbrowser
 
@@ -60,10 +61,12 @@ class SolutionsInteractivePlot:
         dataframe = pd.DataFrame( data=data )
         
         if len(objectives_list)==2:
-            pass
-        
-        elif len(objectives_list)==3:    
-            fig = px.scatter_3d(dataframe, x=objectives_list[0], y=objectives_list[1], z=objectives_list[2], custom_data=['Index'])
+            fig = px.scatter_3d(dataframe,
+                                x=objectives_list[0],
+                                y=objectives_list[1],
+                                z=objectives_list[2],
+                                custom_data=['Index'])
+            
             fig.update_traces(
             hovertemplate="<br>".join([
                 objectives_list[0] + ": %{x}",
@@ -74,6 +77,27 @@ class SolutionsInteractivePlot:
         )
             fig.write_html("plot.html")
             webbrowser.open('file://' + os.path.realpath("plot.html"))
+            os.remove("plot.html")
+            
+        
+        elif len(objectives_list)==3:    
+            fig = px.scatter_3d(dataframe,
+                                x=objectives_list[0],
+                                y=objectives_list[1],
+                                z=objectives_list[2],
+                                custom_data=['Index'])
+            
+            fig.update_traces(
+            hovertemplate="<br>".join([
+                objectives_list[0] + ": %{x}",
+                objectives_list[1] + ": %{y}",
+                objectives_list[2] + ": %{z}",
+                "Index: %{customdata[0]}",
+            ])
+        )
+            fig.write_html("plot.html")
+            webbrowser.open('file://' + os.path.realpath("plot.html"))
+            os.remove("plot.html")
             
         
 

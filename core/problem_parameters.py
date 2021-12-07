@@ -20,6 +20,7 @@ from collections import defaultdict
 
 from core.variable import *
 from core.constant import *
+
 import core.JMetalpy.composite_problem as cproblem
 import jmetal.core.solution as jsol
 

@@ -21,7 +21,7 @@ class OffspringFrame(AlgorithmFrame):
         self.offspring_size_entry.config(state=tk.NORMAL)
         self.offspring_frame.grid( row=0, column=0, sticky="NSEW", pady=25, padx=25 )
         
-        self.offspring_size_parameter = Integer(name="offspring_size", fancy_name="Offspring size", lower_bound=3, upper_bound=100000)
+        self.offspring_size_parameter = Integer(name="offspring_size", fancy_name="Offspring size", lower_bound=1, upper_bound=100000)
         
         self.parameters_bindings.append( ParameterBinding(parameter=self.offspring_size_parameter,
                                                           widget_read_lambda=lambda: self.offspring_size_entry.get(),
