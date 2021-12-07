@@ -194,23 +194,32 @@ class PythonFrame(ProblemFrame):
     def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
         super(PythonFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
         
-        ttk.Label( master=self, text="Function script path").place( relx=0.02, rely=0.05 )
-        self.ScriptFilePath = tk.Entry(master=self, state=tk.NORMAL)
-        self.ScriptFilePath.insert(0, problem_parameters.options["python_script_path"])
-        self.ScriptFilePath.place(relx=0.12, rely=0.05+0.005, relwidth=0.3)
-        self.ScriptFilePath.config(state=tk.DISABLED)
-        self.button_browse_operator = ttk.Button( master=self,  text="Browse", command=lambda: self._browse() ).place(relx=0.43, rely=0.05, relwidth=0.06)
         
+        # Script path
+        self.script_file_path_frame = tk.Frame(self)
+        ttk.Label( master=self.script_file_path_frame, text="Function script path").grid( row=0, column=0, sticky="NSEW", padx=0, pady=0 )
+        self.ScriptFilePath = tk.Entry(master=self.script_file_path_frame, state=tk.NORMAL)
+        self.ScriptFilePath.insert(0, problem_parameters.options["python_script_path"])
+        self.ScriptFilePath.grid( row=0, column=1, sticky="NSEW", padx=8, pady=0, columnspan=1, ipadx=150 )
+        self.ScriptFilePath.config(state=tk.DISABLED)
+        self.button_browse_operator = ttk.Button( master=self.script_file_path_frame,  text="Browse", command=lambda: self._browse() )
+        self.button_browse_operator.grid( row=0, column=2, sticky="NSEW", padx=8, pady=0, columnspan=1 )
+        
+        self.script_file_path_frame.grid( row=0, column=0, sticky="NSW", pady=(30,0), padx=15 )
+        
+        
+        # Function choice
         self.function_options = ["none"]
         
-        tk.Label( master=self, text="Function").place( relx=0.02, rely=0.15 )
-        
-        self.FunctionOption = tk.StringVar(self)
+        self.function_frame = tk.Frame(self)
+        tk.Label( master=self.function_frame, text="Function").grid( row=0, column=0, sticky="NSEW", padx=0, pady=2 )
+        self.FunctionOption = tk.StringVar(self.function_frame)
         self.FunctionOption.set(self.function_options[0])
-        self.function_option = tk.OptionMenu(self, self.FunctionOption, *self.function_options )
+        self.function_option = tk.OptionMenu(self.function_frame, self.FunctionOption, *self.function_options )
         
         self.function_option.config( state=tk.NORMAL )
-        self.function_option.place( relx=0.09, rely=0.15-0.005, relwidth=0.15 )
+        self.function_option.grid( row=0, column=1, sticky="NSEW", padx=8, pady=2, columnspan=1, ipadx=60 )
+        self.function_frame.grid( row=1, column=0, sticky="NSEW", pady=(30,0), padx=15 )
         
         # self.function_option_parameter = Parameter(name="function_operator", fancy_name="Function operator")
         
@@ -225,18 +234,26 @@ class PythonFrame(ProblemFrame):
                                                           widget_update_lambda=lambda var: self._update_function_parameters(var) ) )
         
         
-        tk.Label( master=self, text="Call argument format").place( relx=0.02, rely=0.25 )
-        self.ArgsEntry = tk.Entry(master=self, state=tk.NORMAL)
-        self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
-        self.ArgsEntry.place( relx=0.14, rely=0.25, relwidth=0.3 )
         
+        # Call args
+        self.call_args_frame = tk.Frame(self)
+        tk.Label( master=self.call_args_frame, text="Call argument format").grid( row=0, column=0, sticky="NSEW", padx=0, pady=2 )
+        self.ArgsEntry = tk.Entry(master=self.call_args_frame, state=tk.NORMAL)
+        self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
+        self.ArgsEntry.grid( row=0, column=1, sticky="NSEW", padx=8, pady=2, columnspan=1, ipadx=145 )
+        self.call_args_frame.grid( row=2, column=0, sticky="NSEW", pady=(30,0), padx=15 )
+   
+    
+        # Number of objectives
+        self.number_of_objectives_frame = tk.Frame(self)
         objective_option_list = [i for i in range(1,PythonFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1)]
-        tk.Label( master=self, text="Number of objectives").place( relx=0.02, rely=0.35 )
+        tk.Label( master=self.number_of_objectives_frame, text="Number of objectives").grid( row=0, column=0, sticky="NSEW", padx=0, pady=2 )
         self.ObjectiveOption = tk.StringVar(self)
         # self.ObjectiveOption.set( to_integer(self.problem_parameters.options["objectives"]) )
         self.ObjectiveOption.set( objective_option_list[0] )
-        self.objective_option = tk.OptionMenu(self, self.ObjectiveOption, *objective_option_list, command=self._update_objectives )
-        self.objective_option.place( relx=0.14, rely=0.35-0.005, relwidth=0.1 )
+        self.objective_option = tk.OptionMenu(self.number_of_objectives_frame, self.ObjectiveOption, *objective_option_list, command=self._update_objectives )
+        self.objective_option.grid( row=0, column=1, sticky="NSEW", padx=8, pady=2, columnspan=1, ipadx=40 )
+        self.number_of_objectives_frame.grid( row=3, column=0, sticky="NSEW", pady=(30,0), padx=15 )
         
         # self.ObjectivesEntry = tk.Entry(master=self, state=tk.NORMAL)
         # self.ObjectivesEntry.insert(0, self.problem_parameters.options["objectives"])
@@ -264,7 +281,9 @@ class PythonFrame(ProblemFrame):
         self.objectives_tree.heading( "Type", text="Type" )
         self.objectives_tree.column( "Type", minwidth=100, width=200, stretch=tk.NO )
         
-        self.objectives_tree.place(relx=0.02, rely=0.45, relwidth=0.955, relheight=0.5)
+        self.objectives_tree.grid( row=4, column=0, sticky="NSEW", pady=(30,15), padx=15 )
+        self.grid_rowconfigure(4, weight=1)
+        self.grid_columnconfigure(0, weight=1)
     
         self.reserved_objective_names = { "O"+str(i) for i in range(1,PythonFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1) }
         self.current_objectives = 1
