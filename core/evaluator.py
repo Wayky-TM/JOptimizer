@@ -6,7 +6,7 @@ Created on Thu Sep 16 18:55:58 2021
 """
 
 import sys
-sys.path.append(r"./..")
+# sys.path.append(r"./..")
 
 import copy
 import random
