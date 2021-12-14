@@ -8,7 +8,7 @@ Created on Fri Sep 24 12:05:45 2021
 import os
 import sys
 # sys.path.append(r"./../..")
-sys.path.append(r"./")
+# sys.path.append(r"./")
 
 try:
     import tkinter as tk                # python 3

@@ -19,7 +19,7 @@ from core.variable import *
 
 from util.arg_parsing import *
 
-class PythonFrame(ProblemFrame):
+class MatlabFrame(ProblemFrame):
         
     NUMBER_OF_SUPPORTED_OBJECTIVES=10
     
@@ -96,75 +96,20 @@ class PythonFrame(ProblemFrame):
     
     def _browse(self): 
         
-        path = filedialog.askopenfilename(title = "Select a script which contains the function", filetypes=[("Python script", "*.py")], initialdir=os.getcwd() )
+        path = filedialog.askopenfilename(title = "Select a script which contains the function", filetypes=[("Matlab script", "*.m")], initialdir=os.getcwd() )
         
         if path:
-            try:
-                function_module = imp.load_source(name=Path(path).stem, pathname=path)
-                self.functions = getmembers(function_module, isfunction)
-                self.function_list = [ function[0] for function in self.functions]
-                
-                if len(self.function_list)>0:
-                    self.ScriptFilePath.config(state=tk.NORMAL)
-                    self.ScriptFilePath.delete( 0, tk.END )
-                    self.ScriptFilePath.insert( 0, path )
-                    self.ScriptFilePath.config(state="readonly")
-                    
-                    menu = self.function_option["menu"]
-                    menu.delete(0, "end")
-                    
-                    for string in self.function_list:
-                        menu.add_command(label=string, 
-                                         command=lambda value=string: self.FunctionOption.set(value))
-                        
-                    self.FunctionOption.set( self.function_list[0] )
-                    
-                else:
-                    menu = self.function_option["menu"]
-                    menu.delete(0, "end")
-                    self.FunctionOption.set( "none" )
-            
-            except Exception as error:    
-                tk.messagebox.showerror(title="Invalid script path", message="%s" % (error))
+            self.ScriptFilePath.config(state=tk.NORMAL)
+            self.ScriptFilePath.delete( 0, tk.END )
+            self.ScriptFilePath.insert( 0, path )
+            self.ScriptFilePath.config(state="readonly")
                 
         else:
             tk.messagebox.showerror(title="Invalid script path", message="No script path was chosen")
-    
-    def _update_function_parameters(self, var):
-        
-        function_module = imp.load_source(name=Path(var).stem, pathname=var)
-        self.functions = getmembers(function_module, isfunction)
-        self.function_list = [ function[0] for function in self.functions]
-        
-        if len(self.function_list)>0:
-        
-            # try:
-            self.ScriptFilePath.configure( state=tk.NORMAL )
-            ClearInsertEntry(self.ScriptFilePath, str(var))
-            self.ScriptFilePath.configure( state=tk.DISABLED )
-            
-            if self.problem_parameters.options["function_name"] not in self.function_list:
-               self.problem_parameters.options["function_name"] = self.function_list[0]
-               
-            menu = self.function_option["menu"]
-            menu.delete(0, "end")
-            
-            for string in self.function_list:
-                menu.add_command(label=string, 
-                                 command=lambda value=string: self.FunctionOption.set(value))
-            
-            self.FunctionOption.set(self.problem_parameters.options["function_name"])
-            
-        else:
-            self.master.console_print_error("Loaded file doesn't include any function definition")
-        
-        # except:
-        #     pass
         
         
     def _save_function_parameters(self, *args):
-        self.problem_parameters.options["function_name"] = self.FunctionOption.get()
-        self.problem_parameters.options["python_script_path"] = self.ScriptFilePath.get()
+        self.problem_parameters.options["matlab_script_path"] = self.ScriptFilePath.get()
     
     
     def _update_objectives(self, new_value):
@@ -294,91 +239,6 @@ class PythonFrame(ProblemFrame):
             self.objectives_tree.insert('', 'end', text=str(i), values=(objective[0], objective[1].value))
             
         self.objectives_tree.bind("<Double-1>", lambda event: PythonFrame.ObjectiveDoubleclickPopup(controller=self, event=event))
-    
-    # def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
-    #     super(PythonFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
-        
-    #     ttk.Label( master=self, text="Function script path").place( relx=0.02, rely=0.05 )
-    #     self.ScriptFilePath = tk.Entry(master=self, state=tk.NORMAL)
-    #     self.ScriptFilePath.insert(0, problem_parameters.options["python_script_path"])
-    #     self.ScriptFilePath.place(relx=0.12, rely=0.05+0.005, relwidth=0.3)
-    #     self.ScriptFilePath.config(state=tk.DISABLED)
-    #     self.button_browse_operator = ttk.Button( master=self,  text="Browse", command=lambda: self._browse() ).place(relx=0.43, rely=0.05, relwidth=0.06)
-        
-    #     self.function_options = ["none"]
-        
-    #     tk.Label( master=self, text="Function").place( relx=0.02, rely=0.15 )
-        
-    #     self.FunctionOption = tk.StringVar(self)
-    #     self.FunctionOption.set(self.function_options[0])
-    #     self.function_option = tk.OptionMenu(self, self.FunctionOption, *self.function_options )
-        
-    #     self.function_option.config( state=tk.NORMAL )
-    #     self.function_option.place( relx=0.09, rely=0.15-0.005, relwidth=0.15 )
-        
-    #     # self.function_option_parameter = Parameter(name="function_operator", fancy_name="Function operator")
-        
-    #     self.script_path_parameter = FilePath( fancy_name="Function script path", extension=".py" )
-        
-    #     self.parameters_bindings.append( ParameterBinding(parameter=self.script_path_parameter,
-    #                                                       widget_read_lambda=lambda: self.ScriptFilePath.get(),
-    #                                                       variable_store_lambda=lambda var: self._save_function_parameters(var),
-    #                                                       # error_set_lambda=EntryInvalidator(self.ScriptFilePath),
-    #                                                       # error_reset_lambda=EntryValidator(self.ScriptFilePath),
-    #                                                       variable_read_lambda=lambda: self.problem_parameters.options["python_script_path"],
-    #                                                       widget_update_lambda=lambda var: self._update_function_parameters(var) ) )
-        
-        
-    #     tk.Label( master=self, text="Call argument format").place( relx=0.02, rely=0.25 )
-    #     self.ArgsEntry = tk.Entry(master=self, state=tk.NORMAL)
-    #     self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
-    #     self.ArgsEntry.place( relx=0.14, rely=0.25, relwidth=0.3 )
-        
-    #     objective_option_list = [i for i in range(1,PythonFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1)]
-    #     tk.Label( master=self, text="Number of objectives").place( relx=0.02, rely=0.35 )
-    #     self.ObjectiveOption = tk.StringVar(self)
-    #     # self.ObjectiveOption.set( to_integer(self.problem_parameters.options["objectives"]) )
-    #     self.ObjectiveOption.set( objective_option_list[0] )
-    #     self.objective_option = tk.OptionMenu(self, self.ObjectiveOption, *objective_option_list, command=self._update_objectives )
-    #     self.objective_option.place( relx=0.14, rely=0.35-0.005, relwidth=0.1 )
-        
-    #     # self.ObjectivesEntry = tk.Entry(master=self, state=tk.NORMAL)
-    #     # self.ObjectivesEntry.insert(0, self.problem_parameters.options["objectives"])
-    #     # self.ObjectivesEntry.place( relx=0.14, rely=0.25-0.005, relwidth=0.1 )
-        
-    #     self.objectives_parameter = Integer(name="number_of_objectives", fancy_name="Number of objectives", lower_bound=1, upper_bound=1000)
-            
-    #     self.parameters_bindings.append( ParameterBinding(parameter=self.objectives_parameter,
-    #                                                       widget_read_lambda=lambda: self.ObjectiveOption.get(),
-    #                                                       variable_store_lambda=lambda var: self.problem_parameters.options.update({"objectives":var}),
-    #                                                       # error_set_lambda=EntryInvalidator(self.ObjectivesEntry),
-    #                                                       # error_reset_lambda=EntryValidator(self.ObjectivesEntry),
-    #                                                       variable_read_lambda=lambda: self.problem_parameters.options["objectives"],
-    #                                                       widget_update_lambda=lambda var: self.ObjectiveOption.set( str(var)) ) )        
-        
-    #     self.objectives_headers = ["Name", "Type"]
-    #     self.objectives_tree = ttk.Treeview(master=self, columns=self.objectives_headers, selectmode="extended")
-        
-    #     self.objectives_tree.heading("#0", text="Index")
-    #     self.objectives_tree.column("#0", minwidth=100, width=200, stretch=tk.NO)
-        
-    #     self.objectives_tree.heading( "Name", text="Name" )
-    #     self.objectives_tree.column( "Name", minwidth=100, width=200, stretch=tk.NO )
-        
-    #     self.objectives_tree.heading( "Type", text="Type" )
-    #     self.objectives_tree.column( "Type", minwidth=100, width=200, stretch=tk.NO )
-        
-    #     self.objectives_tree.place(relx=0.02, rely=0.45, relwidth=0.955, relheight=0.5)
-    
-    #     self.reserved_objective_names = { "O"+str(i) for i in range(1,PythonFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1) }
-    #     self.current_objectives = 1
-    #     self.objectives = [("O1",ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE)]
-    #     self.objectives_dict = { "O1" : self.objectives[0] }
-        
-    #     for i, objective in enumerate(self.objectives,1):
-    #         self.objectives_tree.insert('', 'end', text=str(i), values=(objective[0], objective[1].value))
-            
-    #     self.objectives_tree.bind("<Double-1>", lambda event: PythonFrame.ObjectiveDoubleclickPopup(controller=self, event=event))
     
         
     def check_args(self):
