@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Sep 24 12:51:12 2021
 
-@author: Álvaro
-"""
 
 import sys
-sys.path.append(r"./../..")
 
 try:
     import tkinter as tk                # python 3

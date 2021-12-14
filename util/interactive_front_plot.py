@@ -61,17 +61,15 @@ class SolutionsInteractivePlot:
         dataframe = pd.DataFrame( data=data )
         
         if len(objectives_list)==2:
-            fig = px.scatter_3d(dataframe,
+            fig = px.scatter(dataframe,
                                 x=objectives_list[0],
                                 y=objectives_list[1],
-                                z=objectives_list[2],
                                 custom_data=['Index'])
             
             fig.update_traces(
             hovertemplate="<br>".join([
                 objectives_list[0] + ": %{x}",
                 objectives_list[1] + ": %{y}",
-                objectives_list[2] + ": %{z}",
                 "Index: %{customdata[0]}",
             ])
         )

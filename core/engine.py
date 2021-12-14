@@ -1,14 +1,10 @@
 
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Sep 20 20:00:36 2021
 
-@author: Wayky
-"""
 
 
 import sys
-sys.path.append(r"../.")
+# sys.path.append(r"../.")
 
 import copy
 import random

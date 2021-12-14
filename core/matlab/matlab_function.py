@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jun 14 15:53:49 2021
 
-@author: Wayky
-"""
-import matlab.engine
+
+# import matlab.engine
 import os
 
 """
@@ -26,7 +23,7 @@ class MatlabFunction:
         'nargout' - # of return values expected
         'mat_eng' - initialized Matlab engine
     """
-    def __init__( self, script_path, nargin, nargout, mat_engine = matlab.engine.start_matlab() ):
+    def __init__( self, script_path, nargin, nargout, mat_engine ):
         
         self.engine = mat_engine
         self.script_path = os.path.dirname(script_path)

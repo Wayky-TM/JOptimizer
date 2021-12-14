@@ -25,6 +25,7 @@ import core.JMetalpy.composite_problem as cproblem
 import jmetal.core.solution as jsol
 
 from core.evaluators.Python import PythonFunctionEvaluator
+from core.evaluators.Matlab import MatlabFunctionEvaluator
 
 import util.type_check as TC
 import util.arg_parsing as AP
@@ -120,6 +121,7 @@ class ProblemParameters:
             
             evaluator = evaluator_class()
             
+            
         elif self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.PYTHON.value:
             
             evaluator = PythonFunctionEvaluator( #number_of_variables=int(self.options["variables"]),
@@ -127,6 +129,14 @@ class ProblemParameters:
                                                  number_of_objectives=int(self.options["objectives"]),
                                                  script_path=self.options["python_script_path"],
                                                  function_name=self.options["function_name"] )
+            
+            
+        elif self.options["template"] == ProblemParameters.PROBLEM_TEMPLATES.MATLAB.value:
+            
+            evaluator = MatlabFunctionEvaluator( #number_of_variables=int(self.options["variables"]),
+                                                 number_of_variables=len(self.variables)+len(self.constants),
+                                                 number_of_objectives=int(self.options["objectives"]),
+                                                 script_path=self.options["matlab_script_path"] )
         
         composite_problem = cproblem.CompositeProblem( evaluator=evaluator,
                                                        problem_parameters=self)

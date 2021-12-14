@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-# sys.path.append(r"./../../../../../")
 
 from inspect import getmembers, isfunction
 import copy
@@ -137,7 +136,7 @@ class MatlabFrame(ProblemFrame):
         
         
     def __init__(self, master, problem_parameters: ProblemParameters, *args, **kwargs):
-        super(PythonFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
+        super(MatlabFrame, self).__init__(master=master, problem_parameters=problem_parameters, *args, **kwargs)
         
         
         # Script path
@@ -153,29 +152,15 @@ class MatlabFrame(ProblemFrame):
         self.script_file_path_frame.grid( row=0, column=0, sticky="NSW", pady=(30,0), padx=25 )
         
         
-        # Function choice
-        self.function_options = ["none"]
         
-        self.function_frame = tk.Frame(self)
-        tk.Label( master=self.function_frame, text="Function").grid( row=0, column=0, sticky="NSEW", padx=0, pady=2 )
-        self.FunctionOption = tk.StringVar(self.function_frame)
-        self.FunctionOption.set(self.function_options[0])
-        self.function_option = tk.OptionMenu(self.function_frame, self.FunctionOption, *self.function_options )
-        
-        self.function_option.config( state=tk.NORMAL )
-        self.function_option.grid( row=0, column=1, sticky="NSEW", padx=8, pady=2, columnspan=1, ipadx=60 )
-        self.function_frame.grid( row=1, column=0, sticky="NSEW", pady=(30,0), padx=25 )
-        
-        # self.function_option_parameter = Parameter(name="function_operator", fancy_name="Function operator")
-        
-        self.script_path_parameter = FilePath( fancy_name="Function script path", extension=".py" )
+        self.script_path_parameter = FilePath( fancy_name="Function script path", extension=".m" )
         
         self.parameters_bindings.append( ParameterBinding(parameter=self.script_path_parameter,
                                                           widget_read_lambda=lambda: self.ScriptFilePath.get(),
                                                           variable_store_lambda=lambda var: self._save_function_parameters(var),
                                                           # error_set_lambda=EntryInvalidator(self.ScriptFilePath),
                                                           # error_reset_lambda=EntryValidator(self.ScriptFilePath),
-                                                          variable_read_lambda=lambda: self.problem_parameters.options["python_script_path"],
+                                                          variable_read_lambda=lambda: self.problem_parameters.options["matlab_script_path"],
                                                           widget_update_lambda=lambda var: self._update_function_parameters(var) ) )
         
         
@@ -186,23 +171,19 @@ class MatlabFrame(ProblemFrame):
         self.ArgsEntry = tk.Entry(master=self.call_args_frame, state=tk.NORMAL)
         self.ArgsEntry.insert(0, self.problem_parameters.options["call_args"])
         self.ArgsEntry.grid( row=0, column=1, sticky="NSEW", padx=8, pady=2, columnspan=1, ipadx=145 )
-        self.call_args_frame.grid( row=2, column=0, sticky="NSEW", pady=(30,0), padx=25 )
+        self.call_args_frame.grid( row=1, column=0, sticky="NSEW", pady=(30,0), padx=25 )
    
     
         # Number of objectives
         self.number_of_objectives_frame = tk.Frame(self)
-        objective_option_list = [i for i in range(1,PythonFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1)]
+        objective_option_list = [i for i in range(1,MatlabFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1)]
         tk.Label( master=self.number_of_objectives_frame, text="Number of objectives").grid( row=0, column=0, sticky="NSEW", padx=0, pady=2 )
         self.ObjectiveOption = tk.StringVar(self)
         # self.ObjectiveOption.set( to_integer(self.problem_parameters.options["objectives"]) )
         self.ObjectiveOption.set( objective_option_list[0] )
         self.objective_option = tk.OptionMenu(self.number_of_objectives_frame, self.ObjectiveOption, *objective_option_list, command=self._update_objectives )
         self.objective_option.grid( row=0, column=1, sticky="NSEW", padx=8, pady=2, columnspan=1, ipadx=40 )
-        self.number_of_objectives_frame.grid( row=3, column=0, sticky="NSEW", pady=(30,0), padx=25 )
-        
-        # self.ObjectivesEntry = tk.Entry(master=self, state=tk.NORMAL)
-        # self.ObjectivesEntry.insert(0, self.problem_parameters.options["objectives"])
-        # self.ObjectivesEntry.place( relx=0.14, rely=0.25-0.005, relwidth=0.1 )
+        self.number_of_objectives_frame.grid( row=2, column=0, sticky="NSEW", pady=(30,0), padx=25 )
         
         self.objectives_parameter = Integer(name="number_of_objectives", fancy_name="Number of objectives", lower_bound=1, upper_bound=1000)
             
@@ -226,11 +207,11 @@ class MatlabFrame(ProblemFrame):
         self.objectives_tree.heading( "Type", text="Type" )
         self.objectives_tree.column( "Type", minwidth=100, width=200, stretch=tk.NO )
         
-        self.objectives_tree.grid( row=4, column=0, sticky="NSEW", pady=(30,15), padx=25 )
+        self.objectives_tree.grid( row=3, column=0, sticky="NSEW", pady=(30,15), padx=25, rowspan=4 )
         self.grid_rowconfigure(4, weight=1)
         self.grid_columnconfigure(0, weight=1)
     
-        self.reserved_objective_names = { "O"+str(i) for i in range(1,PythonFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1) }
+        self.reserved_objective_names = { "O"+str(i) for i in range(1,MatlabFrame.NUMBER_OF_SUPPORTED_OBJECTIVES+1) }
         self.current_objectives = 1
         self.objectives = [("O1",ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE)]
         self.objectives_dict = { "O1" : self.objectives[0] }
@@ -238,7 +219,7 @@ class MatlabFrame(ProblemFrame):
         for i, objective in enumerate(self.objectives,1):
             self.objectives_tree.insert('', 'end', text=str(i), values=(objective[0], objective[1].value))
             
-        self.objectives_tree.bind("<Double-1>", lambda event: PythonFrame.ObjectiveDoubleclickPopup(controller=self, event=event))
+        self.objectives_tree.bind("<Double-1>", lambda event: MatlabFrame.ObjectiveDoubleclickPopup(controller=self, event=event))
     
         
     def check_args(self):
@@ -250,9 +231,6 @@ class MatlabFrame(ProblemFrame):
         already_warned = False
         error_list = []
         
-        # vector_vars = { var.keyword:var for var in self.problem_parameters.variables if isinstance(var,VectorVariable) }
-        # scalar_vars = { var.keyword:var for var in self.problem_parameters.variables if not isinstance(var,VectorVariable) }
-        # scalar_vars = set.union( scalar_vars, { var.keyword:var for var in self.problem_parameters.constants if not isinstance(var,VectorVariable) })
         
         for token in arg_tokens:
             
@@ -291,19 +269,19 @@ class MatlabFrame(ProblemFrame):
         return error_list
     
     def check_errors(self):
-        error_list = super(PythonFrame,self).check_errors()
+        error_list = super(MatlabFrame,self).check_errors()
         error_list.extend(self.check_args())
         return error_list
             
     def save_parameters(self):
-        super(PythonFrame,self).save_parameters()
+        super(MatlabFrame,self).save_parameters()
         self.problem_parameters.options["call_args"] = self.ArgsEntry.get()
         self.problem_parameters.options["objectives"] = len(self.objectives)
         self.problem_parameters.options["objectives_names"] = [ objective[0] for objective in self.objectives]
         self.problem_parameters.options["objectives_minimize"] = [ objective[1]==ProblemParameters.OPTIMIZATION_TYPE.MINIMIZE for objective in self.objectives]
             
     def load_parameters(self):
-        super(PythonFrame,self).load_parameters()
+        super(MatlabFrame,self).load_parameters()
         self.ArgsEntry.set(self.problem_parameters.options["call_args"])
         
         self.objectives = []
@@ -326,23 +304,4 @@ class MatlabFrame(ProblemFrame):
         for i, objective in enumerate(self.objectives,1):
             self.objectives_tree.insert('', 'end', text=str(i), values=(objective[0], objective[1].value))
         
-    
-    # def __is_evaluator_instance(self, parameter: Parameter):
-            
-    #     error_list = []
-        
-    #     if len(self.evaluator_path_parameter.error_check()) == 0:
-    #         evaluator_module = imp.load_source(name=Path(self.OperatorFilePath.get()).stem, pathname=self.OperatorFilePath.get())
-            
-    #         # if self.evaluator_class_entry.get() in inspect.getmembers(evaluator_module):
-    #         if hasattr(evaluator_module, self.evaluator_class_entry.get()):
-    #             evaluator_class = getattr(evaluator_module, self.evaluator_class_entry.get())
-                
-    #             if not issubclass(evaluator_class, Evaluator):
-    #                 error_list.append("Parameter '%s' is not a subclass of Evaluator" % (self.evaluator_class_parameter.fancy_name))
-                
-    #         else:
-    #             error_list.append("Parameter '%s' is not a class in specified file" % (self.evaluator_class_parameter.fancy_name))
-        
-    #     return error_list
 

@@ -8,7 +8,6 @@ Created on Fri Sep 24 12:25:11 2021
 import imp
 import os
 import sys
-sys.path.append(r"./../..")
 
 try:
     import tkinter as tk                # python 3
@@ -48,9 +47,19 @@ from interface.style_definitions import AppStyle
 from interface.tabs.problem.frames.problem_frame import ProblemFrame
 from interface.tabs.problem.frames.evaluator_frame import EvaluatorFrame
 from interface.tabs.problem.frames.python_frame import PythonFrame
+
 from interface.tabs.problem.frames.variables_frame import VariablesFrame
 from interface.tabs.problem.frames.constants_frame import ConstantsFrame
 from interface.tabs.problem.frames.constraints_frame import ConstraintsFrame
+
+try:
+    import matlab.engine
+    MATLAB_AVAILABLE=True
+except ImportError as e:
+    MATLAB_AVAILABLE=False
+
+if MATLAB_AVAILABLE:
+    from interface.tabs.problem.frames.matlab_frame import MatlabFrame
 
 
 class ProblemTab(ttk.Frame):    
@@ -86,19 +95,24 @@ class ProblemTab(ttk.Frame):
         
         self.problem_parameters = problem_parameters
         
-        templates_optionlist = [ option.value for option in ProblemParameters.PROBLEM_TEMPLATES ]
+        # templates_optionlist = [ option.value for option in ProblemParameters.PROBLEM_TEMPLATES ]
+        templates_optionlist = [ ProblemParameters.PROBLEM_TEMPLATES.PYTHON.value ]
+        
+        if MATLAB_AVAILABLE:
+            templates_optionlist.append( ProblemParameters.PROBLEM_TEMPLATES.MATLAB.value )
         
         ttk.Label( self, text="Template", font=('URW Gothic L','11','bold') ).place( relx=0.01, rely=0.048 )
         self.TemplateOption = tk.StringVar(self)
         self.TemplateOption.set(ProblemParameters.PROBLEM_TEMPLATES.PYTHON.value)
         template_option = tk.OptionMenu(self, self.TemplateOption, *templates_optionlist, command=self.__template_change__)
         template_option.config( font=('URW Gothic L','11') )
-        template_option.config( state=tk.DISABLED )
+        template_option.config( state=tk.NORMAL )
         template_option.place( relx=0.065, rely=0.045, relwidth=0.105 )
         
         self.frames = {}
         self.frames["Evaluator"] = EvaluatorFrame( master=self, problem_parameters=self.problem_parameters )
         self.frames["Function"] = PythonFrame( master=self, problem_parameters=self.problem_parameters )
+        self.frames["Script"] = MatlabFrame( master=self, problem_parameters=self.problem_parameters )
         self.frames["Variables"] = VariablesFrame( master=self, problem_parameters=self.problem_parameters )
         self.frames["Constants"] = ConstantsFrame( master=self, problem_parameters=self.problem_parameters )
         self.frames["Constraints"] = ConstraintsFrame( master=self, problem_parameters=self.problem_parameters )
