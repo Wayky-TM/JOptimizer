@@ -21,6 +21,7 @@ except ImportError:
 # from win32api import GetSystemMetrics
 from collections import defaultdict
 
+from typing import List
 from interface.parameter_frames import *
 from util.type_check import *
 from util.interactive_front_plot import SolutionsInteractivePlot
@@ -149,16 +150,110 @@ class SolutionsFrame( ParameterFrame ):
             
 
 class PlotFrontFrame( ParameterFrame ):
+        
+    def _update_available_objectives( self, selected_objectives: List[str] ):
+        
+        self.available_objectives_listbox.delete(0,'end')
+        
+        for objective_name in self.controller.engine.problem_parameters.options["objectives_names"]:
+            
+            if objective_name not in selected_objectives:
+                
+                self.available_objectives_listbox.insert(tk.END, objective_name)
+                
+    def _add_selected_objective( self, objective: str ):
+        self.selected_objectives_listbox.insert( tk.END, objective )
+        
+    def _remove_selected_objective( self, objective: str ):
+        index = self.selected_objectives_listbox.get(0, tk.END).index(objective)
+        self.selected_objectives_listbox.delete( index )
+        
+    def _enable_plot_button( self ):
+        self.plot_button.config( state=tk.NORMAL )
+    
+    def _disable_plot_button( self ):
+        self.plot_button.config( state=tk.DISABLED )
+        
+    def _add_button_command( self ):
+        
+        available_items = self.available_objectives_listbox.get( 0, tk.END )
+        
+        for index in self.available_objectives_listbox.curselection():
+            self._add_selected_objective( available_items[index] )
+        
+        selected = list(self.selected_objectives_listbox.get(0, tk.END))
+        
+        self._update_available_objectives( selected )
+        
+    
+        if len(selected) >= 2 and len(selected) <= 3:
+            self._enable_plot_button()
+            
+        else:
+            self._disable_plot_button()
+            
+    def _remove_button_command( self ):
+        
+        available_items = self.selected_objectives_listbox.get( 0, tk.END )
+        
+        items_to_remove = [ available_items[index] for index in self.selected_objectives_listbox.curselection()]
+        
+        for item in items_to_remove:
+            self._remove_selected_objective( item )
+            
+        selected = list(self.selected_objectives_listbox.get( 0, tk.END ))
+            
+        self._update_available_objectives( selected )
+        
+    
+        if len(selected) >= 2 and len(selected) <= 3:
+            self._enable_plot_button()
+            
+        else:
+            self._disable_plot_button()
+        
+        
+    def _plot( self ):
+        selected_objectives = list(self.selected_objectives_listbox.get(0, tk.END))
+        
+        self.front = self.controller.engine.get_front()
+        plot_front = SolutionsInteractivePlot( self.controller.engine, title='Pareto front approximation', axis_labels=self.controller.problem_parameters.options["objectives_names"])
+        plot_front.plot(self.front, selected_objectives, label='Algorithm: %s' % (self.controller.engine.algorithm.get_name()), filename='plot_tmp')
+        
     
     def __init__(self, master, controller, *args, **kwargs):
         super( PlotFrontFrame, self ).__init__(master=master, *args, **kwargs)
         
         self.controller = controller
         
-        self.front = self.controller.engine.get_front()
+        self.available_objectives_frame = tk.LabelFrame( master=self, text="Available objectives" )
+        self.available_objectives_listbox = tk.Listbox( master=self.available_objectives_frame )
+        self.available_objectives_listbox.grid( row=0, column=0, sticky="NSEW" )
+        self.available_objectives_listbox.grid_columnconfigure(0, weight=1)
+        self.available_objectives_listbox.grid_rowconfigure(0, weight=1)
+        self._update_available_objectives( [] )
         
-        plot_front = SolutionsInteractivePlot( self.controller.engine, title='Pareto front approximation', axis_labels=self.controller.problem_parameters.options["objectives_names"])
-        plot_front.plot(self.front, self.controller.engine.problem_parameters.options["objectives_names"], label='Algorithm: %s' % (self.controller.engine.algorithm.get_name()), filename='interactive-plot')
+        self.selected_objectives_frame = tk.LabelFrame( master=self, text="Selected objectives" )
+        self.selected_objectives_listbox = tk.Listbox( master=self.selected_objectives_frame )
+        self.selected_objectives_listbox.grid( row=0, column=0, sticky="NSEW" )
+        self.selected_objectives_listbox.grid_columnconfigure(0, weight=1)
+        self.selected_objectives_listbox.grid_rowconfigure(0, weight=1)
+        
+        self.available_objectives_frame.place( relx=0.015, rely=0.02, relwidth=0.4, relheight=0.96 )
+        self.selected_objectives_frame.place( relx=0.585, rely=0.02, relwidth=0.4, relheight=0.96 )
+        
+        self.add_button = tk.Button( master=self, text=">>", command=self._add_button_command, font=('URW Gothic L','12') )
+        self.add_button.config( state=tk.NORMAL )
+        self.add_button.place( relx=0.425, rely=0.02, relwidth=0.15, relheight=0.08 )
+        
+        self.remove_button = tk.Button( master=self, text="<<", command=self._remove_button_command, font=('URW Gothic L','12') )
+        self.remove_button.config( state=tk.NORMAL )
+        self.remove_button.place( relx=0.425, rely=0.13, relwidth=0.15, relheight=0.08 )
+        
+        self.plot_button = tk.Button( master=self, text="Plot", command=self._plot, font=('URW Gothic L','12') )
+        self.plot_button.config( state=tk.DISABLED )
+        self.plot_button.place( relx=0.425, rely=0.78, relwidth=0.15, relheight=0.2 )
+        
         
     def display(self):
         self.place( relx=0.18, rely=0.045, relwidth=0.81, relheight=0.715 )

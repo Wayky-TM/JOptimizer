@@ -5,12 +5,8 @@ from enum import Enum, unique
 
 import jmetal.core.problem as jprob
 import jmetal.core.solution as jsol
-# import jmetal.operator.crossover as Crossover
-# import jmetal.operator.mutation as Mutation
 import core.JMetalpy.composite_solution as CS
 
-# from core.variable import *
-# from core.constant import *
                   
 from core.problem_parameters import *
 from core.evaluator import Evaluator

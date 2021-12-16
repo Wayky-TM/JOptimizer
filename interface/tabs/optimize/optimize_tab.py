@@ -6,7 +6,6 @@ Created on Fri Sep 24 12:56:44 2021
 """
 import os
 import sys
-sys.path.append(r"./../..")
 
 try:
     import tkinter as tk                # python 3

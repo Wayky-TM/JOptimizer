@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Jul 24 20:25:37 2021
 
-@author: Wayky
-"""
 
 import re
 import os
@@ -72,10 +68,11 @@ class SolutionsInteractivePlot:
                 objectives_list[1] + ": %{y}",
                 "Index: %{customdata[0]}",
             ])
-        )
-            fig.write_html("plot.html")
-            webbrowser.open('file://' + os.path.realpath("plot.html"))
-            os.remove("plot.html")
+            )
+            
+            fig.write_html("%s.html" % (filename))
+            webbrowser.open('file://' + os.path.realpath( "%s.html" % (filename) ))
+            # os.remove( "%s.html" % (filename) )
             
         
         elif len(objectives_list)==3:    
@@ -92,10 +89,11 @@ class SolutionsInteractivePlot:
                 objectives_list[2] + ": %{z}",
                 "Index: %{customdata[0]}",
             ])
-        )
-            fig.write_html("plot.html")
-            webbrowser.open('file://' + os.path.realpath("plot.html"))
-            os.remove("plot.html")
+            )
+            
+            fig.write_html("%s.html" % (filename))
+            webbrowser.open('file://' + os.path.realpath( "%s.html" % (filename) ))
+            # os.remove( "%s.html" % (filename) )
             
         
 

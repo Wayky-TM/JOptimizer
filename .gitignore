@@ -132,3 +132,4 @@ dmypy.json
 .pyre/
 
 __tests__
+JOptimizer.py
