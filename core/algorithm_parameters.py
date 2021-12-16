@@ -44,6 +44,8 @@ class AlgorithmParameters:
         NSGAII="NSGAII"
         MOCELL="MOCELL"
         MOEAD="MOEAD"
+        IBEA="IBEA"
+        SPEA2="SPEA2"
         GA_MONO="GA (mono)"
         ANNEALING="Simulated annealing (mono)"
         LOCAL_SEARCH="Local search (mono)"
@@ -207,12 +209,17 @@ class AlgorithmParameters:
         # if problem.include_float or problem.include_floatVector:
         if problem.include_float:
             
-            """ Crossover """
-            if self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION.value:
-                float_crossover = Crossover.DifferentialEvolutionCrossover( CR=float(self.float_crossover_parameters["probability"]), F=float(self.float_crossover_parameters["F"]))
-                
-            elif self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.SBX.value:
-                float_crossover = Crossover.SBXCrossover( probability=float(self.float_crossover_parameters["probability"]), distribution_index=float(self.float_crossover_parameters["distribution_index"]))
+            if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.ANNEALING.value,
+                                   AlgorithmParameters.SUPPORTED_ALGORITHMS.LOCAL_SEARCH.value]:
+            
+                """ Crossover """
+                if self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.DIFF_EVOLUTION.value:
+                    float_crossover = Crossover.DifferentialEvolutionCrossover( CR=float(self.float_crossover_parameters["probability"]), F=float(self.float_crossover_parameters["F"]))
+                    
+                elif self.float_crossover_choice == AlgorithmParameters.FLOAT_CROSSOVER.SBX.value:
+                    float_crossover = Crossover.SBXCrossover( probability=float(self.float_crossover_parameters["probability"]), distribution_index=float(self.float_crossover_parameters["distribution_index"]))
+                    
+                crossover_operators["float_crossover"] = float_crossover
             
             """ Mutation """
             if self.float_mutation_choice == AlgorithmParameters.FLOAT_MUTATION.POLYNOMIAL.value:
@@ -228,7 +235,6 @@ class AlgorithmParameters:
                 float_mutation = Mutation.NonUniformMutation(probability=float(self.float_mutation_parameters["probability"]), perturbation=float(self.float_mutation_parameters["perturbation"]), max_iterations=int(self.float_mutation_parameters["max_iterations"]) )
             
             
-            crossover_operators["float_crossover"] = float_crossover
             mutation_operators["float_mutation"] = float_mutation
             
             
@@ -238,17 +244,20 @@ class AlgorithmParameters:
         # if problem.include_integer or problem.include_discretized or problem.include_integerVector or problem.include_discretizedVector:
         if problem.include_integer:
             
-            """ Crossover """
-            if self.int_crossover_choice == AlgorithmParameters.INT_CROSSOVER.INT_SBX.value:
-                integer_crossover = Crossover.IntegerSBXCrossover( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
+            if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.ANNEALING.value,
+                                   AlgorithmParameters.SUPPORTED_ALGORITHMS.LOCAL_SEARCH.value]:
             
+                """ Crossover """
+                if self.int_crossover_choice == AlgorithmParameters.INT_CROSSOVER.INT_SBX.value:
+                    integer_crossover = Crossover.IntegerSBXCrossover( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
+            
+                crossover_operators["integer_crossover"] = integer_crossover
             
             """ Mutation """
             if self.int_mutation_choice == AlgorithmParameters.INT_MUTATION.INT_POLYNOMIAL.value:
                 integer_mutation = Mutation.IntegerPolynomialMutation( probability=float(self.int_crossover_parameters["probability"]), distribution_index=float(self.int_crossover_parameters["distribution_index"]) )
        
-                
-            crossover_operators["integer_crossover"] = integer_crossover
+            
             mutation_operators["integer_mutation"] = integer_mutation
         
         """
@@ -256,15 +265,19 @@ class AlgorithmParameters:
         """
         if problem.include_binary:
             
-            """ Crossover """
-            if self.binary_crossover_choice == AlgorithmParameters.BINARY_CROSSOVER.SPX.value:
-                binary_crossover = Crossover.SPXCrossover( probability=float(self.binary_crossover_parameters["probability"]) )
+            if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.ANNEALING.value,
+                                   AlgorithmParameters.SUPPORTED_ALGORITHMS.LOCAL_SEARCH.value]:
+            
+                """ Crossover """
+                if self.binary_crossover_choice == AlgorithmParameters.BINARY_CROSSOVER.SPX.value:
+                    binary_crossover = Crossover.SPXCrossover( probability=float(self.binary_crossover_parameters["probability"]) )
+                    
+                crossover_operators["binary_crossover"] = binary_crossover
             
             """ Mutation """
             if self.binary_mutation_choice == AlgorithmParameters.BINARY_MUTATION.BIT_FLIP.value:
                 binary_mutation = Mutation.BitFlipMutation( probability=float(self.binary_mutation_parameters["probability"]) )
             
-            crossover_operators["binary_crossover"] = binary_crossover
             mutation_operators["binary_mutation"] = binary_mutation
         
         
@@ -274,12 +287,17 @@ class AlgorithmParameters:
         """
         if problem.include_permutation:
             
-            """ Crossover """
-            if self.permutation_crossover_choice == AlgorithmParameters.PERMUTATION_CROSSOVER.CXC.value:
-                permutation_crossover = Crossover.CXCrossover( probability=float(self.permutation_crossover_parameters["probability"]) )
+            if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.ANNEALING.value,
+                                   AlgorithmParameters.SUPPORTED_ALGORITHMS.LOCAL_SEARCH.value]:
             
-            elif self.permutation_crossover_choice == AlgorithmParameters.PERMUTATION_CROSSOVER.PMX.value:
-                permutation_crossover = Crossover.PMXCrossover( probability=float(self.permutation_crossover_parameters["probability"]) )
+                """ Crossover """
+                if self.permutation_crossover_choice == AlgorithmParameters.PERMUTATION_CROSSOVER.CXC.value:
+                    permutation_crossover = Crossover.CXCrossover( probability=float(self.permutation_crossover_parameters["probability"]) )
+                
+                elif self.permutation_crossover_choice == AlgorithmParameters.PERMUTATION_CROSSOVER.PMX.value:
+                    permutation_crossover = Crossover.PMXCrossover( probability=float(self.permutation_crossover_parameters["probability"]) )
+                    
+                crossover_operators["permutation_crossover"] = permutation_crossover
             
             """ Mutation """
             if self.permutation_mutation_choice == AlgorithmParameters.PERMUTATION_MUTATION.PERMUTATION_SWAP.value:
@@ -289,7 +307,6 @@ class AlgorithmParameters:
                 permutation_mutation = Mutation.ScrambleMutation( probability=float(self.permutation_mutation_parameters["probability"]) )
             
             
-            crossover_operators["permutation_crossover"] = permutation_crossover
             mutation_operators["permutation_mutation"] = permutation_mutation
             
         composite_crossover = CC.CompositeCrossover( **crossover_operators )
@@ -298,7 +315,11 @@ class AlgorithmParameters:
         """
             Selection
         """
-        if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value]:
+        if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value,
+                               AlgorithmParameters.SUPPORTED_ALGORITHMS.IBEA.value,
+                               AlgorithmParameters.SUPPORTED_ALGORITHMS.SPEA2.value,
+                               AlgorithmParameters.SUPPORTED_ALGORITHMS.ANNEALING.value,
+                               AlgorithmParameters.SUPPORTED_ALGORITHMS.LOCAL_SEARCH.value]:
             
             if self.selection_choice == AlgorithmParameters.SELECTION.ROULETTE.value:
                 selection_operator = Selection.RouletteWheelSelection()
@@ -327,10 +348,15 @@ class AlgorithmParameters:
             # elif self.selection_choice == AlgorithmParameters.SELECTION.BINARY_TOURNAMENT_2:
             #     selection_operator = Selection.BinaryTournament2Selection(  )
             
-            
-        population_size = int(self.general_parameters["population_size"])
+
+        if self.choice not in [AlgorithmParameters.SUPPORTED_ALGORITHMS.ANNEALING.value,
+                               AlgorithmParameters.SUPPORTED_ALGORITHMS.LOCAL_SEARCH.value]:            
+            population_size = int(self.general_parameters["population_size"])
         
-        if self.choice in [AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value, AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value]:
+        if self.choice in [AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value,
+                           AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value,
+                           AlgorithmParameters.SUPPORTED_ALGORITHMS.IBEA.value,
+                           AlgorithmParameters.SUPPORTED_ALGORITHMS.SPEA2.value]:
             offspring_size = int(self.general_parameters["offspring_size"])
         
             
@@ -359,6 +385,44 @@ class AlgorithmParameters:
                                                          selection=selection_operator,
                                                          termination_criterion=termination_criterion,
                                                          population_evaluator=evaluator)
+            
+            
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.IBEA.value:
+            
+            kappa = float(self.specific_options["kappa"])
+            
+            algorithm = Multiobjective.IBEA(problem=problem,
+                                            population_size=population_size,
+                                            offspring_population_size=offspring_size,
+                                            mutation=composite_mutation,
+                                            crossover=composite_crossover,
+                                            kappa=kappa,
+                                            termination_criterion=termination_criterion,
+                                            population_evaluator=evaluator)
+            
+        
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.SPEA2.value:
+            
+            algorithm = Multiobjective.SPEA2(problem=problem,
+                                             population_size=population_size,
+                                             offspring_population_size=offspring_size,
+                                             mutation=composite_mutation,
+                                             crossover=composite_crossover,
+                                             termination_criterion=termination_criterion,
+                                             population_evaluator=evaluator)
+            
+        
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.ANNEALING.value:
+            
+            algorithm = Singleobjective.SimulatedAnnealing(problem=problem,
+                                                         mutation=composite_mutation,
+                                                         termination_criterion=termination_criterion )
+            
+        elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.LOCAL_SEARCH.value:
+            
+            algorithm = Singleobjective.LocalSearch(problem=problem,
+                                                    mutation=composite_mutation,
+                                                    termination_criterion=termination_criterion )
             
             
         elif self.choice == AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value:

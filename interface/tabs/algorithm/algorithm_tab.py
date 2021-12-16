@@ -44,6 +44,9 @@ from interface.tabs.algorithm.frames.mutation_frame import MutationFrame
 from interface.tabs.algorithm.frames.aggregative_frame import AggregativeFrame
 from interface.tabs.algorithm.frames.MOEAD_parameters_frame import MOEADParametersFrame
 
+""" IBEA frames """
+from interface.tabs.algorithm.frames.kappa_frame import KappaFrame
+
 class AlgorithmTab(ParameterFrame):
     
     def update_algorithm_selection(self, new_selection):
@@ -90,7 +93,11 @@ class AlgorithmTab(ParameterFrame):
         
         algorithm_optionlist = [ AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value,
                                  AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value,
-                                 AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value ]
+                                 AlgorithmParameters.SUPPORTED_ALGORITHMS.IBEA.value,
+                                 AlgorithmParameters.SUPPORTED_ALGORITHMS.SPEA2.value,
+                                 AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value,
+                                 AlgorithmParameters.SUPPORTED_ALGORITHMS.ANNEALING.value,
+                                 AlgorithmParameters.SUPPORTED_ALGORITHMS.LOCAL_SEARCH.value]
         
         tk.Label( self, text="Algorithm", font=('URW Gothic L','11','bold') ).place( relx=0.01, rely=0.048 )
         self.AlgorithmOption = tk.StringVar(self)
@@ -108,11 +115,16 @@ class AlgorithmTab(ParameterFrame):
         self.frames["Mutation"] = MutationFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["Aggregative"] = AggregativeFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         self.frames["MOEAD"] = MOEADParametersFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
+        self.frames["Kappa"] = KappaFrame( master=self, problem_parameters=problem_parameters, algorithm_parameters=algorithm_parameters )
         
         self.items_list = {}
         self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.NSGAII.value] = ["Population", "Offspring", "Selection", "Crossover", "Mutation"]
         self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.GA_MONO.value] = ["Population", "Offspring", "Selection", "Crossover", "Mutation"]
         self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.MOEAD.value] = ["Population", "Crossover", "Mutation", "MOEAD", "Aggregative"]
+        self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.SPEA2.value] = ["Population", "Offspring", "Crossover", "Mutation"]
+        self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.IBEA.value] = ["Population", "Offspring", "Crossover", "Mutation", "Kappa"]
+        self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.ANNEALING.value] = ["Mutation"]
+        self.items_list[AlgorithmParameters.SUPPORTED_ALGORITHMS.LOCAL_SEARCH.value] = ["Mutation"]
         
         self.parameters_listbox = tk.Listbox( master=self)
         self.parameters_listbox.config( font=('URW Gothic L','11','bold') )

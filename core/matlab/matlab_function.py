@@ -34,8 +34,12 @@ class MatlabFunction:
         s = self.engine.genpath(self.script_path)
         self.engine.addpath( s, nargout=0 )
         
-        self.command = "self.engine.%s( *args, nargout=self.nargout )" % (self.function_name)
+        # self.command = "self.engine.%s( *args, nargout=self.nargout )" % (self.function_name)
+        self.function_ref = eval("self.engine.%s" % (self.function_name))
+        
         
     def call( self, *args ): #TODO: Proper argument checking
-        return eval(self.command)
+        # return eval(self.command)
+        return self.function_ref( *args, nargout=self.nargout )
+    
 

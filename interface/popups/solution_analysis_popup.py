@@ -3,7 +3,6 @@
 
 import os
 import sys
-# sys.path.append(r"./../..")
 
 try:
     import tkinter as tk                # python 3
@@ -136,6 +135,12 @@ class SolutionsFrame( ParameterFrame ):
             
     def load_solutions(self):
         self.front = self.controller.engine.get_solutions()
+        
+        try:
+            iterator = iter(self.front)
+        except:
+            self.front = [self.front]
+        
         self.solutions = self.controller.engine.get_variables(self.front)
         
         for i, solution in enumerate(self.solutions):
