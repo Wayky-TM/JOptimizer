@@ -228,16 +228,16 @@ class PlotFrontFrame( ParameterFrame ):
         
         self.available_objectives_frame = tk.LabelFrame( master=self, text="Available objectives" )
         self.available_objectives_listbox = tk.Listbox( master=self.available_objectives_frame )
-        self.available_objectives_listbox.grid( row=0, column=0, sticky="NSEW" )
-        self.available_objectives_listbox.grid_columnconfigure(0, weight=1)
-        self.available_objectives_listbox.grid_rowconfigure(0, weight=1)
+        self.available_objectives_listbox.grid( row=0, column=0, sticky="NSEW", padx=10, pady=10 )
+        self.available_objectives_frame.grid_columnconfigure(0, weight=1)
+        self.available_objectives_frame.grid_rowconfigure(0, weight=1)
         self._update_available_objectives( [] )
         
         self.selected_objectives_frame = tk.LabelFrame( master=self, text="Selected objectives" )
         self.selected_objectives_listbox = tk.Listbox( master=self.selected_objectives_frame )
-        self.selected_objectives_listbox.grid( row=0, column=0, sticky="NSEW" )
-        self.selected_objectives_listbox.grid_columnconfigure(0, weight=1)
-        self.selected_objectives_listbox.grid_rowconfigure(0, weight=1)
+        self.selected_objectives_listbox.grid( row=0, column=0, sticky="NSEW", padx=10, pady=10 )
+        self.selected_objectives_frame.grid_columnconfigure(0, weight=1)
+        self.selected_objectives_frame.grid_rowconfigure(0, weight=1)
         
         self.available_objectives_frame.place( relx=0.015, rely=0.02, relwidth=0.4, relheight=0.96 )
         self.selected_objectives_frame.place( relx=0.585, rely=0.02, relwidth=0.4, relheight=0.96 )

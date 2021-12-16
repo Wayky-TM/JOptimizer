@@ -133,3 +133,4 @@ dmypy.json
 
 __tests__
 JOptimizer.py
+plot_tmp.html
